@@ -1,58 +1,62 @@
 package server.serverWork;
 
+import server.DB.SQLFactory;
+import server.DB.UserDAO;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public class BudgetServer implements Runnable {
-    protected int serverPort = 9006;
-    protected ServerSocket serverSocket = null;
-    protected boolean isStopped = false;
+    private final int serverPort;
+    private ServerSocket serverSocket;
+    private boolean isStopped = false;
 
     public BudgetServer(int port) {
         this.serverPort = port;
     }
 
     @Override
-    public void run(){
+    public void run() {
         openServerSocket();
-        while(! isStopped()){
-            Socket clientSocket = null;
+        System.out.println("Сервер запущен на порту " + serverPort);
+
+        while (!isStopped) {
             try {
-                clientSocket = this.serverSocket.accept();
+                Socket clientSocket = this.serverSocket.accept();
+                System.out.println("Клиент подключен: " + clientSocket.getInetAddress());
+
+                Connection connection = SQLFactory.getConnection();
+                UserDAO userDAO = new UserDAO(connection);
+
+                ClientHandler clientHandler = new ClientHandler(clientSocket, userDAO);
+                new Thread(clientHandler).start();
             } catch (IOException e) {
-                if(isStopped()) {
-                    System.out.println("Server Stopped.") ;
+                if (isStopped) {
+                    System.out.println("Сервер остановлен.");
                     return;
                 }
-                throw new RuntimeException("Error accepting client connection", e);
+                e.printStackTrace();
             }
-            new Thread();
-            System.out.println("Клиент подключен.");
         }
-        System.out.println("Server Stopped.") ;
-    }
-
-    private synchronized boolean isStopped() {
-        return this.isStopped;
     }
 
     private void openServerSocket() {
-        System.out.println("Opening server socket...");
         try {
             this.serverSocket = new ServerSocket(this.serverPort);
+            System.out.println("Сервер ожидает подключения...");
         } catch (IOException e) {
-            throw new RuntimeException("Could not open port " + this.serverPort, e);
+            throw new RuntimeException("Ошибка открытия порта " + this.serverPort, e);
         }
     }
 
     public synchronized void stop() {
-        System.out.println("Stopping Server");
-        this.isStopped = true;
+        isStopped = true;
         try {
             this.serverSocket.close();
         } catch (IOException e) {
-            throw new RuntimeException("Error closing server", e);
+            throw new RuntimeException("Ошибка при закрытии сервера", e);
         }
     }
 }

@@ -60,7 +60,7 @@
                         <id>default-cli</id>
                         <configuration>
 
-                            <mainClass>client.main.Main</mainClass>
+                            <mainClass>client.GUI.MainWindow</mainClass>
                         </configuration>
                     </execution>
                 </executions>

@@ -24,12 +24,13 @@ public class Client {
         }
     }
 
-    public void sendMessage(String message) {
+    public String sendMessage(String message) {
         try {
             outStream.writeObject(message);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return message;
     }
 
     public void sendObject(Object object){
