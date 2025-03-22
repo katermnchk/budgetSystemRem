@@ -16,6 +16,11 @@ public class MainWindow extends Application {
 
     private UserDAO userDAO;
 
+    public MainWindow() {
+        // Пустой конструктор
+    }
+
+
     public MainWindow(Client client) {
     }
 
