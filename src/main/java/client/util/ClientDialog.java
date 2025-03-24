@@ -18,4 +18,7 @@ public class ClientDialog {
         alert.setContentText("Такой пользователь не найден в системе");
         alert.showAndWait();
     }
+
+    public static void showAlertWithExistLogin() {
+    }
 }

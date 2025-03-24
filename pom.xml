@@ -68,7 +68,7 @@
                         <id>default-cli</id>
                         <configuration>
 
-                            <mainClass>client.GUI.MainWindow</mainClass>
+                            <mainClass>client.GUI.LoginWindow</mainClass>
                         </configuration>
                     </execution>
                 </executions>
