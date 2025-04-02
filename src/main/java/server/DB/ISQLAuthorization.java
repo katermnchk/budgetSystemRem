@@ -1,6 +1,6 @@
 package server.DB;
 
-import client.controllers.Authorization;
+import models.Authorization;
 import server.SystemOrg.Role;
 
 public interface ISQLAuthorization {

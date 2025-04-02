@@ -1,11 +1,14 @@
 package server.DB;
 
-import java.sql.Connection;
+import java.sql.SQLException;
 
-public class SQLFactory {
-
-    public static Connection getConnection() {
-        Connection con = null;
-        return con;
+public class SQLFactory extends AbstractFactory {
+    public SQLUsers getUsers() throws SQLException, ClassNotFoundException {
+        return SQLUsers.getInstance();
     }
+
+    public SQLAuthorization getRole() throws SQLException, ClassNotFoundException {
+        return SQLAuthorization.getInstance();
+    }
+
 }

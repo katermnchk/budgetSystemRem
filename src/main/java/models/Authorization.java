@@ -1,18 +1,10 @@
-package server.SystemOrg;
+package models;
 
 import java.io.Serializable;
 
-public class Admin implements Serializable {
-    private int id;
+public class Authorization implements Serializable {
     private String login;
     private String password;
-
-    public int getId() {
-        return id;
-    }
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getLogin() {
         return login;
@@ -30,9 +22,8 @@ public class Admin implements Serializable {
 
     @Override
     public String toString() {
-        return "Admin{" +
-                "id=" + id +
-                ", login='" + login + '\'' +
+        return "Authorization{" +
+                "login='" + login + '\'' +
                 ", password='" + password + '\'' +
                 '}';
     }

@@ -1,9 +1,6 @@
 package client.clientWork;
 
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 
 public class Client {
@@ -24,18 +21,19 @@ public class Client {
         }
     }
 
-    public String sendMessage(String message) {
+    public void sendMessage(String message) {
         try {
             outStream.writeObject(message);
+            outStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return message;
     }
 
     public void sendObject(Object object){
         try {
             outStream.writeObject(object);
+            outStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -55,7 +53,6 @@ public class Client {
         try {
             object = inStream.readObject();
         } catch (ClassNotFoundException | IOException e) {
-
             e.printStackTrace();
         }
         return object;

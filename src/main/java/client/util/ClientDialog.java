@@ -11,6 +11,14 @@ public class ClientDialog {
         alert.showAndWait();
     }
 
+    static public void showAlertWithExistLogin(){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Ошибка");
+        alert.setHeaderText("Ошибка: Регистрация");
+        alert.setContentText("Такой пользователь уже существует");
+        alert.showAndWait();
+    }
+
     static public void showAlertWithNoLogin(){
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Ошибка");
@@ -19,6 +27,36 @@ public class ClientDialog {
         alert.showAndWait();
     }
 
-    public static void showAlertWithExistLogin() {
+    static public void showAlertWithData(){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Ошибка");
+        alert.setHeaderText("Ошибка: Сбой задачи");
+        alert.setContentText("Проверьте введнные параметры");
+        alert.showAndWait();
+    }
+
+    static public void correctOperation(){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Correct");
+        alert.setHeaderText("");
+        alert.setContentText("Операция прошла успешно");
+        alert.showAndWait();
+    }
+
+    static public void showAlertWithDouble(){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Ошибка");
+        alert.setHeaderText("Ошибка 500: Ввод двоичных чисел");
+        alert.setContentText("Заполните правильно цену/вес");
+        alert.showAndWait();
+    }
+
+    public static void showAlertWithPassword() {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Ошибка");
+        alert.setHeaderText("Ошибка: Пароли не совпадают");
+        alert.setContentText("Повторите ввод пароля");
+        alert.showAndWait();
     }
 }
+
