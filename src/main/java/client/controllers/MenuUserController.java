@@ -141,8 +141,17 @@ public class MenuUserController {
 
     @FXML
     void viewHistory() {
-        String history = userDAO.getTransactionHistory();
-        showAlert("История операций", history);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/transactionHistory.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("История транзакций");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            showAlert("Ошибка", "Не удалось открыть истории транзакций: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     private double getAmountFromUser(String title, String content) {

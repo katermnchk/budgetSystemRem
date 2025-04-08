@@ -2,6 +2,7 @@ package server.DB;
 
 import client.clientWork.Account;
 import client.clientWork.Category;
+import client.clientWork.Transaction;
 import client.clientWork.Users;
 import server.SystemOrg.Role;
 
@@ -19,4 +20,6 @@ public interface ISQLUsers {
     ArrayList<Category> getExpenseCategories() throws SQLException;
 
     double getBalance(Integer userId) throws SQLException;
+
+    ArrayList<Transaction> getTransactionHistory(Integer userId) throws SQLException;
 }

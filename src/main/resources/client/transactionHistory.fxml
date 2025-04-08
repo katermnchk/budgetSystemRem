@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="15" alignment="CENTER" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="client.controllers.TransactionHistoryController">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="История транзакций" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+
+    <TableView fx:id="transactionTable">
+        <columns>
+            <TableColumn fx:id="dateColumn" text="Дата" prefWidth="120"/>
+            <TableColumn fx:id="accountColumn" text="Счет" prefWidth="100"/>
+            <TableColumn fx:id="categoryColumn" text="Категория" prefWidth="100"/>
+            <TableColumn fx:id="amountColumn" text="Сумма (BYN)" prefWidth="100"/>
+            <TableColumn fx:id="descriptionColumn" text="Описание" prefWidth="150"/>
+        </columns>
+    </TableView>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Button text="Обновить" onAction="#refreshHistory"/>
+        <Button text="Закрыть" onAction="#closeWindow"/>
+    </HBox>
+</VBox>

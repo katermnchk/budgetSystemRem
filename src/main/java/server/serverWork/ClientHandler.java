@@ -2,6 +2,7 @@ package server.serverWork;
 
 import client.clientWork.Account;
 import client.clientWork.Category;
+import client.clientWork.Transaction;
 import client.clientWork.Users;
 import client.controllers.TransactionRequest;
 import models.Authorization;
@@ -168,6 +169,17 @@ public class ClientHandler implements Runnable {
                             soos.writeObject(String.valueOf(balance));
                         } catch (SQLException e) {
                             soos.writeObject("Ошибка при получении баланса: " + e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
+                    case "getTransactionHistory" -> {
+                        Integer userId = (Integer) sois.readObject();
+                        SQLFactory sqlFactory = new SQLFactory();
+                        try {
+                            ArrayList<Transaction> transactions = sqlFactory.getUsers().getTransactionHistory(userId);
+                            soos.writeObject(transactions);
+                        } catch (SQLException e) {
+                            soos.writeObject("Ошибка при получении истории транзакций: " + e.getMessage());
                             e.printStackTrace();
                         }
                     }
