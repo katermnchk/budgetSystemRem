@@ -128,6 +128,34 @@ public class SQLUsers implements ISQLUsers {
         }
         return categories;
     }
+
+    @Override
+    public ArrayList<Category> getExpenseCategories()  throws SQLException {
+        ArrayList<Category> categories = new ArrayList<>();
+        String sql = "SELECT id, name FROM categories WHERE type = 'EXPENSE'";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                categories.add(new Category(rs.getInt("id"), rs.getString("name")));
+            }
+        }
+        return categories;
+    }
+
+    @Override
+    public double getBalance(Integer userId) throws SQLException {
+        String sql = "SELECT SUM(CASE WHEN t.description = 'Доход' THEN t.amount ELSE -t.amount END) AS balance " +
+                "FROM transactions t " +
+                "WHERE t.user_id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getDouble("balance");
+            }
+        }
+        return 0.0;
+    }
 }
 
 /*package server.DB;

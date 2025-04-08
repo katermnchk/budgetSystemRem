@@ -15,6 +15,8 @@ public interface ISQLUsers {
     ArrayList<Users> get();
 
     ArrayList<Account> getUserAccounts(Integer userId) throws SQLException;
-
     ArrayList<Category> getIncomeCategories() throws SQLException;
+    ArrayList<Category> getExpenseCategories() throws SQLException;
+
+    double getBalance(Integer userId) throws SQLException;
 }

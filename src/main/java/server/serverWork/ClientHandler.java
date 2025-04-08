@@ -134,6 +134,43 @@ public class ClientHandler implements Runnable {
                             soos.writeObject("Ошибка при получении категорий: " + e.getMessage());
                         }
                     }
+                    case "addExpense" -> {
+                        TransactionRequest request = (TransactionRequest) sois.readObject();
+                        SQLFactory sqlFactory = new SQLFactory();
+                        try {
+                            SQLExpense expenseDAO = sqlFactory.getExpense();
+                            expenseDAO.addTransaction(
+                                    request.getUserId(),
+                                    request.getAccountId(),
+                                    request.getCategoryId(),
+                                    request.getAmount(),
+                                    request.getDescription()
+                            );
+                            soos.writeObject("OK");
+                        } catch (SQLException e) {
+                            soos.writeObject("Ошибка при добавлении дохода: " + e.getMessage());
+                        }
+                    }
+                    case "getExpenseCategories" -> {
+                        SQLFactory sqlFactory = new SQLFactory();
+                        try {
+                            ArrayList<Category> categories = sqlFactory.getUsers().getExpenseCategories();
+                            soos.writeObject(categories);
+                        } catch (SQLException e) {
+                            soos.writeObject("Ошибка при получении категорий: " + e.getMessage());
+                        }
+                    }
+                    case "getBalance" -> {
+                        Integer userId = (Integer) sois.readObject();
+                        SQLFactory sqlFactory = new SQLFactory();
+                        try {
+                            double balance = sqlFactory.getUsers().getBalance(userId);
+                            soos.writeObject(String.valueOf(balance));
+                        } catch (SQLException e) {
+                            soos.writeObject("Ошибка при получении баланса: " + e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
         } catch (IOException | ClassNotFoundException | SQLException e) {

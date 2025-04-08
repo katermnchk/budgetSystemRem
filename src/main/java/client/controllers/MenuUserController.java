@@ -73,7 +73,9 @@ public class MenuUserController {
             Role r = new Role();
             r.setId(Connect.id);
             Connect.client.sendObject(r);
-            WindowChanger.changeWindow(getClass(), personalInfButton, "profile.fxml", "profile", false);
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/client/profile.fxml"));
+            //WindowChanger.changeWindow(getClass(), personalInfButton, "profile.fxml", "profile", false);
         } catch (Exception e) {
             showAlert("Ошибка", "Не удалось открыть профиль: " + e.getMessage());
             e.printStackTrace();
@@ -98,17 +100,33 @@ public class MenuUserController {
 
     @FXML
     void addExpense() throws SQLException {
-        double amount = getAmountFromUser("Добавление расхода", "Введите сумму расхода:");
-        if (amount > 0) {
-            //userDAO.addTransaction(-amount, "Расход");
-            showAlert("Расход добавлен", "Вы добавили расход: " + amount + " BYN");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/addExpense.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("Добавление расхода");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            showAlert("Ошибка", "Не удалось открыть окно добавления расхода.");
+            e.printStackTrace();
         }
     }
 
     @FXML
     void viewBalance() {
-        double balance = userDAO.getBalance();
-        showAlert("Текущий баланс", "Ваш баланс: " + balance + " BYN");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/balanceWindow.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Текущий баланс");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            showAlert("Ошибка", "Не удалось открыть окно баланса: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @FXML
