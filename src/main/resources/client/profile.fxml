@@ -24,9 +24,11 @@
         <Label layoutX="50.0" layoutY="140.0" text="Логин:"/>
         <Label fx:id="loginLabel" layoutX="150.0" layoutY="140.0"/>
 
-        <Button layoutX="180.0" layoutY="220.0" mnemonicParsing="false"
-                onAction="#closeWindow" prefHeight="37.0" prefWidth="120.0"
-                style="-fx-background-color: #c7dcf7; -fx-border-radius: 10px;"
-                text="Закрыть" />
+        <Button fx:id="backButton" layoutX="180.0" layoutY="235.0" mnemonicParsing="false" onAction="#backToMain" prefHeight="37.0" prefWidth="100.0"
+                style="-fx-background-color: #e5eefc; -fx-border-color: #c7dcf7; -fx-border-width: 3px; -fx-border-radius: 10px;" text="Назад" textAlignment="CENTER">
+            <font>
+                <Font size="14.0" />
+            </font>
+        </Button>
     </children>
 </AnchorPane>

@@ -1,8 +1,11 @@
 package server.serverWork;
 
+import client.clientWork.Account;
+import client.clientWork.Category;
 import client.clientWork.Users;
+import client.controllers.TransactionRequest;
 import models.Authorization;
-import server.DB.SQLFactory;
+import server.DB.*;
 import server.SystemOrg.*;
 
 import java.io.*;
@@ -59,18 +62,18 @@ public class ClientHandler implements Runnable {
                             soos.writeObject("Ошибка при удалении пользователя");
                         }
                     }
-
                     case "registrationUser" -> {
-                        System.out.println("Запрос к БД на проверку пользователя(таблица users), клиент: " +
+                        System.out.println("Запрос к БД на регистрацию пользователя: " +
                                 clientSocket.getInetAddress().toString());
                         Users user = (Users) sois.readObject();
                         System.out.println(user.toString());
 
                         SQLFactory sqlFactory = new SQLFactory();
+
                         Role r = sqlFactory.getUsers().insert(user);
                         System.out.println((r.toString()));
 
-                       if (r.getId() != 0 && !r.getRole().isEmpty()) {
+                        if (r.getId() != 0 && !r.getRole().isEmpty()) {
                             soos.writeObject("OK");
                             soos.writeObject(r);
                         } else {
@@ -83,14 +86,53 @@ public class ClientHandler implements Runnable {
                         System.out.println(auth.toString());
 
                         SQLFactory sqlFactory = new SQLFactory();
+                        SQLAuthorization authDAO = sqlFactory.getRole();
 
-                        Role r = sqlFactory.getRole().getRole(auth);
+                        Role r = authDAO.getRole(auth);
                         System.out.println(r.toString());
+
                         if (r.getId() != 0 && !r.getRole().isEmpty()) {
                             soos.writeObject("OK");
                             soos.writeObject(r);
-                        } else
+                        } else {
                             soos.writeObject("There is no data!");
+                        }
+                    }
+                    case "addIncome" -> {
+                        TransactionRequest request = (TransactionRequest) sois.readObject();
+                        SQLFactory sqlFactory = new SQLFactory();
+                        try {
+                            SQLIncome incomeDAO = sqlFactory.getIncome();
+                            incomeDAO.addTransaction(
+                                    request.getUserId(),
+                                    request.getAccountId(),
+                                    request.getCategoryId(),
+                                    request.getAmount(),
+                                    request.getDescription()
+                            );
+                            soos.writeObject("OK");
+                        } catch (SQLException e) {
+                            soos.writeObject("Ошибка при добавлении дохода: " + e.getMessage());
+                        }
+                    }
+                    case "getUserAccounts" -> {
+                        Integer userId = (Integer) sois.readObject();
+                        SQLFactory sqlFactory = new SQLFactory();
+                        try {
+                            ArrayList<Account> accounts = sqlFactory.getUsers().getUserAccounts(userId);
+                            soos.writeObject(accounts);
+                        } catch (SQLException e) {
+                            soos.writeObject("Ошибка при получении счетов: " + e.getMessage());
+                        }
+                    }
+                    case "getIncomeCategories" -> {
+                        SQLFactory sqlFactory = new SQLFactory();
+                        try {
+                            ArrayList<Category> categories = sqlFactory.getUsers().getIncomeCategories();
+                            soos.writeObject(categories);
+                        } catch (SQLException e) {
+                            soos.writeObject("Ошибка при получении категорий: " + e.getMessage());
+                        }
                     }
                 }
             }

@@ -38,14 +38,14 @@ public class MenuUserController {
 
    private UserDAO userDAO;
 
-  public MenuUserController() {
+  /*public MenuUserController() {
         try {
             Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/budgetsystem", "postgres", "postgresql");
             this.userDAO = new UserDAO(connection);
         } catch (SQLException e) {
             showAlert("Ошибка подключения к БД", "Проверьте подключение к базе данных.");
         }
-    }
+    }*/
 
     @FXML
     void backToMain(ActionEvent event) {
@@ -81,11 +81,18 @@ public class MenuUserController {
     }
 
     @FXML
-    void addIncome() throws SQLException {
-        double amount = getAmountFromUser("Добавление дохода", "Введите сумму дохода:");
-        if (amount > 0) {
-            //userDAO.addTransaction(amount, "Доход");
-            showAlert("Доход добавлен", "Вы добавили доход: " + amount + " BYN");
+    void addIncome() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/addIncome.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("Добавление дохода");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            showAlert("Ошибка", "Не удалось открыть окно добавления дохода.");
+            e.printStackTrace();
         }
     }
 
@@ -119,16 +126,6 @@ public class MenuUserController {
         String history = userDAO.getTransactionHistory();
         showAlert("История операций", history);
     }
-
-    /*@FXML
-    void viewProfile(ActionEvent actionEvent) throws IOException {
-        Connect.client.sendMessage("UserInf");
-        Role r = new Role();
-        r.setId(Connect.id);
-        Connect.client.sendObject(r);
-        WindowChanger.changeWindow(getClass(), backButton, "/client/profile.fxml", "Профиль", false);
-    }*/
-
 
     private double getAmountFromUser(String title, String content) {
         TextInputDialog dialog = new TextInputDialog();

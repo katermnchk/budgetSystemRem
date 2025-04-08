@@ -1,5 +1,7 @@
 package server.DB;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class SQLFactory extends AbstractFactory {
@@ -9,6 +11,14 @@ public class SQLFactory extends AbstractFactory {
 
     public SQLAuthorization getRole() throws SQLException, ClassNotFoundException {
         return SQLAuthorization.getInstance();
+    }
+
+    private static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection("jdbc:postgresql://localhost:5432/budgetsystem", "postgres", "postgresql");
+    }
+
+    public SQLIncome getIncome() throws SQLException {
+        return new SQLIncome(getConnection());
     }
 
 }

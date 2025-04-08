@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.scene.layout.HBox?>
+<VBox spacing="15" alignment="CENTER" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="client.controllers.AddIncomeController">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="Добавление дохода"/>
+    <Label text="Сумма:"/>
+    <TextField fx:id="amountField" promptText="Введите сумму"/>
+
+    <Label text="Счет:"/>
+    <ComboBox fx:id="accountComboBox"/>
+
+    <Label text="Категория:"/>
+    <ComboBox fx:id="categoryComboBox"/>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Button text="Добавить" onAction="#addIncome"/>
+        <Button text="Отмена" onAction="#closeWindow"/>
+    </HBox>
+</VBox>

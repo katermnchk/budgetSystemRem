@@ -2,7 +2,6 @@ package client.controllers;
 
 import java.io.IOException;
 
-
 import client.clientWork.Connect;
 import client.clientWork.Users;
 import javafx.event.ActionEvent;
@@ -37,7 +36,6 @@ public class RegistrationController {
     @FXML
     private PasswordField confirmPassword;
 
-
     @FXML
     private Button registrationButton;
 
@@ -64,16 +62,16 @@ public class RegistrationController {
     void registrationUser(ActionEvent event) throws IOException {
         if (checkInput())
             ClientDialog.showAlertWithNullInput();
-        else if( !password.getText().equals(confirmPassword.getText())) {
+        else if(!password.getText().equals(confirmPassword.getText())) {
             ClientDialog.showAlertWithPassword(); }
         else {
-                Users student = new Users();
-                student.setFirstname(firstName.getText());
-                student.setLastname(lastName.getText());
-                student.setLogin(login.getText());
-                student.setPassword(password.getText());
+                Users user = new Users();
+                user.setFirstname(firstName.getText());
+                user.setLastname(lastName.getText());
+                user.setLogin(login.getText());
+                user.setPassword(password.getText());
                 Connect.client.sendMessage("registrationUser");
-                Connect.client.sendObject(student);
+                Connect.client.sendObject(user);
                 System.out.println("Запись отправлена");
 
                 String mes = "";

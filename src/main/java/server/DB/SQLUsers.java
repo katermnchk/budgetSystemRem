@@ -1,5 +1,7 @@
 package server.DB;
 
+import client.clientWork.Account;
+import client.clientWork.Category;
 import client.clientWork.Users;
 import server.SystemOrg.Role;
 
@@ -7,6 +9,143 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class SQLUsers implements ISQLUsers {
+    private Connection conn;
+    private static SQLUsers instance;
+    public SQLUsers(Connection conn) {
+        this.conn = conn;
+    }
+
+    private SQLUsers() throws SQLException {
+        String url = "jdbc:postgresql://localhost:5432/budgetsystem";
+        String user = "postgres";
+        String password = "postgresql";
+        this.conn = DriverManager.getConnection(url, user, password);
+    }
+
+
+    public static synchronized SQLUsers getInstance() throws SQLException, ClassNotFoundException {
+        if (instance == null) {
+            instance = new SQLUsers();
+        }
+        return instance;
+    }
+    @Override
+    public ArrayList<Users> findUser(Users obj) {
+        ArrayList<Users> usList = new ArrayList<>();
+        String sql = "SELECT u.username, u.firstname, u.lastname " +
+                "FROM users u " +
+                "WHERE u.username = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, obj.getLogin());
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Users user = new Users();
+                user.setLogin(rs.getString("username"));
+                user.setFirstname(rs.getString("firstname"));
+                user.setLastname(rs.getString("lastname"));
+                usList.add(user);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return usList;
+    }
+
+    @Override
+    public Role insert(Users obj) {
+        String proc = "SELECT insert_user(?, ?, ?, ?, ?)";
+        Role r = new Role();
+        try (PreparedStatement stmt = conn.prepareStatement(proc)) {
+            stmt.setString(1, obj.getFirstname());
+            stmt.setString(2, obj.getLastname());
+            stmt.setString(3, obj.getLogin());
+            stmt.setString(4, obj.getPassword());
+            stmt.setString(5, "USER"); // роль по умолчанию
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                int id = rs.getInt(1);
+                r.setId(id);
+                r.setRole("USER");
+            }
+        } catch (SQLIntegrityConstraintViolationException e) {
+            System.out.println("Пользователь уже существует");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return r;
+    }
+
+    @Override
+    public boolean deleteUser(Users obj) {
+        // Реализация удаления пользователя (пример)
+        return false;
+    }
+
+    @Override
+    public ArrayList<Users> get() {
+        ArrayList<Users> usersList = new ArrayList<>();
+        String query = "SELECT * FROM users";
+        try (PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Users user = new Users();
+                user.setId(rs.getInt("id"));
+                user.setFirstname(rs.getString("firstname"));
+                user.setLastname(rs.getString("lastname"));
+                user.setLogin(rs.getString("username"));
+                usersList.add(user);
+            }
+        } catch (SQLException e) {
+            System.err.println("Ошибка при запросе к базе данных: " + e.getMessage());
+        }
+        return usersList;
+    }
+
+
+    @Override
+    public ArrayList<Account> getUserAccounts(Integer userId) throws SQLException {
+        ArrayList<Account> accounts = new ArrayList<>();
+        String sql = "SELECT id, name FROM accounts WHERE user_id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                accounts.add(new Account(rs.getInt("id"), rs.getString("name")));
+            }
+        }
+        return accounts;
+    }
+
+    @Override
+    public ArrayList<Category> getIncomeCategories() throws SQLException {
+        ArrayList<Category> categories = new ArrayList<>();
+        String sql = "SELECT id, name FROM categories WHERE type = 'INCOME'";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                categories.add(new Category(rs.getInt("id"), rs.getString("name")));
+            }
+        }
+        return categories;
+    }
+}
+
+/*package server.DB;
+
+import client.clientWork.Account;
+import client.clientWork.Category;
+import client.clientWork.Users;
+import server.SystemOrg.Role;
+
+import java.sql.*;
+import java.util.ArrayList;
+
+public class SQLUsers implements ISQLUsers {
+    private Connection conn;
+
+    public SQLUsers(Connection conn) {
+        this.conn = conn;
+    }
     private static SQLUsers instance;
     private DatabaseConnection dbConnection;
 
@@ -43,16 +182,21 @@ public class SQLUsers implements ISQLUsers {
 
     @Override
     public Role insert(Users obj) {
-        String proc = "{call insert_user(?,?,?,?,?)}";
+        String proc = "{? = call insert_user(?,?,?,?,?)}";
         Role r = new Role();
         try (CallableStatement callableStatement = DatabaseConnection.dbConnection.prepareCall(proc)) {
-            callableStatement.setString(1, obj.getFirstname());
-            callableStatement.setString(2, obj.getLastname());
-            callableStatement.setString(3, obj.getLogin());
-            callableStatement.setString(4, obj.getPassword());
-            callableStatement.registerOutParameter(5, Types.INTEGER);
+            //callableStatement.setString(1, obj.getFirstname());
+            callableStatement.registerOutParameter(1, Types.INTEGER);
+            callableStatement.setString(2, obj.getFirstname());
+            callableStatement.setString(3, obj.getLastname());
+            callableStatement.setString(4, obj.getLogin());
+            callableStatement.setString(5, obj.getPassword());
+            callableStatement.setString(6, "USER"); //роль по умолчанию
+            //callableStatement.registerOutParameter(5, Types.INTEGER);
             callableStatement.execute();
-            r.setId(callableStatement.getInt(5));
+
+            int id = callableStatement.getInt(1);
+            r.setId(id);
             r.setRole("user");
         } catch (SQLIntegrityConstraintViolationException e) {
             System.out.println("ошибка");
@@ -71,7 +215,7 @@ public class SQLUsers implements ISQLUsers {
         ArrayList<Users> usersList = new ArrayList<>();
         try {
             String query = "SELECT * FROM users";
-            PreparedStatement stmt = dbConnection.getConnection().prepareStatement(query); // Используем dbConnection
+            PreparedStatement stmt = dbConnection.getConnection().prepareStatement(query);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Users user = new Users();
@@ -87,8 +231,31 @@ public class SQLUsers implements ISQLUsers {
         return usersList;
     }
 
+
     @Override
-    public Users geUser(Role r) {
-        return null;
+    public ArrayList<Account> getUserAccounts(Integer userId) throws SQLException {
+        ArrayList<Account> accounts = new ArrayList<>();
+        String sql = "SELECT id, name FROM accounts WHERE user_id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                accounts.add(new Account(rs.getInt("id"), rs.getString("name")));
+            }
+        }
+        return accounts;
     }
-}
+
+    @Override
+    public ArrayList<Category> getIncomeCategories() throws SQLException {
+        ArrayList<Category> categories = new ArrayList<>();
+        String sql = "SELECT id, name FROM categories WHERE type = 'INCOME'";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                categories.add(new Category(rs.getInt("id"), rs.getString("name")));
+            }
+        }
+        return categories;
+    }
+}*/

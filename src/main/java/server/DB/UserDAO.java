@@ -10,7 +10,7 @@ public class UserDAO {
         this.connection = connection;
     }
 
-    public boolean registerUser(Users user) throws SQLException {
+    /*public boolean registerUser(Users user) throws SQLException {
         String query = "INSERT INTO users (firstname, lastname, username, password, role) VALUES (?, ?, ?, ?, 'USER')";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, user.getFirstname());
@@ -43,9 +43,46 @@ public class UserDAO {
             }
         }
         return null;
+    }*/
+
+    public boolean registerUser(Users user) throws SQLException {
+        if (userExists(user.getLogin())) return false;
+
+        String query = "INSERT INTO users (firstname, lastname, username, password, role) VALUES (?, ?, ?, ?, 'USER')";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, user.getFirstname());
+            stmt.setString(2, user.getLastname());
+            stmt.setString(3, user.getLogin());
+            stmt.setString(4, user.getPassword());
+            return stmt.executeUpdate() > 0;
+        }
     }
 
-    // Добавление транзакции пользователя
+    public boolean userExists(String username) throws SQLException {
+        String query = "SELECT id FROM users WHERE username = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, username);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
+    public String[] authenticateUserWithRole(String username, String password) throws SQLException {
+        String query = "SELECT id, role FROM users WHERE username = ? AND password = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, username);
+            stmt.setString(2, password); // Тут тоже должен быть хеш
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new String[]{String.valueOf(rs.getInt("id")), rs.getString("role")};
+                }
+            }
+        }
+        return null;
+    }
+
+
     public void addTransaction(double amount, String category) throws SQLException {
         String query = "INSERT INTO transactions (user_id, amount, category, transaction_date) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {

@@ -80,8 +80,7 @@ public class MainController {
 
     @FXML
     void registration(ActionEvent event) {
-        /*registrationButton.getScene().getWindow().hide();
-        openNewWindow("/client/registration.fxml");*/
+
     }
 
     @FXML
@@ -115,7 +114,6 @@ public class MainController {
             e.printStackTrace();
         }
     }
-
 
     private boolean checkInput() {
         try {

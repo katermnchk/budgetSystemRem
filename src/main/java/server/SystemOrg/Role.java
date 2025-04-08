@@ -7,7 +7,7 @@ public class Role implements Serializable {
     private String role;
 
     public Role() {
-        this.id = 0;
+        this.id = 1;
         this.role = "";
     }
 

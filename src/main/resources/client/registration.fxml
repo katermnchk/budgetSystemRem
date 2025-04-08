@@ -38,7 +38,8 @@
         </Label>
         <PasswordField fx:id="confirmPassword" layoutX="237.0" layoutY="355.0" prefHeight="37.0" prefWidth="225.0" style="-fx-background-radius: 20px;" />
 
-        <Button fx:id="backButton" layoutX="33.0" layoutY="395.0" mnemonicParsing="false" onAction="#backToMain" prefHeight="37.0" prefWidth="100.0" style="-fx-background-color: #e5eefc; -fx-border-color: #c7dcf7; -fx-border-width: 3px; -fx-border-radius: 10px;" text="Назад" textAlignment="CENTER">
+        <Button fx:id="backButton" layoutX="33.0" layoutY="395.0" mnemonicParsing="false" onAction="#backToMain" prefHeight="37.0" prefWidth="100.0"
+                style="-fx-background-color: #e5eefc; -fx-border-color: #c7dcf7; -fx-border-width: 3px; -fx-border-radius: 10px;" text="Назад" textAlignment="CENTER">
             <font>
                 <Font size="14.0" />
             </font>
@@ -52,7 +53,8 @@
                 </Label>
             </children>
         </AnchorPane>
-        <Button fx:id="registrationButton" layoutX="574.0" layoutY="395.0" mnemonicParsing="false" onAction="#registrationUser" prefHeight="37.0" prefWidth="112.0" style="-fx-background-color: #e5eefc; -fx-border-color: #c7dcf7; -fx-border-width: 3px; -fx-border-radius: 10px;" text="Регистрация" textAlignment="CENTER">
+        <Button fx:id="registrationButton" layoutX="574.0" layoutY="395.0" mnemonicParsing="false" onAction="#registrationUser" prefHeight="37.0" prefWidth="112.0"
+                style="-fx-background-color: #e5eefc; -fx-border-color: #c7dcf7; -fx-border-width: 3px; -fx-border-radius: 10px;" text="Регистрация" textAlignment="CENTER">
             <font>
                 <Font size="14.0" />
             </font>
