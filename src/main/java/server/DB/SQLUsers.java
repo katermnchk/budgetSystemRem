@@ -182,6 +182,44 @@ public class SQLUsers implements ISQLUsers {
         }
         return transactions;
     }
+
+    @Override
+    public void addCategory(Category category) throws SQLException {
+        String sql = "INSERT INTO categories (name, type) VALUES (?, ?) RETURNING id";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, category.getName());
+            stmt.setString(2, category.getType());
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                category.setId(rs.getInt("id")); // Обновляем ID категории
+            }
+        }
+    }
+
+    @Override
+    public void deleteCategory(int categoryId) throws SQLException {
+        String sql = "DELETE FROM categories WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, categoryId);
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new SQLException("Категория с ID " + categoryId + " не найдена.");
+            }
+        }
+    }
+
+    @Override
+    public ArrayList<Category> getAllCategories(Integer userId) throws SQLException {
+        ArrayList<Category> categories = new ArrayList<>();
+        String sql = "SELECT id, name, type FROM categories";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                categories.add(new Category(rs.getInt("id"), rs.getString("name"), rs.getString("type")));
+            }
+        }
+        return categories;
+    }
 }
 
 /*package server.DB;

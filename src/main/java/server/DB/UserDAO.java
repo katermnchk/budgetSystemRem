@@ -1,4 +1,4 @@
-package server.DB;
+/*package server.DB;
 
 import client.clientWork.Users;
 import java.sql.*;
@@ -16,7 +16,7 @@ public class UserDAO {
             stmt.setString(1, user.getFirstname());
             stmt.setString(2, user.getLastname());
             stmt.setString(3, user.getLogin());
-            stmt.setString(4, user.getPassword()); //нужно хешировать пароль!
+            stmt.setString(4, user.getPassword()); //надо добавить хеширование сос!
             return stmt.executeUpdate() > 0;
         }
     }
@@ -43,7 +43,7 @@ public class UserDAO {
             }
         }
         return null;
-    }*/
+    }
 
     public boolean registerUser(Users user) throws SQLException {
         if (userExists(user.getLogin())) return false;
@@ -163,4 +163,4 @@ public class UserDAO {
     public String getTransactionHistory() {
         return null;
     }
-}
+}*/

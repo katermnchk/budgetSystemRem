@@ -8,7 +8,8 @@
 <?import javafx.scene.text.Font?>
 
 <?import javafx.scene.effect.DropShadow?>
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="700.0" style="-fx-background-color: #eff5ff;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.MainController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="700.0"
+            style="-fx-background-color: #eff5ff;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.MainController">
     <children>
         <AnchorPane prefHeight="113.0" prefWidth="700.0" style="-fx-background-color: #c7dcf7;">
             <children>

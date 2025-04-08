@@ -11,7 +11,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextInputDialog;
 import javafx.stage.Stage;
-import server.DB.UserDAO;
 import server.SystemOrg.Role;
 
 import java.io.IOException;
@@ -35,8 +34,6 @@ public class MenuUserController {
 
     @FXML
     private Button personalInfButton;
-
-   private UserDAO userDAO;
 
   /*public MenuUserController() {
         try {
@@ -68,7 +65,7 @@ public class MenuUserController {
 
     @FXML
     void persInf(ActionEvent event) throws IOException {
-        try {
+       /* try {
             Connect.client.sendMessage("userInf");
             Role r = new Role();
             r.setId(Connect.id);
@@ -77,6 +74,17 @@ public class MenuUserController {
             loader.setLocation(getClass().getResource("/client/profile.fxml"));
             //WindowChanger.changeWindow(getClass(), personalInfButton, "profile.fxml", "profile", false);
         } catch (Exception e) {
+            showAlert("Ошибка", "Не удалось открыть профиль: " + e.getMessage());
+            e.printStackTrace();
+        }*/
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/profile.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Профиль");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
             showAlert("Ошибка", "Не удалось открыть профиль: " + e.getMessage());
             e.printStackTrace();
         }
@@ -136,7 +144,17 @@ public class MenuUserController {
 
     @FXML
     void manageCategories() {
-        showAlert("Категории", "Функция управления категориями в разработке");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/categoryManager.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Управление категориями");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            showAlert("Ошибка", "Не удалось открыть окно управления категориями: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @FXML

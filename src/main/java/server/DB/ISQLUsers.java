@@ -22,4 +22,7 @@ public interface ISQLUsers {
     double getBalance(Integer userId) throws SQLException;
 
     ArrayList<Transaction> getTransactionHistory(Integer userId) throws SQLException;
+    void addCategory(Category category) throws SQLException;
+    void deleteCategory(int categoryId) throws SQLException;
+    ArrayList<Category> getAllCategories(Integer userId) throws SQLException;
 }

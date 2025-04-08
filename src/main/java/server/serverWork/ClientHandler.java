@@ -183,6 +183,39 @@ public class ClientHandler implements Runnable {
                             e.printStackTrace();
                         }
                     }
+                    case "addCategory" -> {
+                        Category category = (Category) sois.readObject();
+                        SQLFactory sqlFactory = new SQLFactory();
+                        try {
+                            sqlFactory.getUsers().addCategory(category);
+                            soos.writeObject("OK");
+                        } catch (SQLException e) {
+                            soos.writeObject("Ошибка при добавлении категории: " + e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
+                    case "deleteCategory" -> {
+                        Integer categoryId = (Integer) sois.readObject();
+                        SQLFactory sqlFactory = new SQLFactory();
+                        try {
+                            sqlFactory.getUsers().deleteCategory(categoryId);
+                            soos.writeObject("OK");
+                        } catch (SQLException e) {
+                            soos.writeObject("Ошибка при удалении категории: " + e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
+                    case "getAllCategories" -> {
+                        Integer userId = (Integer) sois.readObject();
+                        SQLFactory sqlFactory = new SQLFactory();
+                        try {
+                            ArrayList<Category> categories = sqlFactory.getUsers().getAllCategories(userId);
+                            soos.writeObject(categories);
+                        } catch (SQLException e) {
+                            soos.writeObject("Ошибка при получении категорий: " + e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
         } catch (IOException | ClassNotFoundException | SQLException e) {
