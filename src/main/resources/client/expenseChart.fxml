@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="15" alignment="CENTER" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="client.controllers.ExpenseChartController">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="График расходов" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+
+    <PieChart fx:id="expenseChart" prefWidth="500" prefHeight="400"/>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Button text="Обновить" onAction="#refreshChart"/>
+        <Button text="Закрыть" onAction="#closeWindow"/>
+    </HBox>
+</VBox>

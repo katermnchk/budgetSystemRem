@@ -8,6 +8,7 @@ import server.SystemOrg.Role;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class SQLUsers implements ISQLUsers {
     private Connection conn;
@@ -219,6 +220,26 @@ public class SQLUsers implements ISQLUsers {
             }
         }
         return categories;
+    }
+
+    @Override
+    public HashMap<String, Double> getExpenseChartData(Integer userId) throws SQLException {
+        HashMap<String, Double> expenseData = new HashMap<>();
+        String sql = "SELECT c.name, SUM(t.amount) as total " +
+                "FROM transactions t " +
+                "JOIN categories c ON t.category_id = c.id " +
+                "WHERE t.user_id = ? AND t.amount < 0 " +
+                "GROUP BY c.name";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                String categoryName = rs.getString("name");
+                double total = Math.abs(rs.getDouble("total"));
+                expenseData.put(categoryName, total);
+            }
+        }
+        return expenseData;
     }
 }
 

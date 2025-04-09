@@ -1,7 +1,5 @@
 package client.controllers;
 
-import client.clientWork.Connect;
-import client.util.WindowChanger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,11 +9,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextInputDialog;
 import javafx.stage.Stage;
-import server.SystemOrg.Role;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Optional;
 
@@ -139,7 +134,17 @@ public class MenuUserController {
 
     @FXML
     void viewChart() {
-        showAlert("График расходов", "Функция в разработке");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/expenseChart.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("График расходов");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            showAlert("Ошибка", "Не удалось открыть окно графика расходов: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @FXML

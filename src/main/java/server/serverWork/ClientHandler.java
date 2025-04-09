@@ -13,6 +13,7 @@ import java.io.*;
 import java.net.Socket;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ClientHandler implements Runnable {
     protected Socket clientSocket = null;
@@ -213,6 +214,17 @@ public class ClientHandler implements Runnable {
                             soos.writeObject(categories);
                         } catch (SQLException e) {
                             soos.writeObject("Ошибка при получении категорий: " + e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
+                    case "getExpenseChartData" -> {
+                        Integer userId = (Integer) sois.readObject();
+                        SQLFactory sqlFactory = new SQLFactory();
+                        try {
+                            HashMap<String, Double> expenseData = sqlFactory.getUsers().getExpenseChartData(userId);
+                            soos.writeObject(expenseData);
+                        } catch (SQLException e) {
+                            soos.writeObject("Ошибка при получении данных для графика: " + e.getMessage());
                             e.printStackTrace();
                         }
                     }

@@ -43,7 +43,7 @@ public class ProfileController {
 
     @FXML
     void backToMain(ActionEvent event) {
-        backButton.getScene().getWindow().hide();
+        /*backButton.getScene().getWindow().hide();
 
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/client/menu.fxml"));
@@ -57,7 +57,9 @@ public class ProfileController {
         Parent root = loader.getRoot();
         Stage stage = new Stage();
         stage.setScene(new Scene((root)));
-        stage.show();
+        stage.show();*/
+        Stage stage = (Stage) backButton.getScene().getWindow();
+        stage.close();
     }
 
 

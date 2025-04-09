@@ -8,6 +8,7 @@ import server.SystemOrg.Role;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public interface ISQLUsers {
     ArrayList<Users> findUser(Users obj);
@@ -25,4 +26,6 @@ public interface ISQLUsers {
     void addCategory(Category category) throws SQLException;
     void deleteCategory(int categoryId) throws SQLException;
     ArrayList<Category> getAllCategories(Integer userId) throws SQLException;
+
+    HashMap<String, Double> getExpenseChartData(Integer userId) throws SQLException;
 }
