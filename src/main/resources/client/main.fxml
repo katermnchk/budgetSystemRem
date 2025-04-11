@@ -1,80 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.Font?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<?import javafx.scene.effect.DropShadow?>
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="700.0"
-            style="-fx-background-color: #eff5ff;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.MainController">
-    <children>
-        <AnchorPane prefHeight="113.0" prefWidth="700.0" style="-fx-background-color: #c7dcf7;">
-            <children>
-                <Label layoutX="175.0" layoutY="26.0" prefHeight="61.0" prefWidth="350.0" text="Budget System by Rem" textAlignment="CENTER">
-                    <font>
-                        <Font name="Cursive" size="32.0" />
-                    </font>
-                    <effect>
-                        <DropShadow radius="10.0" color="rgba(0, 0, 0, 0.1)" />
-                    </effect>
-                </Label>
-            </children>
-        </AnchorPane>
-        <TextField fx:id="login" layoutX="237.0" layoutY="155.0" prefHeight="40.0" prefWidth="225.0"
-                   style="-fx-background-radius: 20px;"
-                   promptText="Введите логин">
-            <font>
-                <Font name="Arial" size="16.0" />
-            </font>
-        </TextField>
-        <PasswordField fx:id="password" layoutX="237.0" layoutY="234.0" prefHeight="40.0" prefWidth="225.0"
-                       style="-fx-background-radius: 20px;"
-                       promptText="Введите пароль">
-            <font>
-                <Font name="Arial" size="16.0" />
-            </font>
-        </PasswordField>
-        <Label layoutX="162.0" layoutY="160.0" text="Логин">
-            <font>
-                <Font name="Arial" size="18.0" />
-            </font>
-            <effect>
-                <DropShadow radius="5.0" color="rgba(0, 0, 0, 0.1)" />
-            </effect>
-        </Label>
-        <Label layoutX="156.0" layoutY="239.0" text="Пароль">
-            <font>
-                <Font name="Arial" size="18.0" />
-            </font>
-            <effect>
-                <DropShadow radius="5.0" color="rgba(0, 0, 0, 0.1)">
-                </DropShadow>
-            </effect>
-        </Label>
-        <Button fx:id="enterButton" layoutX="237.0" layoutY="312.0" mnemonicParsing="false"
-                onAction="#authorization" prefHeight="45.0" prefWidth="100.0"
-                style="-fx-background-color: #e5eefc; -fx-border-color: #c7dcf7; -fx-border-width: 3px; -fx-border-radius: 10px;"
-                text="Вход" textAlignment="CENTER">
-            <font>
-                <Font name="Arial" size="14.0" />
-            </font>
-            <effect>
-                <DropShadow radius="5.0" color="rgba(0, 0, 0, 0.1)" />
-            </effect>
-        </Button>
-        <Button fx:id="registrationButton" layoutX="344.0" layoutY="312.0" mnemonicParsing="false"
-                onAction="#registration" prefHeight="45.0" prefWidth="120.0"
-                style="-fx-background-color: #e5eefc; -fx-border-color: #c7dcf7; -fx-border-width: 3px; -fx-border-radius: 10px;"
-                text="Регистрация">
-            <font>
-                <Font name="Arial" size="14.0" />
-            </font>
-            <effect>
-                <DropShadow radius="5.0" color="rgba(0, 0, 0, 0.1)" />
-            </effect>
-        </Button>
-    </children>
-</AnchorPane>
+<VBox prefHeight="400.0" prefWidth="700.0" styleClass="root" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.MainController">
+
+    <AnchorPane prefHeight="100.0" styleClass="header">
+        <children>
+            <Label layoutX="197.0" layoutY="30.0" styleClass="header-label" text="Budget System by Rem" AnchorPane.topAnchor="30.0" />
+        </children>
+    </AnchorPane>
+
+    <HBox alignment="CENTER" spacing="40" VBox.vgrow="ALWAYS">
+        <padding>
+            <Insets bottom="20" left="20" right="20" top="20" />
+        </padding>
+
+        <ImageView fx:id="welcomeImage" fitHeight="200.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@../images/welcome_image.jpg" />
+            </image>
+        </ImageView>
+
+        <VBox alignment="CENTER" spacing="20">
+            <VBox spacing="5">
+                <Label styleClass="input-label" text="Логин" />
+                <TextField fx:id="login" prefHeight="23.0" prefWidth="155.0" promptText="Логин" styleClass="my-textfield">
+               <font>
+                  <Font name="Broadway" size="12.0" />
+               </font>
+               <opaqueInsets>
+                  <Insets bottom="15.0" left="15.0" top="15.0" />
+               </opaqueInsets></TextField>
+            </VBox>
+
+            <VBox prefHeight="43.0" prefWidth="171.0" spacing="5">
+                <Label styleClass="input-label" text="Пароль" />
+                <PasswordField fx:id="password" prefHeight="23.0" prefWidth="155.0" promptText="Пароль" styleClass="my-textfield" />
+            </VBox>
+
+            <HBox alignment="CENTER" spacing="15">
+                <Button fx:id="enterButton" onAction="#authorization" styleClass="my-button" text="Вход" />
+                <Button fx:id="registrationButton" onAction="#registration" styleClass="my-button" text="Регистрация" />
+            </HBox>
+        </VBox>
+    </HBox>
+</VBox>

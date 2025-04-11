@@ -1,22 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox spacing="15" alignment="CENTER" xmlns="http://javafx.com/javafx"
+<VBox alignment="CENTER" spacing="20" prefWidth="400.0" prefHeight="300.0" styleClass="root"
+      xmlns="http://javafx.com/javafx/17.0.12"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="client.controllers.AddAccountController">
+      fx:controller="client.controllers.AddAccountController"
+      stylesheets="@../css/styles.css">
     <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
+        <Insets top="30" right="30" bottom="30" left="30"/>
     </padding>
 
-    <Label text="Добавление счета" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+    <HBox alignment="CENTER" spacing="10">
+       <!-- <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@../images/account_icon.png"/>
+            </image>
+        </ImageView>-->
+        <Label text="Добавление счета" styleClass="header-label"/>
+    </HBox>
 
-    <Label text="Название счета:"/>
-    <TextField fx:id="nameField" promptText="Введите название"/>
+    <VBox spacing="5" alignment="CENTER">
+        <Label text="Название счета" styleClass="input-label"/>
+        <TextField fx:id="nameField" promptText="Введите название" styleClass="my-textfield"/>
+    </VBox>
 
-    <HBox spacing="10" alignment="CENTER">
-        <Button text="Добавить" onAction="#addAccount"/>
-        <Button text="Отмена" onAction="#cancel"/>
+    <HBox alignment="CENTER" spacing="15">
+        <Button text="Добавить" onAction="#addAccount" styleClass="my-button"/>
+        <Button text="Отмена" onAction="#cancel" styleClass="cancel-button"/>
     </HBox>
 </VBox>
