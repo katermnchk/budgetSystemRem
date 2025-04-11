@@ -61,7 +61,6 @@ public class Client {
     public void close() {
         try {
             clientSocket.close();
-            //outStream.flush();
             inStream.close();
             outStream.close();
         } catch (EOFException e) {

@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="700.0" style="-fx-background-color: #e5eefc;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="client.controllers.MenuUserController">
+<AnchorPane prefHeight="400.0" prefWidth="700.0" style="-fx-background-color: #e5eefc;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.MenuUserController">
     <children>
 
-        <Button fx:id="backButton" layoutX="33.0" layoutY="348.0" mnemonicParsing="false" onAction="#backToMain" prefHeight="37.0" prefWidth="100.0"
-                style="-fx-background-color: #e5eefc; -fx-border-color: #c7dcf7; -fx-border-width: 3px; -fx-border-radius: 10px;" text="Назад" textAlignment="CENTER">
+        <Button fx:id="backButton" layoutX="24.0" layoutY="349.0" mnemonicParsing="false" onAction="#backToMain" prefHeight="37.0" prefWidth="100.0" style="-fx-background-color: #e5eefc; -fx-border-color: #c7dcf7; -fx-border-width: 3px; -fx-border-radius: 10px;" text="Назад" textAlignment="CENTER">
             <font>
                 <Font size="14.0" />
             </font>
@@ -18,7 +15,7 @@
 
         <AnchorPane prefHeight="72.0" prefWidth="700.0" style="-fx-background-color: #c7dcf7;">
             <children>
-                <Label layoutX="230.0" layoutY="5.0" prefHeight="61.0" prefWidth="250.0" text="Семейный бюджет" textAlignment="CENTER">
+                <Label layoutX="199.0" layoutY="6.0" prefHeight="61.0" prefWidth="303.0" text="Семейный бюджет">
                     <font>
                         <Font name="Bernard MT Condensed" size="35.0" />
                     </font>
@@ -26,52 +23,49 @@
             </children>
         </AnchorPane>
 
-        <Button fx:id="addIncomeButton" layoutX="83.0" layoutY="90.0" mnemonicParsing="false" onAction="#addIncome" prefHeight="37.0" prefWidth="214.0"
-                style="-fx-background-color: #e5eefc; -fx-border-color: #c7dcf7; -fx-border-width: 3px; -fx-border-radius: 10px;" text="Добавить доход" textAlignment="CENTER">
+        <Button fx:id="addIncomeButton" layoutX="83.0" layoutY="90.0" mnemonicParsing="false" onAction="#addIncome" prefHeight="37.0" prefWidth="214.0" style="-fx-background-color: #e5eefc; -fx-border-color: #c7dcf7; -fx-border-width: 3px; -fx-border-radius: 10px;" text="Добавить доход" textAlignment="CENTER">
             <font>
                 <Font size="14.0" />
             </font>
         </Button>
 
-        <Button fx:id="addExpenseButton" layoutX="416.0" layoutY="90.0" mnemonicParsing="false" onAction="#addExpense" prefHeight="37.0" prefWidth="214.0"
-                style="-fx-background-color: #e5eefc; -fx-border-color: #c7dcf7; -fx-border-width: 3px; -fx-border-radius: 10px;" text="Добавить расход" textAlignment="CENTER">
+        <Button fx:id="addExpenseButton" layoutX="416.0" layoutY="90.0" mnemonicParsing="false" onAction="#addExpense" prefHeight="37.0" prefWidth="214.0" style="-fx-background-color: #e5eefc; -fx-border-color: #c7dcf7; -fx-border-width: 3px; -fx-border-radius: 10px;" text="Добавить расход" textAlignment="CENTER">
             <font>
                 <Font size="14.0" />
             </font>
         </Button>
 
-        <Button fx:id="viewBalanceButton" layoutX="83.0" layoutY="162.0" mnemonicParsing="false" onAction="#viewBalance" prefHeight="37.0" prefWidth="214.0"
-                style="-fx-background-color: #e5eefc; -fx-border-color: #c7dcf7; -fx-border-width: 3px; -fx-border-radius: 10px;" text="Просмотр баланса" textAlignment="CENTER">
+        <Button fx:id="viewBalanceButton" layoutX="83.0" layoutY="162.0" mnemonicParsing="false" onAction="#viewBalance" prefHeight="37.0" prefWidth="214.0" style="-fx-background-color: #e5eefc; -fx-border-color: #c7dcf7; -fx-border-width: 3px; -fx-border-radius: 10px;" text="Просмотр баланса" textAlignment="CENTER">
             <font>
                 <Font size="14.0" />
             </font>
         </Button>
 
-        <Button fx:id="viewChartButton" layoutX="416.0" layoutY="162.0" mnemonicParsing="false" onAction="#viewChart" prefHeight="37.0" prefWidth="214.0"
-                style="-fx-background-color: #e5eefc; -fx-border-color: #c7dcf7; -fx-border-width: 3px; -fx-border-radius: 10px;" text="График расходов" textAlignment="CENTER">
+        <Button fx:id="viewChartButton" layoutX="416.0" layoutY="162.0" mnemonicParsing="false" onAction="#viewChart" prefHeight="37.0" prefWidth="214.0" style="-fx-background-color: #e5eefc; -fx-border-color: #c7dcf7; -fx-border-width: 3px; -fx-border-radius: 10px;" text="График расходов" textAlignment="CENTER">
             <font>
                 <Font size="14.0" />
             </font>
         </Button>
 
-        <Button fx:id="manageCategoriesButton" layoutX="83.0" layoutY="236.0" mnemonicParsing="false" onAction="#manageCategories" prefHeight="37.0" prefWidth="214.0"
-                style="-fx-background-color: #e5eefc; -fx-border-color: #c7dcf7; -fx-border-width: 3px; -fx-border-radius: 10px;" text="Настройки категорий" textAlignment="CENTER">
+        <Button fx:id="manageCategoriesButton" layoutX="83.0" layoutY="236.0" mnemonicParsing="false" onAction="#manageCategories" prefHeight="37.0" prefWidth="214.0" style="-fx-background-color: #e5eefc; -fx-border-color: #c7dcf7; -fx-border-width: 3px; -fx-border-radius: 10px;" text="Настройки категорий" textAlignment="CENTER">
             <font>
                 <Font size="14.0" />
             </font>
         </Button>
 
-        <Button fx:id="transactionHistoryButton" layoutX="416.0" layoutY="236.0" mnemonicParsing="false" onAction="#viewHistory" prefHeight="37.0" prefWidth="214.0"
-                style="-fx-background-color: #e5eefc; -fx-border-color: #c7dcf7; -fx-border-width: 3px; -fx-border-radius: 10px;" text="История транзакций" textAlignment="CENTER">
+        <Button fx:id="transactionHistoryButton" layoutX="416.0" layoutY="236.0" mnemonicParsing="false" onAction="#viewHistory" prefHeight="37.0" prefWidth="214.0" style="-fx-background-color: #e5eefc; -fx-border-color: #c7dcf7; -fx-border-width: 3px; -fx-border-radius: 10px;" text="История транзакций" textAlignment="CENTER">
             <font>
                 <Font size="14.0" />
             </font>
         </Button>
 
-        <Button fx:id="personalInfButton" layoutX="250.0" layoutY="300.0" mnemonicParsing="false"
-                onAction="#persInf" prefHeight="37.0" prefWidth="214.0"
-                style="-fx-background-color: #e5eefc; -fx-border-color: #c7dcf7; -fx-border-width: 3px; -fx-border-radius: 10px;"
-                text="Просмотр профиля" textAlignment="CENTER">
+        <Button fx:id="personalInfButton" layoutX="416.0" layoutY="300.0" mnemonicParsing="false" onAction="#persInf" prefHeight="37.0" prefWidth="214.0" style="-fx-background-color: #e5eefc; -fx-border-color: #c7dcf7; -fx-border-width: 3px; -fx-border-radius: 10px;" text="Просмотр профиля" textAlignment="CENTER">
+            <font>
+                <Font size="14.0" />
+            </font>
+        </Button>
+
+        <Button fx:id="addAccountButton" layoutX="83.0" layoutY="300.0" mnemonicParsing="false" onAction="#addAccount" prefHeight="37.0" prefWidth="214.0" style="-fx-background-color: #e5eefc; -fx-border-color: #c7dcf7; -fx-border-width: 3px; -fx-border-radius: 10px;" text="Добавить счет" textAlignment="CENTER">
             <font>
                 <Font size="14.0" />
             </font>

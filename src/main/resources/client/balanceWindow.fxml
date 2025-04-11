@@ -7,7 +7,6 @@
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="client.controllers.BalanceWindowController"
             prefHeight="400.0" prefWidth="600.0">
-
     <VBox alignment="CENTER" spacing="20" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
           AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0">
         <padding>
@@ -16,9 +15,18 @@
 
         <Label text="Текущий баланс" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
 
-        <Label fx:id="balanceLabel" text="0.00 BYN" style="-fx-font-size: 24px;"/>
+        <Label fx:id="totalBalanceLabel" text="Общий бюджет: 0.00 BYN" style="-fx-font-size: 16px;"/>
 
-        <Button text="Обновить" onAction="#refreshBalance"/>
-        <Button text="Закрыть" onAction="#closeWindow"/>
+        <TableView fx:id="accountsTable" prefHeight="200.0" prefWidth="560.0">
+            <columns>
+                <TableColumn fx:id="accountNameColumn" text="Счет" prefWidth="280.0"/>
+                <TableColumn fx:id="balanceColumn" text="Баланс (BYN)" prefWidth="280.0"/>
+            </columns>
+        </TableView>
+
+        <HBox spacing="10" alignment="CENTER">
+            <Button text="Обновить" onAction="#refreshBalance"/>
+            <Button text="Закрыть" onAction="#closeWindow"/>
+        </HBox>
     </VBox>
 </AnchorPane>

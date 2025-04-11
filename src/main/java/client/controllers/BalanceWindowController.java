@@ -3,47 +3,66 @@ package client.controllers;
 import client.clientWork.Connect;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class BalanceWindowController implements Initializable {
     @FXML
-    private Label balanceLabel;
+    private Label totalBalanceLabel;
+
+    @FXML
+    private TableView<AccountBalance> accountsTable;
+
+    @FXML
+    private TableColumn<AccountBalance, String> accountNameColumn;
+
+    @FXML
+    private TableColumn<AccountBalance, String> balanceColumn;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        refreshBalance(); // Загружаем баланс при открытии окна
+        accountNameColumn.setCellValueFactory(new PropertyValueFactory<>("accountName"));
+        balanceColumn.setCellValueFactory(new PropertyValueFactory<>("balance"));
+
+        refreshBalance();
     }
 
     @FXML
     private void refreshBalance() {
-        try {
-            Connect.client.sendMessage("getBalance");
-            Connect.client.sendObject(Connect.id);
+        Connect.client.sendMessage("getAccountBalances");
+        Connect.client.sendObject(Connect.id);
 
-            String response = Connect.client.readMessage();
-            double balance = Double.parseDouble(response);
+        Object response = Connect.client.readObject();
+        if (response instanceof HashMap) {
+            HashMap<String, Double> balances = (HashMap<String, Double>) response;
+
+            accountsTable.getItems().clear();
 
             DecimalFormat df = new DecimalFormat("#0.00");
-            balanceLabel.setText(df.format(balance) + " BYN");
-        } catch (NumberFormatException e) {
-            showAlert("Ошибка", "Некорректный формат баланса от сервера.");
-            e.printStackTrace();
-        } catch (IOException e) {
-            showAlert("Ошибка связи", "Не удалось связаться с сервером: " + e.getMessage());
-            e.printStackTrace();
+            double totalBalance = 0.0;
+
+            for (Map.Entry<String, Double> entry : balances.entrySet()) {
+                accountsTable.getItems().add(new AccountBalance(entry.getKey(), df.format(entry.getValue())));
+                totalBalance += entry.getValue();
+            }
+
+            totalBalanceLabel.setText("Общий бюджет: " + df.format(totalBalance) + " BYN");
+        } else {
+            showAlert("Ошибка", "Не удалось загрузить данные о балансах: " + response);
         }
     }
 
     @FXML
     private void closeWindow() {
-        Stage stage = (Stage) balanceLabel.getScene().getWindow();
+        Stage stage = (Stage) totalBalanceLabel.getScene().getWindow();
         stage.close();
     }
 
@@ -53,5 +72,23 @@ public class BalanceWindowController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+
+    public static class AccountBalance {
+        private final String accountName;
+        private final String balance;
+
+        public AccountBalance(String accountName, String balance) {
+            this.accountName = accountName;
+            this.balance = balance;
+        }
+
+        public String getAccountName() {
+            return accountName;
+        }
+
+        public String getBalance() {
+            return balance;
+        }
     }
 }

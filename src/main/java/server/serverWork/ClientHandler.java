@@ -36,11 +36,17 @@ public class ClientHandler implements Runnable {
                 System.out.println("Команда получена");
                 switch (choice) {
                     case "userInf" -> {
-                        System.out.println("Запрос к БД на получение информации о пользователях: " + clientSocket.getInetAddress().toString());
+                        Integer userId = (Integer) sois.readObject();
+                        System.out.println("Запрос информации о пользователе с ID: " + userId);
                         SQLFactory sqlFactory = new SQLFactory();
-                        ArrayList<Users> userList = sqlFactory.getUsers().get();
-                        System.out.println(userList.toString());
-                        soos.writeObject(userList);
+                        Users user = sqlFactory.getUsers().getUserById(userId);
+                        if (user != null) {
+                            soos.writeObject(user);
+                            System.out.println("Информация о пользователе отправлена: " + user.getLogin());
+                        } else {
+                            soos.writeObject("Пользователь не найден");
+                            System.out.println("Пользователь с ID " + userId + " не найден");
+                        }
                     }
                     case "findUser" -> {
                         System.out.println("Запрос к БД на поиск пользователя: " + clientSocket.getInetAddress().toString());
@@ -173,6 +179,17 @@ public class ClientHandler implements Runnable {
                             e.printStackTrace();
                         }
                     }
+                    case "getAccountBalances" -> {
+                        Integer userId = (Integer) sois.readObject();
+                        SQLFactory sqlFactory = new SQLFactory();
+                        try {
+                            HashMap<String, Double> balances = sqlFactory.getUsers().getAccountBalances(userId);
+                            soos.writeObject(balances);
+                        } catch (SQLException e) {
+                            soos.writeObject("Ошибка при получении балансов счетов: " + e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
                     case "getTransactionHistory" -> {
                         Integer userId = (Integer) sois.readObject();
                         SQLFactory sqlFactory = new SQLFactory();
@@ -225,6 +242,18 @@ public class ClientHandler implements Runnable {
                             soos.writeObject(expenseData);
                         } catch (SQLException e) {
                             soos.writeObject("Ошибка при получении данных для графика: " + e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
+                    case "addAccount" -> {
+                        Account account = (Account) sois.readObject();
+                        Integer userId = (Integer) sois.readObject();
+                        SQLFactory sqlFactory = new SQLFactory();
+                        try {
+                            sqlFactory.getUsers().addAccount(account, userId);
+                            soos.writeObject("OK");
+                        } catch (SQLException e) {
+                            soos.writeObject("Ошибка при добавлении счета " + e.getMessage());
                             e.printStackTrace();
                         }
                     }

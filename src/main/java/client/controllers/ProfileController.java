@@ -1,18 +1,18 @@
 package client.controllers;
 
 import client.clientWork.Connect;
+import client.clientWork.Users;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
-import client.clientWork.Users;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class ProfileController {
     @FXML
@@ -28,40 +28,32 @@ public class ProfileController {
     private Button backButton;
 
     @FXML
-    public void initialize() throws ClassNotFoundException {
+    public void initialize() {
         Connect.client.sendMessage("userInf");
         Connect.client.sendObject(Connect.id);
 
-        ArrayList<Users> usersList = (ArrayList<Users>) Connect.client.readObject();
-        if (!usersList.isEmpty()) {
-            Users user = usersList.get(0);
-            firstNameLabel.setText(user.getFirstname());
-            lastNameLabel.setText(user.getLastname());
-            loginLabel.setText(user.getLogin());
+        Object response = Connect.client.readObject();
+        if (response instanceof Users) {
+            Users user = (Users) response;
+            firstNameLabel.setText(user.getFirstname() != null ? user.getFirstname() : "Не указано");
+            lastNameLabel.setText(user.getLastname() != null ? user.getLastname() : "Не указано");
+            loginLabel.setText(user.getLogin() != null ? user.getLogin() : "Не указано");
+        } else {
+            showAlert("Ошибка", "Не удалось загрузить данные пользователя: " + response);
         }
     }
 
     @FXML
     void backToMain(ActionEvent event) {
-        /*backButton.getScene().getWindow().hide();
-
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/client/menu.fxml"));
-
-        try {
-            loader.load();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        Parent root = loader.getRoot();
-        Stage stage = new Stage();
-        stage.setScene(new Scene((root)));
-        stage.show();*/
         Stage stage = (Stage) backButton.getScene().getWindow();
         stage.close();
     }
 
-
-
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
 }

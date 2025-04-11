@@ -62,16 +62,21 @@ public class SQLUsers implements ISQLUsers {
             stmt.setString(2, obj.getLastname());
             stmt.setString(3, obj.getLogin());
             stmt.setString(4, obj.getPassword());
-            stmt.setString(5, "USER"); // роль по умолчанию
+            stmt.setString(5, "USER");
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 int id = rs.getInt(1);
                 r.setId(id);
                 r.setRole("USER");
+
+                Account defaultAccount = new Account(0, "Основной счет");
+                addAccount(defaultAccount, id);
+                System.out.println("Добавлен базовый счет для пользователя с ID: " + id);
             }
         } catch (SQLIntegrityConstraintViolationException e) {
             System.out.println("Пользователь уже существует");
         } catch (SQLException e) {
+            System.err.println("Ошибка при регистрации пользователя или добавлении счета: " + e.getMessage());
             e.printStackTrace();
         }
         return r;
@@ -79,7 +84,7 @@ public class SQLUsers implements ISQLUsers {
 
     @Override
     public boolean deleteUser(Users obj) {
-        // Реализация удаления пользователя (пример)
+        // удаление пользователя
         return false;
     }
 
@@ -101,6 +106,24 @@ public class SQLUsers implements ISQLUsers {
             System.err.println("Ошибка при запросе к базе данных: " + e.getMessage());
         }
         return usersList;
+    }
+
+    @Override
+    public Users getUserById(Integer userId) throws SQLException {
+        Users user = null;
+        String sql = "SELECT id, username, firstname, lastname FROM users WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                user = new Users();
+                user.setId(rs.getInt("id"));
+                user.setLogin(rs.getString("username"));
+                user.setFirstname(rs.getString("firstname"));
+                user.setLastname(rs.getString("lastname"));
+            }
+        }
+        return user;
     }
 
 
@@ -146,7 +169,7 @@ public class SQLUsers implements ISQLUsers {
 
     @Override
     public double getBalance(Integer userId) throws SQLException {
-        String sql = "SELECT SUM(CASE WHEN t.description = 'Доход' THEN t.amount ELSE -t.amount END) AS balance " +
+        String sql = "SELECT SUM(CASE WHEN t.description = 'Доход' THEN t.amount ELSE +t.amount END) AS balance " +
                 "FROM transactions t " +
                 "WHERE t.user_id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -157,6 +180,24 @@ public class SQLUsers implements ISQLUsers {
             }
         }
         return 0.0;
+    }
+
+    @Override
+    public HashMap<String, Double> getAccountBalances(Integer userId) throws SQLException {
+        HashMap<String, Double> balances = new HashMap<>();
+        String sql = "SELECT a.name, a.balance " +
+                "FROM accounts a " +
+                "WHERE a.user_id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                String accountName = rs.getString("name");
+                double balance = rs.getDouble("balance");
+                balances.put(accountName, balance);
+            }
+        }
+        return balances;
     }
 
     @Override
@@ -192,7 +233,7 @@ public class SQLUsers implements ISQLUsers {
             stmt.setString(2, category.getType());
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                category.setId(rs.getInt("id")); // Обновляем ID категории
+                category.setId(rs.getInt("id")); // обновляем ID категории
             }
         }
     }
@@ -241,134 +282,18 @@ public class SQLUsers implements ISQLUsers {
         }
         return expenseData;
     }
-}
-
-/*package server.DB;
-
-import client.clientWork.Account;
-import client.clientWork.Category;
-import client.clientWork.Users;
-import server.SystemOrg.Role;
-
-import java.sql.*;
-import java.util.ArrayList;
-
-public class SQLUsers implements ISQLUsers {
-    private Connection conn;
-
-    public SQLUsers(Connection conn) {
-        this.conn = conn;
-    }
-    private static SQLUsers instance;
-    private DatabaseConnection dbConnection;
-
-    public SQLUsers() throws SQLException, ClassNotFoundException {
-        dbConnection = DatabaseConnection.getInstance();
-    }
-
-    public static synchronized SQLUsers getInstance() throws SQLException, ClassNotFoundException {
-        if (instance == null) {
-            instance = new SQLUsers();
-        }
-        return instance;
-    }
 
     @Override
-    public ArrayList<Users> findUser(Users obj) {
-        String str = "select `keys`.login, firstname, lastname, averageMark, `groups`.numberGroup, payments.payment" +
-                " from users" +
-                " join `keys` on `keys`.`id_keys` = students.id_keys" +
-                " left join `groups` on `groups`.idgroup = users.idgroup" +
-                " left join payments on payments.idpayment = users.idpayment" +
-                " where `keys`.login = \"" + obj.getLogin() + "\";";
-        ArrayList<String[]> result = dbConnection.getArrayResult(str);
-        ArrayList<Users> usList = new ArrayList<>();
-        for (String[] items: result){
-            Users students = new Users();
-            students.setLogin(items[0]);
-            students.setFirstname(items[1]);
-            students.setLastname(items[2]);
-            usList.add(students);
-        }
-        return usList;
-    }
-
-    @Override
-    public Role insert(Users obj) {
-        String proc = "{? = call insert_user(?,?,?,?,?)}";
-        Role r = new Role();
-        try (CallableStatement callableStatement = DatabaseConnection.dbConnection.prepareCall(proc)) {
-            //callableStatement.setString(1, obj.getFirstname());
-            callableStatement.registerOutParameter(1, Types.INTEGER);
-            callableStatement.setString(2, obj.getFirstname());
-            callableStatement.setString(3, obj.getLastname());
-            callableStatement.setString(4, obj.getLogin());
-            callableStatement.setString(5, obj.getPassword());
-            callableStatement.setString(6, "USER"); //роль по умолчанию
-            //callableStatement.registerOutParameter(5, Types.INTEGER);
-            callableStatement.execute();
-
-            int id = callableStatement.getInt(1);
-            r.setId(id);
-            r.setRole("user");
-        } catch (SQLIntegrityConstraintViolationException e) {
-            System.out.println("ошибка");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return r;
-    }
-
-    @Override
-    public boolean deleteUser(Users obj) {
-        return false;
-    }
-
-    public ArrayList<Users> get() {
-        ArrayList<Users> usersList = new ArrayList<>();
-        try {
-            String query = "SELECT * FROM users";
-            PreparedStatement stmt = dbConnection.getConnection().prepareStatement(query);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                Users user = new Users();
-                user.setId(rs.getInt("id"));
-                user.setFirstname(rs.getString("firstname"));
-                user.setLastname(rs.getString("lastname"));
-                user.setLogin(rs.getString("username"));
-                usersList.add(user);
-            }
-        } catch (SQLException e) {
-            System.err.println("Ошибка при запросе к базе данных: " + e.getMessage());
-        }
-        return usersList;
-    }
-
-
-    @Override
-    public ArrayList<Account> getUserAccounts(Integer userId) throws SQLException {
-        ArrayList<Account> accounts = new ArrayList<>();
-        String sql = "SELECT id, name FROM accounts WHERE user_id = ?";
+    public void addAccount(Account account, Integer userId) throws SQLException {
+        String sql = "INSERT INTO accounts (user_id, name, balance) VALUES (?, ?, ?) RETURNING id";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
+            stmt.setString(2, account.getName());
+            stmt.setDouble(3, 0.0);
             ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                accounts.add(new Account(rs.getInt("id"), rs.getString("name")));
+            if (rs.next()) {
+                account.setId(rs.getInt("id"));
             }
         }
-        return accounts;
     }
-
-    @Override
-    public ArrayList<Category> getIncomeCategories() throws SQLException {
-        ArrayList<Category> categories = new ArrayList<>();
-        String sql = "SELECT id, name FROM categories WHERE type = 'INCOME'";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                categories.add(new Category(rs.getInt("id"), rs.getString("name")));
-            }
-        }
-        return categories;
-    }
-}*/
+}

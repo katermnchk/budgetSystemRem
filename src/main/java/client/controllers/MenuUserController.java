@@ -28,9 +28,12 @@ public class MenuUserController {
     private Button backButton;
 
     @FXML
+    private Button addAccountButton;
+
+   /* @FXML
     private Button personalInfButton;
 
-  /*public MenuUserController() {
+  public MenuUserController() {
         try {
             Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/budgetsystem", "postgres", "postgresql");
             this.userDAO = new UserDAO(connection);
@@ -200,5 +203,19 @@ public class MenuUserController {
         alert.showAndWait();
     }
 
+    @FXML
+    void addAccount(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/AddAccount.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Добавление счета");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            showAlert("Ошибка", "Не удалось открыть окно добавления счета: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
 }

@@ -15,12 +15,14 @@ public interface ISQLUsers {
     Role insert(Users obj);
     boolean deleteUser(Users obj);
     ArrayList<Users> get();
+    Users getUserById(Integer userId) throws SQLException;
 
     ArrayList<Account> getUserAccounts(Integer userId) throws SQLException;
     ArrayList<Category> getIncomeCategories() throws SQLException;
     ArrayList<Category> getExpenseCategories() throws SQLException;
 
     double getBalance(Integer userId) throws SQLException;
+    HashMap<String, Double> getAccountBalances(Integer userId) throws SQLException;
 
     ArrayList<Transaction> getTransactionHistory(Integer userId) throws SQLException;
     void addCategory(Category category) throws SQLException;
@@ -28,4 +30,7 @@ public interface ISQLUsers {
     ArrayList<Category> getAllCategories(Integer userId) throws SQLException;
 
     HashMap<String, Double> getExpenseChartData(Integer userId) throws SQLException;
+
+    void addAccount(Account account, Integer userId) throws SQLException;
+
 }
