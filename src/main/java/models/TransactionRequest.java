@@ -1,4 +1,4 @@
-package client.controllers;
+package models;
 
 public class TransactionRequest implements java.io.Serializable {
     private int userId;

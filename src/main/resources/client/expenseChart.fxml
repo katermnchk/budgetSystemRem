@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.geometry.Insets?>
+
+<?import javafx.geometry.*?>
 <?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox prefHeight="500.0" prefWidth="600.0" styleClass="root"
-      xmlns="http://javafx.com/javafx/17.0.12"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="client.controllers.ExpenseChartController"
-      stylesheets="@../css/styles.css">
+<VBox prefHeight="500.0" prefWidth="600.0" styleClass="root" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.user.ExpenseChartController">
     <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
+        <Insets bottom="20" left="20" right="20" top="20" />
     </padding>
 
     <HBox alignment="CENTER" spacing="10">
@@ -20,13 +16,13 @@
                 <Image url="@../images/expense_chart_icon.png"/>
             </image>
         </ImageView>-->
-        <Label text="График расходов" styleClass="header-label"/>
+        <Label styleClass="header-label" text="График расходов" />
     </HBox>
 
-    <PieChart fx:id="expenseChart" prefWidth="500" prefHeight="400" styleClass="my-chart"/>
+    <PieChart fx:id="expenseChart" prefHeight="400" prefWidth="500" styleClass="my-chart" />
 
-    <HBox spacing="15" alignment="CENTER">
-        <Button text="Обновить" onAction="#refreshChart" styleClass="my-button"/>
-        <Button text="Закрыть" onAction="#closeWindow" styleClass="cancel-button"/>
+    <HBox alignment="CENTER" prefHeight="92.0" prefWidth="560.0" spacing="15">
+        <Button onAction="#refreshChart" styleClass="my-button" text="Обновить" />
+        <Button onAction="#closeWindow" styleClass="cancel-button" text="Закрыть" />
     </HBox>
 </VBox>

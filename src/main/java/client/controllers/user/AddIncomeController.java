@@ -1,8 +1,9 @@
-package client.controllers;
+package client.controllers.user;
 
 import client.clientWork.Account;
 import client.clientWork.Category;
 import client.clientWork.Connect;
+import models.TransactionRequest;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

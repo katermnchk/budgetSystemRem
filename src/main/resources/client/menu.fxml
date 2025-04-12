@@ -5,7 +5,8 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox prefHeight="450.0" prefWidth="700.0" styleClass="root" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.MenuUserController">
+<VBox prefHeight="450.0" prefWidth="700.0" styleClass="root" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/17.0.12"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.user.MenuUserController">
 
     <AnchorPane prefHeight="80.0" styleClass="header">
         <children>
@@ -26,22 +27,30 @@
             </ImageView>
         </VBox>
 
-        <GridPane alignment="CENTER" hgap="15" styleClass="button-grid" vgap="15">
-            <Button fx:id="addIncomeButton" onAction="#addIncome" prefWidth="132.0" styleClass="my-button" text="Добавить доход" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <GridPane alignment="CENTER" hgap="15" prefHeight="268.0" prefWidth="379.0" styleClass="button-grid" vgap="15">
+            <Button fx:id="addIncomeButton" onAction="#addIncome" prefWidth="132.0" styleClass="main-button" text="Добавить доход"
+                    GridPane.columnIndex="0" GridPane.rowIndex="0" />
                    <!-- graphic="@../images/add_income_icon.png"/>-->
-            <Button fx:id="addExpenseButton" onAction="#addExpense" prefWidth="170.0" styleClass="my-button" text="Добавить расход" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <Button fx:id="addExpenseButton" onAction="#addExpense" prefWidth="170.0" styleClass="main-button" text="Добавить расход"
+                    GridPane.columnIndex="0" GridPane.rowIndex="1" />
 <!--                    graphic="@../images/add_expense_icon.png"/>-->
-            <Button fx:id="viewBalanceButton" onAction="#viewBalance" styleClass="my-button" text="Просмотр баланса" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+            <Button fx:id="viewBalanceButton" onAction="#viewBalance" prefWidth="195.0" styleClass="main-button" text="Просмотр баланса"
+                    GridPane.columnIndex="0" GridPane.rowIndex="2" />
 <!--                    graphic="@../images/balance_icon.png"/>-->
-            <Button fx:id="viewChartButton" onAction="#viewChart" styleClass="my-button" text="График расходов" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+            <Button fx:id="viewChartButton" onAction="#viewChart" styleClass="main-button" text="График расходов"
+                    GridPane.columnIndex="0" GridPane.rowIndex="3" />
 <!--                    graphic="@../images/chart_icon.png"/>-->
-            <Button fx:id="transactionHistoryButton" onAction="#viewHistory" styleClass="my-button" text="История транзакций" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+            <Button fx:id="transactionHistoryButton" onAction="#viewHistory" styleClass="main-button" text="История транзакций"
+                    GridPane.columnIndex="1" GridPane.rowIndex="0" />
 <!--                    graphic="@../images/history_icon.png"/>-->
-            <Button fx:id="addAccountButton" onAction="#addAccount" styleClass="my-button" text="Добавить счет" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Button fx:id="addAccountButton" onAction="#addAccount" styleClass="main-button" text="Добавить счет"
+                    GridPane.columnIndex="1" GridPane.rowIndex="1" />
 <!--                    graphic="@../images/account_icon.png"/>-->
-            <Button fx:id="manageCategoriesButton" onAction="#manageCategories" styleClass="my-button" text="Настройки категорий" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Button fx:id="manageCategoriesButton" onAction="#manageCategories" styleClass="main-button" text="Настройки категорий"
+                    GridPane.columnIndex="1" GridPane.rowIndex="2" />
 <!--                    graphic="@../images/categories_icon.png"/>-->
-            <Button fx:id="personalInfButton" onAction="#persInf" styleClass="my-button" text="Профиль" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <Button fx:id="personalInfButton" onAction="#persInf" styleClass="main-button" text="Профиль" GridPane.columnIndex="1"
+                    GridPane.rowIndex="3" />
          <columnConstraints>
             <ColumnConstraints />
             <ColumnConstraints />

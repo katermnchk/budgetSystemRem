@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.collections.FXCollections?>
-<?import java.lang.String?>
 
-<VBox prefHeight="500.0" prefWidth="600.0" styleClass="root"
-      xmlns="http://javafx.com/javafx/17.0.12"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="client.controllers.CategoryManagerController"
-      stylesheets="@../css/styles.css">
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="500.0" prefWidth="600.0" styleClass="root" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.user.CategoryManagerController">
     <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
+        <Insets bottom="20" left="20" right="20" top="20" />
     </padding>
 
     <HBox alignment="CENTER" spacing="10">
@@ -21,33 +23,33 @@
                 <Image url="@../images/category_icon.png"/>
             </image>
         </ImageView>-->
-        <Label text="Управление категориями" styleClass="header-label"/>
+        <Label styleClass="header-label" text="Управление категориями" />
     </HBox>
 
     <TableView fx:id="categoryTable" prefHeight="300.0" styleClass="my-table">
         <columns>
-            <TableColumn fx:id="nameColumn" text="Название" prefWidth="150"/>
-            <TableColumn fx:id="typeColumn" text="Тип" prefWidth="100"/>
+            <TableColumn fx:id="nameColumn" prefWidth="150" text="Название" />
+            <TableColumn fx:id="typeColumn" prefWidth="100" text="Тип" />
         </columns>
     </TableView>
 
-    <HBox spacing="10" alignment="CENTER">
-        <Label text="Новая категория:" styleClass="input-label"/>
-        <TextField fx:id="nameField" promptText="Введите название" styleClass="my-textfield"/>
+    <HBox alignment="CENTER" prefHeight="94.0" prefWidth="560.0" spacing="10">
+        <Label prefHeight="18.0" prefWidth="182.0" styleClass="input-label" text="Новая категория:" />
+        <TextField fx:id="nameField" promptText="Введите название" styleClass="my-textfield" />
         <ComboBox fx:id="typeComboBox" styleClass="my-combobox">
             <items>
                 <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="INCOME"/>
-                    <String fx:value="EXPENSE"/>
+                    <String fx:value="INCOME" />
+                    <String fx:value="EXPENSE" />
                 </FXCollections>
             </items>
         </ComboBox>
-        <Button text="Добавить" onAction="#addCategory" styleClass="my-button"/>
+        <Button onAction="#addCategory" prefHeight="42.0" prefWidth="222.0" styleClass="my-button" text="Добавить" />
     </HBox>
 
-    <HBox spacing="15" alignment="CENTER">
-        <Button text="Удалить выбранную" onAction="#deleteCategory" styleClass="expense-button"/>
-        <Button text="Обновить" onAction="#refreshCategories" styleClass="my-button"/>
-        <Button text="Закрыть" onAction="#closeWindow" styleClass="cancel-button"/>
+    <HBox alignment="CENTER" prefHeight="63.0" prefWidth="560.0" spacing="15">
+        <Button onAction="#deleteCategory" prefHeight="38.0" prefWidth="179.0" styleClass="expense-button" text="Удалить выбранную" />
+        <Button onAction="#refreshCategories" prefHeight="42.0" prefWidth="143.0" styleClass="my-button" text="Обновить" />
+        <Button onAction="#closeWindow" prefHeight="42.0" prefWidth="130.0" styleClass="cancel-button" text="Закрыть" />
     </HBox>
 </VBox>

@@ -4,11 +4,13 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class Users implements Serializable {
-    int id;
-    String firstname;
-    String lastname;
-    String login;
-    String password;
+    private int id;
+    private String firstname;
+    private String lastname;
+    private String login;
+    private String password;
+    private String role;
+    private String status;
 
     public Users(String login, String password) {
         this.login = login;
@@ -16,71 +18,85 @@ public class Users implements Serializable {
     }
 
     public Users() {
-
     }
 
-    public void setLogin(String text) {
-        this.login = text;
+    public int getId() {
+        return id;
     }
-    public String getLogin() {
-        return login;
-    }
-
-    public void setPassword(String text) {
-        this.password = text;
-    }
-    public String getPassword() {
-        return password;
-    }
-
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
-    }
-
-    public void setLastname(String lastname) {
-    this.lastname = lastname;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getFirstname() {
         return firstname;
     }
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
     public String getLastname() {
         return lastname;
+    }
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
+        if (!(o instanceof Users)) return false;
         Users that = (Users) o;
-
-        return  Objects.equals(this.login, that.login) &&
-                Objects.equals(this.password, that.password) &&
-                Objects.equals(this.firstname, that.firstname) &&
-                Objects.equals(this.lastname, that.lastname);
+        return Objects.equals(login, that.login) &&
+                Objects.equals(password, that.password) &&
+                Objects.equals(firstname, that.firstname) &&
+                Objects.equals(lastname, that.lastname) &&
+                Objects.equals(role, that.role) &&
+                Objects.equals(status, that.status);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.login, this.password, this.firstname, this.lastname);
+        return Objects.hash(login, password, firstname, lastname, role, status);
     }
 
     @Override
     public String toString() {
         return "Users{" +
-                "firstname='" + firstname + '\'' +
+                "id=" + id +
+                ", firstname='" + firstname + '\'' +
                 ", lastname='" + lastname + '\'' +
                 ", login='" + login + '\'' +
                 ", password='" + password + '\'' +
+                ", role='" + role + '\'' +
+                ", status='" + status + '\'' +
                 '}';
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public Object getId() {
-        return id;
     }
 }

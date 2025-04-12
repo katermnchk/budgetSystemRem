@@ -33,4 +33,9 @@ public interface ISQLUsers {
 
     void addAccount(Account account, Integer userId) throws SQLException;
 
+    boolean editUser(Users user);
+
+    Integer getUsersCount();
+
+    Integer getTransactionsCount();
 }

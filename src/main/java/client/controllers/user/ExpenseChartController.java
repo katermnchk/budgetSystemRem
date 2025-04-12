@@ -1,4 +1,4 @@
-package client.controllers;
+package client.controllers.user;
 
 import client.clientWork.Connect;
 import javafx.collections.FXCollections;

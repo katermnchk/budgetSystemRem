@@ -1,4 +1,4 @@
-package client.controllers;
+package client.controllers.user;
 
 import client.clientWork.Connect;
 import client.clientWork.Transaction;
@@ -12,12 +12,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.net.URL;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.ResourceBundle;
 
 public class TransactionHistoryController implements Initializable {

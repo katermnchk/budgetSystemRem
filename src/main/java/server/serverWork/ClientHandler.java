@@ -4,7 +4,7 @@ import client.clientWork.Account;
 import client.clientWork.Category;
 import client.clientWork.Transaction;
 import client.clientWork.Users;
-import client.controllers.TransactionRequest;
+import models.TransactionRequest;
 import models.Authorization;
 import server.DB.*;
 import server.SystemOrg.*;
@@ -34,11 +34,12 @@ public class ClientHandler implements Runnable {
                 String choice = sois.readObject().toString();
                 System.out.println(choice);
                 System.out.println("Команда получена");
+                SQLFactory sqlFactory = new SQLFactory();
                 switch (choice) {
                     case "userInf" -> {
                         Integer userId = (Integer) sois.readObject();
                         System.out.println("Запрос информации о пользователе с ID: " + userId);
-                        SQLFactory sqlFactory = new SQLFactory();
+
                         Users user = sqlFactory.getUsers().getUserById(userId);
                         if (user != null) {
                             soos.writeObject(user);
@@ -52,23 +53,21 @@ public class ClientHandler implements Runnable {
                         System.out.println("Запрос к БД на поиск пользователя: " + clientSocket.getInetAddress().toString());
                         Users st = (Users) sois.readObject();
                         System.out.println(st.toString());
-                        SQLFactory sqlFactory = new SQLFactory();
+                        //SQLFactory sqlFactory = new SQLFactory();
                         ArrayList<Users> userList = sqlFactory.getUsers().findUser(st);
                         System.out.println(userList.toString());
                         soos.writeObject(userList);
                     }
+                    case "getUsers" -> {
+                        System.out.println("Запрос списка всех пользователей: " + clientSocket.getInetAddress().toString());
+                        ArrayList<Users> usersList = sqlFactory.getUsers().get();
+                        soos.writeObject(usersList);
+                    }
                     case "deleteUser" -> {
-                        System.out.println("Выполняется удаление пользователя...");
-                        Users users = (Users) sois.readObject();
-                        System.out.println(users.toString());
-
-                        SQLFactory sqlFactory = new SQLFactory();
-
-                        if (sqlFactory.getUsers().deleteUser(users)) {
-                            soos.writeObject("OK");
-                        } else {
-                            soos.writeObject("Ошибка при удалении пользователя");
-                        }
+                        System.out.println("Запрос на удаление пользователя: " + clientSocket.getInetAddress().toString());
+                        Users user = (Users) sois.readObject();
+                        boolean success = sqlFactory.getUsers().deleteUser(user);
+                        soos.writeObject(success ? "OK" : "Ошибка при удалении пользователя");
                     }
                     case "registrationUser" -> {
                         System.out.println("Запрос к БД на регистрацию пользователя: " +
@@ -76,7 +75,7 @@ public class ClientHandler implements Runnable {
                         Users user = (Users) sois.readObject();
                         System.out.println(user.toString());
 
-                        SQLFactory sqlFactory = new SQLFactory();
+                       // SQLFactory sqlFactory = new SQLFactory();
 
                         Role r = sqlFactory.getUsers().insert(user);
                         System.out.println((r.toString()));
@@ -93,7 +92,7 @@ public class ClientHandler implements Runnable {
                         Authorization auth = (Authorization) sois.readObject();
                         System.out.println(auth.toString());
 
-                        SQLFactory sqlFactory = new SQLFactory();
+                       // SQLFactory sqlFactory = new SQLFactory();
                         SQLAuthorization authDAO = sqlFactory.getRole();
 
                         Role r = authDAO.getRole(auth);
@@ -108,7 +107,7 @@ public class ClientHandler implements Runnable {
                     }
                     case "addIncome" -> {
                         TransactionRequest request = (TransactionRequest) sois.readObject();
-                        SQLFactory sqlFactory = new SQLFactory();
+                        //SQLFactory sqlFactory = new SQLFactory();
                         try {
                             SQLIncome incomeDAO = sqlFactory.getIncome();
                             incomeDAO.addTransaction(
@@ -125,7 +124,7 @@ public class ClientHandler implements Runnable {
                     }
                     case "getUserAccounts" -> {
                         Integer userId = (Integer) sois.readObject();
-                        SQLFactory sqlFactory = new SQLFactory();
+                        //SQLFactory sqlFactory = new SQLFactory();
                         try {
                             ArrayList<Account> accounts = sqlFactory.getUsers().getUserAccounts(userId);
                             soos.writeObject(accounts);
@@ -134,7 +133,7 @@ public class ClientHandler implements Runnable {
                         }
                     }
                     case "getIncomeCategories" -> {
-                        SQLFactory sqlFactory = new SQLFactory();
+                       // SQLFactory sqlFactory = new SQLFactory();
                         try {
                             ArrayList<Category> categories = sqlFactory.getUsers().getIncomeCategories();
                             soos.writeObject(categories);
@@ -144,7 +143,7 @@ public class ClientHandler implements Runnable {
                     }
                     case "addExpense" -> {
                         TransactionRequest request = (TransactionRequest) sois.readObject();
-                        SQLFactory sqlFactory = new SQLFactory();
+                        //SQLFactory sqlFactory = new SQLFactory();
                         try {
                             SQLExpense expenseDAO = sqlFactory.getExpense();
                             expenseDAO.addTransaction(
@@ -160,7 +159,7 @@ public class ClientHandler implements Runnable {
                         }
                     }
                     case "getExpenseCategories" -> {
-                        SQLFactory sqlFactory = new SQLFactory();
+                       // SQLFactory sqlFactory = new SQLFactory();
                         try {
                             ArrayList<Category> categories = sqlFactory.getUsers().getExpenseCategories();
                             soos.writeObject(categories);
@@ -170,7 +169,7 @@ public class ClientHandler implements Runnable {
                     }
                     case "getBalance" -> {
                         Integer userId = (Integer) sois.readObject();
-                        SQLFactory sqlFactory = new SQLFactory();
+                        //SQLFactory sqlFactory = new SQLFactory();
                         try {
                             double balance = sqlFactory.getUsers().getBalance(userId);
                             soos.writeObject(String.valueOf(balance));
@@ -181,7 +180,7 @@ public class ClientHandler implements Runnable {
                     }
                     case "getAccountBalances" -> {
                         Integer userId = (Integer) sois.readObject();
-                        SQLFactory sqlFactory = new SQLFactory();
+                       // SQLFactory sqlFactory = new SQLFactory();
                         try {
                             HashMap<String, Double> balances = sqlFactory.getUsers().getAccountBalances(userId);
                             soos.writeObject(balances);
@@ -192,7 +191,7 @@ public class ClientHandler implements Runnable {
                     }
                     case "getTransactionHistory" -> {
                         Integer userId = (Integer) sois.readObject();
-                        SQLFactory sqlFactory = new SQLFactory();
+                      //  SQLFactory sqlFactory = new SQLFactory();
                         try {
                             ArrayList<Transaction> transactions = sqlFactory.getUsers().getTransactionHistory(userId);
                             soos.writeObject(transactions);
@@ -203,7 +202,7 @@ public class ClientHandler implements Runnable {
                     }
                     case "addCategory" -> {
                         Category category = (Category) sois.readObject();
-                        SQLFactory sqlFactory = new SQLFactory();
+                       // SQLFactory sqlFactory = new SQLFactory();
                         try {
                             sqlFactory.getUsers().addCategory(category);
                             soos.writeObject("OK");
@@ -214,7 +213,7 @@ public class ClientHandler implements Runnable {
                     }
                     case "deleteCategory" -> {
                         Integer categoryId = (Integer) sois.readObject();
-                        SQLFactory sqlFactory = new SQLFactory();
+                       // SQLFactory sqlFactory = new SQLFactory();
                         try {
                             sqlFactory.getUsers().deleteCategory(categoryId);
                             soos.writeObject("OK");
@@ -225,7 +224,7 @@ public class ClientHandler implements Runnable {
                     }
                     case "getAllCategories" -> {
                         Integer userId = (Integer) sois.readObject();
-                        SQLFactory sqlFactory = new SQLFactory();
+                      //  SQLFactory sqlFactory = new SQLFactory();
                         try {
                             ArrayList<Category> categories = sqlFactory.getUsers().getAllCategories(userId);
                             soos.writeObject(categories);
@@ -236,7 +235,7 @@ public class ClientHandler implements Runnable {
                     }
                     case "getExpenseChartData" -> {
                         Integer userId = (Integer) sois.readObject();
-                        SQLFactory sqlFactory = new SQLFactory();
+                        //SQLFactory sqlFactory = new SQLFactory();
                         try {
                             HashMap<String, Double> expenseData = sqlFactory.getUsers().getExpenseChartData(userId);
                             soos.writeObject(expenseData);
@@ -248,13 +247,40 @@ public class ClientHandler implements Runnable {
                     case "addAccount" -> {
                         Account account = (Account) sois.readObject();
                         Integer userId = (Integer) sois.readObject();
-                        SQLFactory sqlFactory = new SQLFactory();
+                        //SQLFactory sqlFactory = new SQLFactory();
                         try {
                             sqlFactory.getUsers().addAccount(account, userId);
                             soos.writeObject("OK");
                         } catch (SQLException e) {
                             soos.writeObject("Ошибка при добавлении счета " + e.getMessage());
                             e.printStackTrace();
+                        }
+                    }
+                    case "manageCategories" -> {
+                        System.out.println("Запрос на получение категорий: " + clientSocket.getInetAddress().toString());
+                        //SQLFactory sqlFactory = new SQLFactory();
+                        ArrayList<Category> categories = sqlFactory.getUsers().getAllCategories(0); // 0 для всех категорий
+                        soos.writeObject(categories);
+                    }
+                    case "editUser" -> {
+                        System.out.println("Запрос на редактирование пользователя: " + clientSocket.getInetAddress().toString());
+                        Users user = (Users) sois.readObject();
+                        boolean success = sqlFactory.getUsers().editUser(user);
+                        soos.writeObject(success ? "OK" : "Ошибка при редактировании пользователя");
+                    }
+                    case "logout" -> {
+                        System.out.println("Пользователь вышел: " + clientSocket.getInetAddress().toString());
+                        soos.writeObject("OK");
+                    }
+                    case "getStatistics" -> {
+                        System.out.println("Запрос статистики: " + clientSocket.getInetAddress().toString());
+                        HashMap<String, Integer> stats = new HashMap<>();
+                        try {
+                            stats.put("usersCount", sqlFactory.getUsers().getUsersCount());
+                            stats.put("transactionsCount", sqlFactory.getUsers().getTransactionsCount());
+                            soos.writeObject(stats);
+                        } catch (SQLException e) {
+                            soos.writeObject("Ошибка при получении статистики: " + e.getMessage());
                         }
                     }
                 }

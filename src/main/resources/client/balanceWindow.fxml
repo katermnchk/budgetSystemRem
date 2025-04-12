@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
 
-<VBox prefHeight="400.0" prefWidth="600.0" styleClass="root"
-      xmlns="http://javafx.com/javafx/17.0.12"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="client.controllers.BalanceWindowController"
-      stylesheets="@../css/styles.css">
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox prefHeight="400.0" prefWidth="600.0" styleClass="root" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.user.BalanceWindowController">
     <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
+        <Insets bottom="20" left="20" right="20" top="20" />
     </padding>
 
     <!-- Заголовок с иконкой -->
@@ -20,23 +17,26 @@
                 <Image url="@../images/balance_icon.png"/>
             </image>
         </ImageView>-->
-        <Label text="Текущий баланс" styleClass="header-label"/>
+        <Label styleClass="header-label" text="Текущий баланс">
+         <font>
+            <Font name="Book Antiqua" size="15.0" />
+         </font></Label>
     </HBox>
 
-    <!-- Общий баланс -->
-    <Label fx:id="totalBalanceLabel" text="Общий бюджет: 0.00 BYN" styleClass="total-balance-label"/>
+    <Label fx:id="totalBalanceLabel" styleClass="total-balance-label" text="Общий бюджет: 0.00 BYN">
+      <font>
+         <Font size="15.0" />
+      </font></Label>
 
-    <!-- Таблица счетов -->
     <TableView fx:id="accountsTable" prefHeight="200.0" styleClass="my-table">
         <columns>
-            <TableColumn fx:id="accountNameColumn" text="Счет" prefWidth="280.0"/>
-            <TableColumn fx:id="balanceColumn" text="Баланс (BYN)" prefWidth="280.0"/>
+            <TableColumn fx:id="accountNameColumn" prefWidth="280.0" text="Счет" />
+            <TableColumn fx:id="balanceColumn" prefWidth="280.0" text="Баланс (BYN)" />
         </columns>
     </TableView>
 
-    <!-- Кнопки -->
-    <HBox spacing="15" alignment="CENTER">
-        <Button text="Обновить" onAction="#refreshBalance" styleClass="my-button"/>
-        <Button text="Закрыть" onAction="#closeWindow" styleClass="cancel-button"/>
+    <HBox alignment="CENTER" prefHeight="105.0" prefWidth="560.0" spacing="15">
+        <Button onAction="#refreshBalance" styleClass="my-button" text="Обновить" />
+        <Button onAction="#closeWindow" styleClass="cancel-button" text="Отмена" />
     </HBox>
 </VBox>

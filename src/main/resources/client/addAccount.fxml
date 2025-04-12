@@ -7,7 +7,7 @@
 <VBox alignment="CENTER" spacing="20" prefWidth="400.0" prefHeight="300.0" styleClass="root"
       xmlns="http://javafx.com/javafx/17.0.12"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="client.controllers.AddAccountController"
+      fx:controller="client.controllers.user.AddAccountController"
       stylesheets="@../css/styles.css">
     <padding>
         <Insets top="30" right="30" bottom="30" left="30"/>

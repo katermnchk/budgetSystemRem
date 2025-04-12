@@ -84,8 +84,16 @@ public class SQLUsers implements ISQLUsers {
 
     @Override
     public boolean deleteUser(Users obj) {
-        // удаление пользователя
-        return false;
+        try {
+            String query = "DELETE FROM users WHERE username = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setString(1, obj.getLogin());
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.err.println("Ошибка при удалении пользователя: " + e.getMessage());
+            return false;
+        }
     }
 
     @Override
@@ -295,5 +303,73 @@ public class SQLUsers implements ISQLUsers {
                 account.setId(rs.getInt("id"));
             }
         }
+    }
+
+    public boolean editUser(Users user) {
+        String sql = "UPDATE users SET firstname = ?, lastname = ?, username = ?, password = ?, role_id = ? WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, user.getFirstname());
+            stmt.setString(2, user.getLastname());
+            stmt.setString(3, user.getLogin());
+            stmt.setString(4, user.getPassword());
+            // Найти role_id по имени роли
+            String role = user.getRole() != null ? user.getRole() : "USER";
+            Integer roleId = getRoleId(role);
+            if (roleId == null) {
+                System.err.println("Ошибка: Роль " + role + " не найдена");
+                return false;
+            }
+            stmt.setInt(5, roleId);
+            stmt.setInt(6, user.getId());
+            int rowsAffected = stmt.executeUpdate();
+            System.out.println("Редактирование пользователя с id " + user.getId() + ": " + rowsAffected + " строк затронуто");
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.err.println("Ошибка при редактировании пользователя: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private Integer getRoleId(String roleName) {
+        String sql = "SELECT id FROM roles WHERE role = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, roleName);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("id");
+            }
+        } catch (SQLException e) {
+            System.err.println("Ошибка при получении role_id для " + roleName + ": " + e.getMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public Integer getUsersCount() {
+        String query = "SELECT COUNT(*) FROM users";
+        try (PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.err.println("Ошибка при подсчете пользователей: " + e.getMessage());
+        }
+        return 0;
+    }
+
+    @Override
+    public Integer getTransactionsCount() {
+        String query = "SELECT COUNT(*) FROM transactions";
+        try (PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.err.println("Ошибка при подсчете транзакций: " + e.getMessage());
+        }
+        return 0;
     }
 }

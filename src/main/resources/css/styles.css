@@ -58,6 +58,21 @@
     -fx-border-width: 2px;
 }
 
+.main-button {
+    -fx-border-color: #6a82fb;
+    -fx-background-radius: 15px;
+    -fx-border-radius: 15px;
+    -fx-border-width: 2px;
+    -fx-padding: 10 20 10 20;
+    -fx-font-size: 14px;
+    -fx-text-fill: #6a82fb;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);
+    -fx-pref-width: 300px;
+    -fx-pref-height: 40px;
+    -fx-cursor: hand;
+}
+
 .my-button {
     -fx-border-color: #6a82fb;
     -fx-background-radius: 15px;
@@ -127,7 +142,7 @@
     -fx-font-size: 14px;
     -fx-text-fill: #6a82fb;
     -fx-font-weight: bold;
-    -fx-pref-width: 100px;
+    -fx-pref-width: 170px;
     -fx-pref-height: 40px;
     -fx-cursor: hand;
 }
@@ -191,4 +206,49 @@
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);
     -fx-pie-label-visible: true;
     -fx-legend-side: bottom;
+}
+
+.rounded-image {
+    -fx-background-radius: 20px; /* Радиус скругления */
+    -fx-border-radius: 20px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2); /* Тень для эффекта */
+}
+
+.admin-button {
+    -fx-border-color: #6a82fb;
+    -fx-background-radius: 15px;
+    -fx-border-radius: 15px;
+    -fx-border-width: 2px;
+    -fx-padding: 10 20 10 20;
+    -fx-font-size: 14px;
+    -fx-text-fill: #6a82fb;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);
+    -fx-pref-width: 220px;
+    -fx-pref-height: 40px;
+    -fx-cursor: hand;
+}
+
+.admin-cancel-button {
+    -fx-background-color: transparent;
+    -fx-border-color: #6a82fb;
+    -fx-border-width: 2px;
+    -fx-border-radius: 15px;
+    -fx-background-radius: 15px;
+    -fx-padding: 10 20 10 20;
+    -fx-font-size: 14px;
+    -fx-text-fill: #6a82fb;
+    -fx-font-weight: bold;
+    -fx-pref-width: 220px;
+    -fx-pref-height: 40px;
+    -fx-cursor: hand;
+}
+
+.admin-cancel-button:hover {
+    -fx-background-color: #6a82fb;
+    -fx-text-fill: white;
+}
+
+.admin-cancel-button:pressed {
+    -fx-background-color: #5a72e0;
 }
