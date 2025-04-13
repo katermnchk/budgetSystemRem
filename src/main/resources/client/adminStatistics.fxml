@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="TOP_CENTER" prefHeight="656.0" prefWidth="452.0" spacing="10" xmlns="http://javafx.com/javafx/17.0.12"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.admin.AdminStatisticsController"
+      stylesheets="@../css/styles.css">
+    <Label style="-fx-font-size: 18; -fx-font-weight: bold;" text="Статистика администратора" styleClass="header-label"/>
+
+    <GridPane alignment="CENTER" hgap="10" vgap="10">
+        <Label text="Всего пользователей:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <Text fx:id="totalUsers" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+        <Label text="Всего счетов:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <Text fx:id="totalAccounts" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+        <Label text="Общий баланс:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+        <Text fx:id="totalBalance" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+        <Label text="Всего транзакций:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+        <Text fx:id="totalTransactions" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+      <columnConstraints>
+         <ColumnConstraints />
+         <ColumnConstraints />
+      </columnConstraints>
+      <rowConstraints>
+         <RowConstraints />
+         <RowConstraints />
+         <RowConstraints />
+         <RowConstraints />
+      </rowConstraints>
+    </GridPane>
+
+    <Label text="Пользователи по ролям" />
+    <TableView fx:id="roleTable" prefHeight="200" styleClass="my-table">
+        <columns>
+            <TableColumn fx:id="roleColumn" prefWidth="100" text="Роль" />
+            <TableColumn fx:id="countColumn" prefWidth="100" text="Количество" />
+        </columns>
+    </TableView>
+
+    <Label text="Транзакции по категориям" />
+    <TableView fx:id="categoryTable" prefHeight="200" styleClass="my-table">
+        <columns>
+            <TableColumn fx:id="categoryNameColumn" prefWidth="150" text="Категория" />
+            <TableColumn fx:id="categoryTypeColumn" prefWidth="100" text="Тип" />
+            <TableColumn fx:id="transactionCountColumn" prefWidth="100" text="Транзакций" />
+            <TableColumn fx:id="totalAmountColumn" prefWidth="100" text="Сумма" />
+        </columns>
+    </TableView>
+
+    <Button fx:id="backButton" onAction="#back" prefHeight="0.0" prefWidth="49.0" styleClass="my-button" text="Назад" />
+</VBox>

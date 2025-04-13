@@ -241,7 +241,7 @@ public class SQLUsers implements ISQLUsers {
             stmt.setString(2, category.getType());
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                category.setId(rs.getInt("id")); // обновляем ID категории
+                category.setId(rs.getInt("id"));
             }
         }
     }
@@ -371,5 +371,82 @@ public class SQLUsers implements ISQLUsers {
             System.err.println("Ошибка при подсчете транзакций: " + e.getMessage());
         }
         return 0;
+    }
+
+    @Override
+    public HashMap<String, Object> getStatistics() {
+        HashMap<String, Object> stats = new HashMap<>();
+        try {
+            //всего пользователей
+            String userSql = "SELECT COUNT(*) AS total FROM users";
+            try (PreparedStatement stmt = conn.prepareStatement(userSql);
+                 ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    stats.put("totalUsers", rs.getInt("total"));
+                }
+            }
+            //всего счетов
+            String accountSql = "SELECT COUNT(*) AS total FROM accounts";
+            try (PreparedStatement stmt = conn.prepareStatement(accountSql);
+                 ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    stats.put("totalAccounts", rs.getInt("total"));
+                }
+            }
+            //общий баланс
+            String balanceSql = "SELECT SUM(balance) AS total FROM accounts";
+            try (PreparedStatement stmt = conn.prepareStatement(balanceSql);
+                 ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    stats.put("totalBalance", rs.getDouble("total"));
+                }
+            }
+            // всего транзакций
+            String transactionSql = "SELECT COUNT(*) AS total FROM transactions";
+            try (PreparedStatement stmt = conn.prepareStatement(transactionSql);
+                 ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    stats.put("totalTransactions", rs.getInt("total"));
+                }
+            }
+            //статистика по ролям
+            String roleSql = "SELECT r.role, COUNT(u.id) AS count " +
+                    "FROM roles r LEFT JOIN users u ON r.id = u.role_id " +
+                    "GROUP BY r.role";
+            ArrayList<HashMap<String, Object>> roleStats = new ArrayList<>();
+            try (PreparedStatement stmt = conn.prepareStatement(roleSql);
+                 ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    HashMap<String, Object> role = new HashMap<>();
+                    role.put("role", rs.getString("role"));
+                    role.put("count", rs.getInt("count"));
+                    roleStats.add(role);
+                }
+            }
+            stats.put("roleStats", roleStats);
+            // статистика по категориям
+            String categorySql = "SELECT c.name, c.type, COUNT(t.id) AS transaction_count, " +
+                    "COALESCE(SUM(t.amount), 0) AS total_amount " +
+                    "FROM categories c LEFT JOIN transactions t ON c.id = t.category_id " +
+                    "GROUP BY c.name, c.type";
+            ArrayList<HashMap<String, Object>> categoryStats = new ArrayList<>();
+            try (PreparedStatement stmt = conn.prepareStatement(categorySql);
+                 ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    HashMap<String, Object> category = new HashMap<>();
+                    category.put("name", rs.getString("name"));
+                    category.put("type", rs.getString("type"));
+                    category.put("transactionCount", rs.getInt("transaction_count"));
+                    category.put("totalAmount", rs.getDouble("total_amount"));
+                    categoryStats.add(category);
+                }
+            }
+            stats.put("categoryStats", categoryStats);
+
+        } catch (SQLException e) {
+            System.err.println("Ошибка при получении статистики: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return stats;
     }
 }

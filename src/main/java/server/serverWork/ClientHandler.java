@@ -274,14 +274,8 @@ public class ClientHandler implements Runnable {
                     }
                     case "getStatistics" -> {
                         System.out.println("Запрос статистики: " + clientSocket.getInetAddress().toString());
-                        HashMap<String, Integer> stats = new HashMap<>();
-                        try {
-                            stats.put("usersCount", sqlFactory.getUsers().getUsersCount());
-                            stats.put("transactionsCount", sqlFactory.getUsers().getTransactionsCount());
-                            soos.writeObject(stats);
-                        } catch (SQLException e) {
-                            soos.writeObject("Ошибка при получении статистики: " + e.getMessage());
-                        }
+                        HashMap<String, Object> stats = sqlFactory.getUsers().getStatistics();
+                        soos.writeObject(stats);
                     }
                 }
             }

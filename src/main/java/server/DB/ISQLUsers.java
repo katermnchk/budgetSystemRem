@@ -38,4 +38,6 @@ public interface ISQLUsers {
     Integer getUsersCount();
 
     Integer getTransactionsCount();
+
+    HashMap<String, Object> getStatistics();
 }
