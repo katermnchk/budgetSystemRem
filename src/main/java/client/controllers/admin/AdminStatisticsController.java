@@ -22,6 +22,8 @@ import java.util.HashMap;
 
 public class AdminStatisticsController {
 
+    @FXML private Label adminStatistics;
+
     @FXML private Text totalUsers;
     @FXML private Text totalAccounts;
     @FXML private Text totalBalance;
@@ -137,18 +139,9 @@ public class AdminStatisticsController {
     }
 
     @FXML
-    void back(ActionEvent event) {
-        backButton.getScene().getWindow().hide();
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/menuAdmin.fxml"));
-            Parent root = loader.load();
-            Stage stage = new Stage();
-            stage.setTitle("Меню администратора");
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Ошибка", "Не удалось загрузить меню администратора: " + e.getMessage());
-        }
+    private void closeWindow(ActionEvent event) {
+        Stage stage = (Stage) backButton.getScene().getWindow();
+        stage.close();
     }
 
     private void showAlert(Alert.AlertType type, String title, String content) {

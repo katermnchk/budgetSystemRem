@@ -280,7 +280,7 @@ public class ClientHandler implements Runnable {
                 }
             }
         } catch (IOException | ClassNotFoundException | SQLException e) {
-            System.out.println("Client disconnected.");
+            System.out.println("Клиент отключен");
         }
     }
 }

@@ -24,7 +24,7 @@ public class SQLIncome implements ISQLIncome {
             stmt.setString(5, description != null ? description : "Доход");
             stmt.executeUpdate();
 
-            // Обновляем баланс счета
+
             String updateBalanceQuery = "UPDATE accounts SET balance = balance + ? WHERE id = ?";
             try (PreparedStatement updateStmt = connection.prepareStatement(updateBalanceQuery)) {
                 updateStmt.setDouble(1, amount);

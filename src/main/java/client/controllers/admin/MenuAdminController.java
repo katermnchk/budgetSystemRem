@@ -32,24 +32,21 @@ public class MenuAdminController {
 
     @FXML
     private void logout() {
-        if (backButton == null) {
-            showAlert("Ошибка", "Кнопка выхода не инициализирована!");
-            return;
-        }
-
         backButton.getScene().getWindow().hide();
 
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/client/main.fxml"));
+
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/main.fxml"));
-            Parent root = loader.load();
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Главное окно");
-            stage.show();
+            loader.load();
         } catch (IOException e) {
-            showAlert("Ошибка", "Не удалось загрузить главное окно: " + e.getMessage());
             e.printStackTrace();
         }
+
+        Parent root = loader.getRoot();
+        Stage stage = new Stage();
+        stage.setScene(new Scene((root)));
+        stage.show();
     }
 
     private void openWindow(String fxmlPath, String title) {

@@ -24,7 +24,6 @@ public class SQLExpense implements ISQLExpense {
             stmt.setString(5, description != null ? description : "Расход");
             stmt.executeUpdate();
 
-            // обновляем баланс счета
             String updateBalanceQuery = "UPDATE accounts SET balance = balance + ? WHERE id = ?";
             try (PreparedStatement updateStmt = connection.prepareStatement(updateBalanceQuery)) {
                 updateStmt.setDouble(1, amount);

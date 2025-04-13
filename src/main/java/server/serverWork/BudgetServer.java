@@ -24,15 +24,15 @@ public class BudgetServer implements Runnable {
                 clientSocket = this.serverSocket.accept();
             } catch (IOException e) {
                 if(isStopped()) {
-                    System.out.println("Server Stopped.") ;
+                    System.out.println("Сервер остановлен") ;
                     return;
                 }
-                throw new RuntimeException("Error accepting client connection", e);
+                throw new RuntimeException("Ошибка подключения клиента", e);
             }
             new Thread(new ClientHandler(clientSocket)).start();
-            System.out.println("Клиент подключен.");
+            System.out.println("Клиент подключен");
         }
-        System.out.println("Server Stopped.") ;
+        System.out.println("Сервер остановлен") ;
     }
 
     private synchronized boolean isStopped() {

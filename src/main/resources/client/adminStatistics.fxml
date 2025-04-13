@@ -51,5 +51,5 @@
         </columns>
     </TableView>
 
-    <Button fx:id="backButton" onAction="#back" prefHeight="0.0" prefWidth="49.0" styleClass="my-button" text="Назад" />
+    <Button fx:id="backButton" onAction="#closeWindow" prefHeight="0.0" prefWidth="49.0" styleClass="my-button" text="Назад" />
 </VBox>

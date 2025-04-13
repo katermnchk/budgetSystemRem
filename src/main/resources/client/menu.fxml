@@ -69,6 +69,6 @@
         <padding>
             <Insets bottom="20" left="20" />
         </padding>
-        <Button fx:id="backButton" onAction="#backToMain" styleClass="cancel-button" text="Назад" />
+        <Button fx:id="backButton" onAction="#backToMain" styleClass="cancel-button" text="Выйти" />
     </HBox>
 </VBox>

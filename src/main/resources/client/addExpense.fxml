@@ -13,7 +13,6 @@
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
 
-    <!-- Заголовок с иконкой -->
     <HBox alignment="CENTER" spacing="10">
         <!--<ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
             <image>
@@ -23,7 +22,6 @@
         <Label text="Добавление расхода" styleClass="header-label"/>
     </HBox>
 
-    <!-- Поля ввода -->
     <VBox spacing="10" alignment="CENTER">
         <Label text="Сумма" styleClass="input-label"/>
         <TextField fx:id="amountField" promptText="Введите сумму" styleClass="my-textfield"/>
