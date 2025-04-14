@@ -19,6 +19,7 @@ public class ClientHandler implements Runnable {
     protected Socket clientSocket = null;
     ObjectInputStream sois;
     ObjectOutputStream soos;
+    private int currentUserId = 0;
 
     public ClientHandler (Socket clientSocket) {
         this.clientSocket = clientSocket;
@@ -99,9 +100,11 @@ public class ClientHandler implements Runnable {
                         System.out.println(r.toString());
 
                         if (r.getId() != 0 && !r.getRole().isEmpty()) {
+                            currentUserId = r.getId();
                             soos.writeObject("OK");
                             soos.writeObject(r);
                         } else {
+                            currentUserId = 0;
                             soos.writeObject("There is no data!");
                         }
                     }
@@ -126,7 +129,7 @@ public class ClientHandler implements Runnable {
                         Integer userId = (Integer) sois.readObject();
                         //SQLFactory sqlFactory = new SQLFactory();
                         try {
-                            ArrayList<Account> accounts = sqlFactory.getUsers().getUserAccounts(userId);
+                            ArrayList<Account> accounts = sqlFactory.getUsers().getUserAccounts(currentUserId);
                             soos.writeObject(accounts);
                         } catch (SQLException e) {
                             soos.writeObject("Ошибка при получении счетов: " + e.getMessage());
@@ -270,12 +273,47 @@ public class ClientHandler implements Runnable {
                     }
                     case "logout" -> {
                         System.out.println("Пользователь вышел: " + clientSocket.getInetAddress().toString());
+                        currentUserId = 0;
                         soos.writeObject("OK");
                     }
                     case "getStatistics" -> {
                         System.out.println("Запрос статистики: " + clientSocket.getInetAddress().toString());
                         HashMap<String, Object> stats = sqlFactory.getUsers().getStatistics();
                         soos.writeObject(stats);
+                    }
+                    case "addGoal" -> {
+                        System.out.println("Запрос на добавление цели: " + clientSocket.getInetAddress());
+                        HashMap<String, Object> goalData = (HashMap<String, Object>) sois.readObject();
+                        if (currentUserId == 0) {
+                            soos.writeObject("Ошибка: пользователь не авторизован");
+                        } else {
+                            boolean success = sqlFactory.getUsers().addGoal(
+                                    currentUserId,
+                                    ((Number) goalData.get("categoryId")).intValue(),
+                                    (String) goalData.get("type"),
+                                    ((Number) goalData.get("targetAmount")).doubleValue(),
+                                    (String) goalData.get("period")
+                            );
+                            soos.writeObject(success ? "OK" : "Ошибка при добавлении цели");
+                        }
+                    }
+                    case "getGoals" -> {
+                        System.out.println("Запрос целей пользователя: " + clientSocket.getInetAddress());
+                        if (currentUserId == 0) {
+                            soos.writeObject("Ошибка: пользователь не авторизован");
+                        } else {
+                            ArrayList<HashMap<String, Object>> goals = sqlFactory.getUsers().getGoals(currentUserId);
+                            soos.writeObject(goals);
+                        }
+                    }
+                    case "getRecommendations" -> {
+                        System.out.println("Запрос рекомендаций: " + clientSocket.getInetAddress());
+                        if (currentUserId == 0) {
+                            soos.writeObject("Ошибка: пользователь не авторизован");
+                        } else {
+                            ArrayList<String> recommendations = sqlFactory.getUsers().getRecommendations(currentUserId);
+                            soos.writeObject(recommendations);
+                        }
                     }
                 }
             }

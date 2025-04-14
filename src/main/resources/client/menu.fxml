@@ -51,6 +51,8 @@
 <!--                    graphic="@../images/categories_icon.png"/>-->
             <Button fx:id="personalInfButton" onAction="#persInf" styleClass="main-button" text="Профиль" GridPane.columnIndex="1"
                     GridPane.rowIndex="3" />
+            <Button fx:id="manageGoalsButton" onAction="#manageGoals" styleClass="main-button" text="Управление целями"
+                    GridPane.columnIndex="0" GridPane.rowIndex="4" />
          <columnConstraints>
             <ColumnConstraints />
             <ColumnConstraints />

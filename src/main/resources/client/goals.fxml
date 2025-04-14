@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="client.controllers.user.GoalsController" spacing="10" alignment="TOP_CENTER"
+      stylesheets="@../css/styles.css" prefHeight="500.0" prefWidth="600.0">
+    <padding>
+        <Insets bottom="10" left="10" right="10" top="10"/>
+    </padding>
+
+    <Label text="Управление целями" style="-fx-font-size: 18; -fx-font-weight: bold;"/>
+
+    <GridPane hgap="10" vgap="10" alignment="CENTER">
+        <Label text="Категория:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="categoryComboBox" prefWidth="200.0" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="Тип:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="typeComboBox" prefWidth="200.0" GridPane.rowIndex="1" GridPane.columnIndex="1">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="INCOME"/>
+                    <String fx:value="EXPENSE"/>
+                </FXCollections>
+            </items>
+        </ComboBox>
+
+        <Label text="Сумма цели (BYN):" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <TextField fx:id="targetAmountField" prefWidth="200.0" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+        <HBox spacing="10" alignment="CENTER" GridPane.rowIndex="3" GridPane.columnIndex="1">
+            <Button fx:id="addGoalButton" text="Добавить цель" onAction="#addGoal" styleClass="main-button"/>
+            <Button fx:id="cancelButton" text="Отмена" onAction="#cancel" styleClass="cancel-button"/>
+        </HBox>
+    </GridPane>
+
+    <Label text="Ваши цели"/>
+    <TableView fx:id="goalsTable" prefHeight="150.0">
+        <columns>
+            <TableColumn fx:id="categoryColumn" text="Категория" prefWidth="150"/>
+            <TableColumn fx:id="typeColumn" text="Тип" prefWidth="100"/>
+            <TableColumn fx:id="targetAmountColumn" text="Цель (BYN)" prefWidth="100"/>
+            <TableColumn fx:id="actualAmountColumn" text="Факт (BYN)" prefWidth="100"/>
+            <TableColumn fx:id="statusColumn" text="Статус" prefWidth="100"/>
+        </columns>
+    </TableView>
+
+    <Label text="Рекомендации"/>
+    <TextArea fx:id="recommendationsArea" prefHeight="100" editable="false"/>
+</VBox>

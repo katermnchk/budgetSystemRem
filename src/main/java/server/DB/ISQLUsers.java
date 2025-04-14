@@ -40,4 +40,10 @@ public interface ISQLUsers {
     Integer getTransactionsCount();
 
     HashMap<String, Object> getStatistics();
+
+    boolean addGoal(int userId, int categoryId, String type, double targetAmount, String period);
+
+    ArrayList<HashMap<String, Object>> getGoals(int userId);
+
+    ArrayList<String> getRecommendations(int userId);
 }

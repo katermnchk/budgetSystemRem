@@ -30,6 +30,9 @@ public class MenuUserController {
     @FXML
     private Button addAccountButton;
 
+    @FXML
+    public Button manageGoalsButton;
+
    /* @FXML
     private Button personalInfButton;
 
@@ -206,7 +209,7 @@ public class MenuUserController {
     @FXML
     void addAccount(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/AddAccount.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/addAccount.fxml"));
             Parent root = loader.load();
             Stage stage = new Stage();
             stage.setTitle("Добавление счета");
@@ -218,4 +221,19 @@ public class MenuUserController {
         }
     }
 
+    @FXML
+    void manageGoals(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/goals.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            //Stage stage = (Stage) manageGoalsButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Управление целями");
+            stage.show();
+        } catch (IOException e) {
+            showAlert("Ошибка", "Не удалось открыть окно управления целями: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }

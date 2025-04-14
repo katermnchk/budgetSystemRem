@@ -7,6 +7,8 @@ import client.clientWork.Users;
 import server.SystemOrg.Role;
 
 import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -448,5 +450,114 @@ public class SQLUsers implements ISQLUsers {
             e.printStackTrace();
         }
         return stats;
+    }
+
+    @Override
+    public boolean addGoal(int userId, int categoryId, String type, double targetAmount, String period) {
+        String sql = "INSERT INTO goals (user_id, category_id, type, target_amount, period) VALUES (?, ?, ?, ?, ?) RETURNING id";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            stmt.setInt(2, categoryId);
+            stmt.setString(3, type);
+            stmt.setDouble(4, targetAmount);
+            stmt.setString(5, period);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            System.err.println("Ошибка при добавлении цели: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public ArrayList<HashMap<String, Object>> getGoals(int userId) {
+        ArrayList<HashMap<String, Object>> goals = new ArrayList<>();
+        String sql = "SELECT g.id, g.category_id, g.type, g.target_amount, g.period, c.name AS category_name, " +
+                "COALESCE(SUM(t.amount), 0) AS actual_amount " +
+                "FROM goals g " +
+                "JOIN categories c ON g.category_id = c.id " +
+                "LEFT JOIN transactions t ON t.user_id = g.user_id AND t.category_id = g.category_id " +
+                "AND t.date >= ? AND t.date < ? " +
+                "WHERE g.user_id = ? " +
+                "GROUP BY g.id, c.name";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime startOfMonth = now.with(TemporalAdjusters.firstDayOfMonth()).withHour(0).withMinute(0).withSecond(0);
+            LocalDateTime endOfMonth = now.with(TemporalAdjusters.firstDayOfNextMonth()).withHour(0).withMinute(0).withSecond(0);
+            stmt.setTimestamp(1, Timestamp.valueOf(startOfMonth));
+            stmt.setTimestamp(2, Timestamp.valueOf(endOfMonth));
+            stmt.setInt(3, userId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                HashMap<String, Object> goal = new HashMap<>();
+                goal.put("id", rs.getInt("id"));
+                goal.put("categoryId", rs.getInt("category_id"));
+                goal.put("categoryName", rs.getString("category_name"));
+                goal.put("type", rs.getString("type"));
+                double targetAmount = rs.getDouble("target_amount");
+                double actualAmount = rs.getDouble("actual_amount");
+                goal.put("targetAmount", targetAmount);
+                goal.put("actualAmount", actualAmount);
+                goal.put("period", rs.getString("period"));
+                boolean achieved = rs.getString("type").equals("INCOME") ? actualAmount >= targetAmount : actualAmount <= targetAmount*(-1);
+                goal.put("achieved", achieved);
+                goals.add(goal);
+                System.out.println("Цель добавлена: category=" + rs.getString("category_name") + ", target=" + targetAmount + ", actual=" + actualAmount);
+            }
+        } catch (SQLException e) {
+            System.err.println("Ошибка при получении целей: " + e.getMessage());
+        }
+        System.out.println("Всего целей для userId=" + userId + ": " + goals.size());
+        return goals;
+    }
+
+    @Override
+    public ArrayList<String> getRecommendations(int userId) {
+        ArrayList<String> recommendations = new ArrayList<>();
+        ArrayList<HashMap<String, Object>> goals = getGoals(userId);
+        for (HashMap<String, Object> goal : goals) {
+            Boolean achieved = (Boolean) goal.get("achieved");
+            String type = (String) goal.get("type");
+            if (achieved != null && !achieved && "EXPENSE".equals(type)) {
+                Object targetObj = goal.get("targetAmount");
+                Object actualObj = goal.get("actualAmount");
+                if (targetObj instanceof Number && actualObj instanceof Number) {
+                    double target = ((Number) targetObj).doubleValue();
+                    double actual = ((Number) actualObj).doubleValue();
+                    double excess = actual - target;
+                    String categoryName = (String) goal.get("categoryName");
+                    recommendations.add(String.format("Цель по расходам на '%s' превышена на %.2f BYN. Рекомендуем сократить траты.", categoryName, excess));
+
+                    String sql = "SELECT c.name, SUM(t.amount) AS total " +
+                            "FROM transactions t " +
+                            "JOIN categories c ON t.category_id = c.id " +
+                            "WHERE t.user_id = ? AND c.type = 'EXPENSE' AND c.id != ? " +
+                            "AND t.date >= ? AND t.date < ? " +
+                            "GROUP BY c.name " +
+                            "HAVING SUM(t.amount) > 0 " +
+                            "ORDER BY total DESC LIMIT 1";
+                    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                        LocalDateTime now = LocalDateTime.now();
+                        LocalDateTime startOfMonth = now.with(TemporalAdjusters.firstDayOfMonth()).withHour(0).withMinute(0).withSecond(0);
+                        LocalDateTime endOfMonth = now.with(TemporalAdjusters.firstDayOfNextMonth()).withHour(0).withMinute(0).withSecond(0);
+                        stmt.setInt(1, userId);
+                        stmt.setInt(2, (Integer) goal.get("categoryId"));
+                        stmt.setTimestamp(3, Timestamp.valueOf(startOfMonth));
+                        stmt.setTimestamp(4, Timestamp.valueOf(endOfMonth));
+                        ResultSet rs = stmt.executeQuery();
+                        if (rs.next()) {
+                            String otherCategory = rs.getString("name");
+                            double otherAmount = rs.getDouble("total");
+                            recommendations.add(String.format("Рассмотрите сокращение расходов на '%s' (текущие траты: %.2f BYN).", otherCategory, otherAmount));
+                        }
+                    } catch (SQLException e) {
+                        System.err.println("Ошибка при генерации рекомендаций: " + e.getMessage());
+                    }
+                } else {
+                    System.err.println("Ошибка: targetAmount или actualAmount не являются числами для категории " + goal.get("categoryName"));
+                }
+            }
+        }
+        return recommendations;
     }
 }
