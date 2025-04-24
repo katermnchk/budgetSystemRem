@@ -22,9 +22,9 @@
                 <Label styleClass="input-label" text="Имя" />
 
                 <Label styleClass="input-label" text="Фамилия" />
-                <Label styleClass="input-label" text="Пароль" />
 
                 <Label styleClass="input-label" text="Логин" />
+                <Label styleClass="input-label" text="Пароль" />
 
                 <Label styleClass="input-label" text="Подтвердите пароль" />
             </VBox>
@@ -32,8 +32,8 @@
             <VBox alignment="CENTER_RIGHT" spacing="10">
                 <TextField fx:id="firstName" promptText="Введите имя" styleClass="my-textfield" />
                 <TextField fx:id="lastName" promptText="Введите фамилию" styleClass="my-textfield" />
-                <PasswordField fx:id="password" promptText="Введите пароль" styleClass="my-textfield" />
                 <TextField fx:id="login" promptText="Введите логин" styleClass="my-textfield" />
+                <PasswordField fx:id="password" promptText="Введите пароль" styleClass="my-textfield" />
                 <PasswordField fx:id="confirmPassword" promptText="Подтвердите пароль" styleClass="my-textfield" />
             </VBox>
         </HBox>

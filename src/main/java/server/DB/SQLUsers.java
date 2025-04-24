@@ -5,6 +5,7 @@ import client.clientWork.Category;
 import client.clientWork.Transaction;
 import client.clientWork.Users;
 import server.SystemOrg.Role;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ import java.util.HashMap;
 public class SQLUsers implements ISQLUsers {
     private Connection conn;
     private static SQLUsers instance;
+
     public SQLUsers(Connection conn) {
         this.conn = conn;
     }
@@ -26,13 +28,37 @@ public class SQLUsers implements ISQLUsers {
         this.conn = DriverManager.getConnection(url, user, password);
     }
 
-
     public static synchronized SQLUsers getInstance() throws SQLException, ClassNotFoundException {
         if (instance == null) {
             instance = new SQLUsers();
         }
         return instance;
     }
+
+    // Метод для хеширования существующих паролей
+    public void hashExistingPasswords() {
+        String selectSql = "SELECT id, password FROM users";
+        String updateSql = "UPDATE users SET password = ? WHERE id = ?";
+        try (PreparedStatement selectStmt = conn.prepareStatement(selectSql);
+             PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+            ResultSet rs = selectStmt.executeQuery();
+            while (rs.next()) {
+                int userId = rs.getInt("id");
+                String plainPassword = rs.getString("password");
+                // Проверяем, не хеширован ли пароль уже (BCrypt начинается с $2a$)
+                if (!plainPassword.startsWith("$2a$")) {
+                    String hashedPassword = BCrypt.hashpw(plainPassword, BCrypt.gensalt(12));
+                    updateStmt.setString(1, hashedPassword);
+                    updateStmt.setInt(2, userId);
+                    updateStmt.executeUpdate();
+                    System.out.println("Пароль для userId=" + userId + " успешно хеширован.");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Ошибка при хешировании паролей: " + e.getMessage());
+        }
+    }
+
     @Override
     public ArrayList<Users> findUser(Users obj) {
         ArrayList<Users> usList = new ArrayList<>();
@@ -57,13 +83,14 @@ public class SQLUsers implements ISQLUsers {
 
     @Override
     public Role insert(Users obj) {
-        String proc = "SELECT insert_user(?, ?, ?, ?, ?)";
         Role r = new Role();
-        try (PreparedStatement stmt = conn.prepareStatement(proc)) {
+        String sql = "SELECT insert_user(?, ?, ?, ?, ?)";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            String hashedPassword = BCrypt.hashpw(obj.getPassword(), BCrypt.gensalt(12));
             stmt.setString(1, obj.getFirstname());
             stmt.setString(2, obj.getLastname());
             stmt.setString(3, obj.getLogin());
-            stmt.setString(4, obj.getPassword());
+            stmt.setString(4, hashedPassword);
             stmt.setString(5, "USER");
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -136,7 +163,6 @@ public class SQLUsers implements ISQLUsers {
         return user;
     }
 
-
     @Override
     public ArrayList<Account> getUserAccounts(Integer userId) throws SQLException {
         ArrayList<Account> accounts = new ArrayList<>();
@@ -165,7 +191,7 @@ public class SQLUsers implements ISQLUsers {
     }
 
     @Override
-    public ArrayList<Category> getExpenseCategories()  throws SQLException {
+    public ArrayList<Category> getExpenseCategories() throws SQLException {
         ArrayList<Category> categories = new ArrayList<>();
         String sql = "SELECT id, name FROM categories WHERE type = 'EXPENSE'";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -307,14 +333,15 @@ public class SQLUsers implements ISQLUsers {
         }
     }
 
+    @Override
     public boolean editUser(Users user) {
         String sql = "UPDATE users SET firstname = ?, lastname = ?, username = ?, password = ?, role_id = ? WHERE id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, user.getFirstname());
             stmt.setString(2, user.getLastname());
             stmt.setString(3, user.getLogin());
-            stmt.setString(4, user.getPassword());
-            // Найти role_id по имени роли
+            String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt(12));
+            stmt.setString(4, hashedPassword);
             String role = user.getRole() != null ? user.getRole() : "USER";
             Integer roleId = getRoleId(role);
             if (roleId == null) {
@@ -379,7 +406,6 @@ public class SQLUsers implements ISQLUsers {
     public HashMap<String, Object> getStatistics() {
         HashMap<String, Object> stats = new HashMap<>();
         try {
-            //всего пользователей
             String userSql = "SELECT COUNT(*) AS total FROM users";
             try (PreparedStatement stmt = conn.prepareStatement(userSql);
                  ResultSet rs = stmt.executeQuery()) {
@@ -387,7 +413,6 @@ public class SQLUsers implements ISQLUsers {
                     stats.put("totalUsers", rs.getInt("total"));
                 }
             }
-            //всего счетов
             String accountSql = "SELECT COUNT(*) AS total FROM accounts";
             try (PreparedStatement stmt = conn.prepareStatement(accountSql);
                  ResultSet rs = stmt.executeQuery()) {
@@ -395,7 +420,6 @@ public class SQLUsers implements ISQLUsers {
                     stats.put("totalAccounts", rs.getInt("total"));
                 }
             }
-            //общий баланс
             String balanceSql = "SELECT SUM(balance) AS total FROM accounts";
             try (PreparedStatement stmt = conn.prepareStatement(balanceSql);
                  ResultSet rs = stmt.executeQuery()) {
@@ -403,7 +427,6 @@ public class SQLUsers implements ISQLUsers {
                     stats.put("totalBalance", rs.getDouble("total"));
                 }
             }
-            // всего транзакций
             String transactionSql = "SELECT COUNT(*) AS total FROM transactions";
             try (PreparedStatement stmt = conn.prepareStatement(transactionSql);
                  ResultSet rs = stmt.executeQuery()) {
@@ -411,7 +434,6 @@ public class SQLUsers implements ISQLUsers {
                     stats.put("totalTransactions", rs.getInt("total"));
                 }
             }
-            //статистика по ролям
             String roleSql = "SELECT r.role, COUNT(u.id) AS count " +
                     "FROM roles r LEFT JOIN users u ON r.id = u.role_id " +
                     "GROUP BY r.role";
@@ -426,7 +448,6 @@ public class SQLUsers implements ISQLUsers {
                 }
             }
             stats.put("roleStats", roleStats);
-            // статистика по категориям
             String categorySql = "SELECT c.name, c.type, COUNT(t.id) AS transaction_count, " +
                     "COALESCE(SUM(t.amount), 0) AS total_amount " +
                     "FROM categories c LEFT JOIN transactions t ON c.id = t.category_id " +
@@ -444,7 +465,6 @@ public class SQLUsers implements ISQLUsers {
                 }
             }
             stats.put("categoryStats", categoryStats);
-
         } catch (SQLException e) {
             System.err.println("Ошибка при получении статистики: " + e.getMessage());
             e.printStackTrace();
@@ -470,6 +490,7 @@ public class SQLUsers implements ISQLUsers {
         }
     }
 
+    @Override
     public ArrayList<HashMap<String, Object>> getGoals(int userId) {
         ArrayList<HashMap<String, Object>> goals = new ArrayList<>();
         String sql = "SELECT g.id, g.category_id, g.type, g.target_amount, g.period, c.name AS category_name, " +
@@ -499,7 +520,7 @@ public class SQLUsers implements ISQLUsers {
                 goal.put("targetAmount", targetAmount);
                 goal.put("actualAmount", actualAmount);
                 goal.put("period", rs.getString("period"));
-                boolean achieved = rs.getString("type").equals("INCOME") ? actualAmount >= targetAmount : actualAmount <= targetAmount*(-1);
+                boolean achieved = rs.getString("type").equals("INCOME") ? actualAmount >= targetAmount : actualAmount <= targetAmount * (-1);
                 goal.put("achieved", achieved);
                 goals.add(goal);
                 System.out.println("Цель добавлена: category=" + rs.getString("category_name") + ", target=" + targetAmount + ", actual=" + actualAmount);

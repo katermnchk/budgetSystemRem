@@ -2,11 +2,9 @@ package server.DB;
 
 import models.Authorization;
 import server.SystemOrg.Role;
+import org.mindrot.jbcrypt.BCrypt;
 
-import java.sql.CallableStatement;
-import java.sql.SQLException;
-import java.sql.SQLIntegrityConstraintViolationException;
-import java.sql.Types;
+import java.sql.*;
 
 public class SQLAuthorization implements ISQLAuthorization {
     private static SQLAuthorization instance;
@@ -25,19 +23,26 @@ public class SQLAuthorization implements ISQLAuthorization {
 
     @Override
     public Role getRole(Authorization obj) {
-        String proc = "{call find_login(?,?,?,?)}";
         Role r = new Role();
-        try (CallableStatement callableStatement = DatabaseConnection.dbConnection.prepareCall(proc)) {
-            callableStatement.setString(1, obj.getLogin());
-            callableStatement.setString(2, obj.getPassword());
-            callableStatement.registerOutParameter(3, Types.INTEGER);
-            callableStatement.registerOutParameter(4, Types.VARCHAR);
-            callableStatement.execute();
-            r.setId(callableStatement.getInt(3));
-            r.setRole(callableStatement.getString(4));
-        } catch (SQLIntegrityConstraintViolationException e) {
-            System.out.println("ошибка");
-        } catch (Exception e) {
+        String sql = "SELECT id, password, role_id FROM users WHERE username = ?";
+        try (PreparedStatement stmt = dbConnection.getConnection().prepareStatement(sql)) {
+            stmt.setString(1, obj.getLogin());
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                String hashedPassword = rs.getString("password");
+                if (BCrypt.checkpw(obj.getPassword(), hashedPassword)) {
+                    r.setId(rs.getInt("id"));
+                    String role = rs.getInt("role_id") == 1 ? "USER" : "ADMIN"; // Предполагается маппинг role_id
+                    r.setRole(role);
+                    System.out.println("Успешная авторизация: " + obj.getLogin());
+                } else {
+                    System.out.println("Неверный пароль для: " + obj.getLogin());
+                }
+            } else {
+                System.out.println("Пользователь не найден: " + obj.getLogin());
+            }
+        } catch (SQLException e) {
+            System.err.println("Ошибка при авторизации: " + e.getMessage());
             e.printStackTrace();
         }
         return r;

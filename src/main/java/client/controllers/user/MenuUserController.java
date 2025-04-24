@@ -66,18 +66,6 @@ public class MenuUserController {
 
     @FXML
     void persInf(ActionEvent event) throws IOException {
-       /* try {
-            Connect.client.sendMessage("userInf");
-            Role r = new Role();
-            r.setId(Connect.id);
-            Connect.client.sendObject(r);
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/client/profile.fxml"));
-            //WindowChanger.changeWindow(getClass(), personalInfButton, "profile.fxml", "profile", false);
-        } catch (Exception e) {
-            showAlert("Ошибка", "Не удалось открыть профиль: " + e.getMessage());
-            e.printStackTrace();
-        }*/
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/profile.fxml"));
             Parent root = loader.load();

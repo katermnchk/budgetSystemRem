@@ -71,16 +71,11 @@ public class ClientHandler implements Runnable {
                         soos.writeObject(success ? "OK" : "Ошибка при удалении пользователя");
                     }
                     case "registrationUser" -> {
-                        System.out.println("Запрос к БД на регистрацию пользователя: " +
-                                clientSocket.getInetAddress().toString());
+                        System.out.println("Запрос к БД на регистрацию пользователя: " + clientSocket.getInetAddress().toString());
                         Users user = (Users) sois.readObject();
                         System.out.println(user.toString());
-
-                       // SQLFactory sqlFactory = new SQLFactory();
-
                         Role r = sqlFactory.getUsers().insert(user);
-                        System.out.println((r.toString()));
-
+                        System.out.println(r.toString());
                         if (r.getId() != 0 && !r.getRole().isEmpty()) {
                             soos.writeObject("OK");
                             soos.writeObject(r);
@@ -92,13 +87,9 @@ public class ClientHandler implements Runnable {
                         System.out.println("Выполняется авторизация пользователя....");
                         Authorization auth = (Authorization) sois.readObject();
                         System.out.println(auth.toString());
-
-                       // SQLFactory sqlFactory = new SQLFactory();
                         SQLAuthorization authDAO = sqlFactory.getRole();
-
                         Role r = authDAO.getRole(auth);
                         System.out.println(r.toString());
-
                         if (r.getId() != 0 && !r.getRole().isEmpty()) {
                             currentUserId = r.getId();
                             soos.writeObject("OK");
