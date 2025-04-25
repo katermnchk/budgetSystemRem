@@ -12,8 +12,11 @@ import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 public class SQLUsers implements ISQLUsers {
+    private static final Logger LOGGER = Logger.getLogger(SQLUsers.class.getName());
+
     private Connection conn;
     private static SQLUsers instance;
 
@@ -35,7 +38,6 @@ public class SQLUsers implements ISQLUsers {
         return instance;
     }
 
-    // Метод для хеширования существующих паролей
     public void hashExistingPasswords() {
         String selectSql = "SELECT id, password FROM users";
         String updateSql = "UPDATE users SET password = ? WHERE id = ?";
@@ -205,25 +207,33 @@ public class SQLUsers implements ISQLUsers {
 
     @Override
     public double getBalance(Integer userId) throws SQLException {
-        String sql = "SELECT SUM(CASE WHEN t.description = 'Доход' THEN t.amount ELSE +t.amount END) AS balance " +
+        String sql = "SELECT COALESCE(SUM(t.amount), 0) AS balance " +
                 "FROM transactions t " +
                 "WHERE t.user_id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return rs.getDouble("balance");
+                double balance = rs.getDouble("balance");
+                LOGGER.info("Balance for user " + userId + ": " + balance);
+                return balance;
             }
+        } catch (SQLException e) {
+            LOGGER.severe("Error calculating balance for user " + userId + ": " + e.getMessage());
+            throw e;
         }
+        LOGGER.info("No transactions found for user " + userId + ", returning 0.0");
         return 0.0;
     }
 
     @Override
     public HashMap<String, Double> getAccountBalances(Integer userId) throws SQLException {
         HashMap<String, Double> balances = new HashMap<>();
-        String sql = "SELECT a.name, a.balance " +
+        String sql = "SELECT a.name, COALESCE(SUM(t.amount), 0) AS balance " +
                 "FROM accounts a " +
-                "WHERE a.user_id = ?";
+                "LEFT JOIN transactions t ON a.id = t.account_id " +
+                "WHERE a.user_id = ? " +
+                "GROUP BY a.name";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
             ResultSet rs = stmt.executeQuery();
@@ -231,7 +241,11 @@ public class SQLUsers implements ISQLUsers {
                 String accountName = rs.getString("name");
                 double balance = rs.getDouble("balance");
                 balances.put(accountName, balance);
+                LOGGER.info("Account balance for user " + userId + ", account " + accountName + ": " + balance);
             }
+        } catch (SQLException e) {
+            LOGGER.severe("Error fetching account balances for user " + userId + ": " + e.getMessage());
+            throw e;
         }
         return balances;
     }
@@ -580,5 +594,63 @@ public class SQLUsers implements ISQLUsers {
             }
         }
         return recommendations;
+    }
+
+    @Override
+    public boolean deleteAccount(int accountId, int userId) throws SQLException {
+        // принадлежит ли счёт пользователю
+        String checkSql = "SELECT user_id FROM accounts WHERE id = ?";
+        try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+            checkStmt.setInt(1, accountId);
+            ResultSet rs = checkStmt.executeQuery();
+            if (rs.next() && rs.getInt("user_id") == userId) {
+                String deleteSql = "DELETE FROM accounts WHERE id = ?";
+                try (PreparedStatement deleteStmt = conn.prepareStatement(deleteSql)) {
+                    deleteStmt.setInt(1, accountId);
+                    int rowsAffected = deleteStmt.executeUpdate();
+                    return rowsAffected > 0;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean editAccount(int accountId, int userId, String newName) throws SQLException {
+        String checkSql = "SELECT user_id FROM accounts WHERE id = ?";
+        try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+            checkStmt.setInt(1, accountId);
+            ResultSet rs = checkStmt.executeQuery();
+            if (rs.next() && rs.getInt("user_id") == userId) {
+                String updateSql = "UPDATE accounts SET name = ? WHERE id = ?";
+                try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+                    updateStmt.setString(1, newName);
+                    updateStmt.setInt(2, accountId);
+                    int rowsAffected = updateStmt.executeUpdate();
+                    return rowsAffected > 0;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public HashMap<String, Object> getAccountInfo(int accountId, int userId) throws SQLException {
+        HashMap<String, Object> accountInfo = new HashMap<>();
+        String sql = "SELECT account_id, account_name, balance, transaction_count, category_stats " +
+                "FROM account_stats WHERE account_id = ? AND user_id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, accountId);
+            stmt.setInt(2, userId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                accountInfo.put("accountId", rs.getInt("account_id"));
+                accountInfo.put("accountName", rs.getString("account_name"));
+                accountInfo.put("balance", rs.getDouble("balance"));
+                accountInfo.put("transactionCount", rs.getInt("transaction_count"));
+                accountInfo.put("categoryStats", rs.getObject("category_stats")); // JSON
+            }
+        }
+        return accountInfo;
     }
 }

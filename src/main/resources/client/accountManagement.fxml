@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox prefHeight="450.0" prefWidth="700.0" styleClass="root" stylesheets="@../css/styles.css"
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="client.controllers.AccountManagementController">
+
+    <AnchorPane prefHeight="80.0" styleClass="header">
+        <children>
+            <Label styleClass="header-label" text="Управление счетами" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0"/>
+        </children>
+    </AnchorPane>
+
+    <HBox alignment="CENTER" spacing="20" VBox.vgrow="ALWAYS">
+        <padding>
+            <Insets bottom="20" left="20" right="20" top="20"/>
+        </padding>
+
+        <VBox alignment="CENTER_LEFT" spacing="10" styleClass="image-pane">
+            <ImageView fx:id="catImage" fitHeight="250.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true">
+                <image>
+                    <Image url="@../images/cat.jpg"/>
+                </image>
+            </ImageView>
+        </VBox>
+
+        <GridPane alignment="CENTER" hgap="15" vgap="15" styleClass="button-grid">
+            <children>
+                <HBox spacing="10" alignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <Label text="Счета:"/>
+                    <ComboBox fx:id="accountComboBox" prefWidth="200"/>
+                </HBox>
+                <Button text="Просмотреть" onAction="#viewAccountInfo" styleClass="main-button" prefWidth="150.0"
+                        GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                <HBox spacing="10" alignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                    <Label text="Новое название:"/>
+                    <TextField fx:id="newAccountNameField" prefWidth="150"/>
+                </HBox>
+                <Button text="Редактировать" onAction="#editAccount" styleClass="main-button" prefWidth="150.0"
+                        GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                <Button text="Удалить" onAction="#deleteAccount" styleClass="main-button" prefWidth="150.0"
+                        GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                <HBox spacing="10" alignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                    <Label text="Название счета:"/>
+                    <TextField fx:id="addAccountNameField" prefWidth="150"/>
+                </HBox>
+                <Button text="Добавить" onAction="#addAccount" styleClass="main-button" prefWidth="150.0"
+                        GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                <VBox fx:id="accountInfoPane" spacing="5" alignment="CENTER" visible="false" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="4">
+                    <Label fx:id="accountNameLabel" style="-fx-font-weight: bold;"/>
+                    <Label fx:id="balanceLabel"/>
+                    <Label fx:id="transactionCountLabel"/>
+                    <Text fx:id="categoryStatsText" wrappingWidth="300"/>
+                </VBox>
+            </children>
+            <columnConstraints>
+                <ColumnConstraints halignment="CENTER"/>
+                <ColumnConstraints halignment="CENTER"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints valignment="CENTER"/>
+                <RowConstraints valignment="CENTER"/>
+                <RowConstraints valignment="CENTER"/>
+                <RowConstraints valignment="CENTER"/>
+                <RowConstraints valignment="CENTER"/>
+            </rowConstraints>
+        </GridPane>
+    </HBox>
+
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <padding>
+            <Insets bottom="20" left="20"/>
+        </padding>
+        <Button fx:id="backButton" onAction="#backToMenu" styleClass="cancel-button" text="Вернуться"/>
+    </HBox>
+</VBox>

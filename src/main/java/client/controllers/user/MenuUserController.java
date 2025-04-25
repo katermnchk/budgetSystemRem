@@ -224,4 +224,18 @@ public class MenuUserController {
             e.printStackTrace();
         }
     }
+
+    @FXML
+    private void openAccountManagement() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/AccountManagement.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Управление счетами");
+            stage.show();
+        } catch (IOException e) {
+            showAlert("Ошибка", "Не удалось открыть управление счетами: " + e.getMessage());
+        }
+    }
 }

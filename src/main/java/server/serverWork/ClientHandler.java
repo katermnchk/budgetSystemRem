@@ -14,8 +14,11 @@ import java.net.Socket;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Logger;
+
 
 public class ClientHandler implements Runnable {
+    private static final Logger LOGGER = Logger.getLogger(ClientHandler.class.getName());
     protected Socket clientSocket = null;
     ObjectInputStream sois;
     ObjectOutputStream soos;
@@ -174,7 +177,6 @@ public class ClientHandler implements Runnable {
                     }
                     case "getAccountBalances" -> {
                         Integer userId = (Integer) sois.readObject();
-                       // SQLFactory sqlFactory = new SQLFactory();
                         try {
                             HashMap<String, Double> balances = sqlFactory.getUsers().getAccountBalances(userId);
                             soos.writeObject(balances);
@@ -304,6 +306,29 @@ public class ClientHandler implements Runnable {
                         } else {
                             ArrayList<String> recommendations = sqlFactory.getUsers().getRecommendations(currentUserId);
                             soos.writeObject(recommendations);
+                        }
+                    }
+                    case "deleteAccount" -> {
+                        System.out.println("Запрос на удаление счета: " + clientSocket.getInetAddress());
+                        Integer accountId = (Integer) sois.readObject();
+                        boolean success = sqlFactory.getUsers().deleteAccount(accountId, currentUserId);
+                        soos.writeObject(success ? "OK" : "Ошибка: счет не найден или не принадлежит пользователю");
+                    }
+                    case "editAccount" -> {
+                        System.out.println("Запрос на редактирование счета: " + clientSocket.getInetAddress());
+                        HashMap<String, Object> accountData = (HashMap<String, Object>) sois.readObject();
+                        Integer accountId = (Integer) accountData.get("accountId");
+                        String newName = (String) accountData.get("newName");
+                        boolean success = sqlFactory.getUsers().editAccount(accountId, currentUserId, newName);
+                        soos.writeObject(success ? "OK" : "Ошибка: счет не найден или не принадлежит пользователю");
+                    }
+                    case "getAccountInfo" -> {
+                        System.out.println("Запрос информации о счете: " + clientSocket.getInetAddress());
+                        Integer accountId = (Integer) sois.readObject();
+                        HashMap<String, Object> accountInfo = sqlFactory.getUsers().getAccountInfo(accountId, currentUserId);
+                        soos.writeObject(accountInfo.isEmpty() ? "Ошибка: счет не найден или не принадлежит пользователю" : "OK");
+                        if (!accountInfo.isEmpty()) {
+                            soos.writeObject(accountInfo);
                         }
                     }
                 }

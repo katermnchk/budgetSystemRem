@@ -46,4 +46,10 @@ public interface ISQLUsers {
     ArrayList<HashMap<String, Object>> getGoals(int userId);
 
     ArrayList<String> getRecommendations(int userId);
+
+    boolean deleteAccount(int accountId, int userId) throws SQLException;
+
+    boolean editAccount(int accountId, int userId, String newName) throws SQLException;
+
+    HashMap<String, Object> getAccountInfo(int accountId, int userId) throws SQLException;
 }
