@@ -13,9 +13,13 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 public class AddExpenseController implements Initializable {
+    private static final Logger LOGGER = Logger.getLogger(AddExpenseController.class.getName());
+
     @FXML
     private TextField amountField;
 
@@ -34,6 +38,7 @@ public class AddExpenseController implements Initializable {
     }
 
     private void loadAccountsAndCategories() {
+
         Connect.client.sendMessage("getUserAccounts");
         Connect.client.sendObject(Connect.id);
         accounts = (ArrayList<Account>) Connect.client.readObject();
@@ -56,6 +61,7 @@ public class AddExpenseController implements Initializable {
 
     @FXML
     private void addExpense() {
+
         try {
             double amount = Double.parseDouble(amountField.getText());
             if (amount <= 0) {
@@ -64,6 +70,13 @@ public class AddExpenseController implements Initializable {
             }
 
             int accountIndex = accountComboBox.getSelectionModel().getSelectedIndex();
+            double balance = getAccountBalance(accounts.get(accountIndex).getId());
+            if (amount > balance) {
+                showAlert("Ошибка", "Недостаточно средств");
+                return;
+            }
+
+
             int categoryIndex = categoryComboBox.getSelectionModel().getSelectedIndex();
             if (accountIndex < 0 || categoryIndex < 0) {
                 showAlert("Ошибка", "Выберите счет и категорию.");
@@ -91,6 +104,31 @@ public class AddExpenseController implements Initializable {
         } catch (IOException e) {
             showAlert("Ошибка связи", "Не удалось связаться с сервером: " + e.getMessage());
             e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private double getAccountBalance(int accountId) throws IOException, ClassNotFoundException {
+        Connect.client.sendMessage("getAccountBalances");
+        Connect.client.sendObject(Connect.id);
+        Object response = Connect.client.readObject();
+        if (response instanceof HashMap) {
+            HashMap<String, Double> balances = (HashMap<String, Double>) response;
+            String accountName = accounts.stream()
+                    .filter(a -> a.getId() == accountId)
+                    .findFirst()
+                    .map(Account::getName)
+                    .orElseThrow(() -> new IOException("Счет не найден"));
+            Double balance = balances.get(accountName);
+            if (balance == null) {
+                throw new IOException("Баланс для счета " + accountName + " не найден");
+            }
+            LOGGER.info("Balance for accountId " + accountId + ": " + balance);
+            return balance;
+        } else {
+            LOGGER.warning("Invalid response for getAccountBalances: " + response);
+            throw new IOException("Ошибка при получении баланса: " + response);
         }
     }
 

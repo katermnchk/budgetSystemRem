@@ -168,13 +168,24 @@ public class SQLUsers implements ISQLUsers {
     @Override
     public ArrayList<Account> getUserAccounts(Integer userId) throws SQLException {
         ArrayList<Account> accounts = new ArrayList<>();
-        String sql = "SELECT id, name FROM accounts WHERE user_id = ?";
+        String sql = "SELECT a.id, a.name, COALESCE(SUM(t.amount), 0) AS balance " +
+                "FROM accounts a " +
+                "LEFT JOIN transactions t ON a.id = t.account_id " +
+                "WHERE a.user_id = ? " +
+                "GROUP BY a.id, a.name";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                accounts.add(new Account(rs.getInt("id"), rs.getString("name")));
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                double balance = rs.getDouble("balance");
+                accounts.add(new Account(id, name, balance));
+                LOGGER.info("Loaded account: id=" + id + ", name=" + name + ", balance=" + balance + " for user " + userId);
             }
+        } catch (SQLException e) {
+            LOGGER.severe("Error fetching accounts for user " + userId + ": " + e.getMessage());
+            throw e;
         }
         return accounts;
     }
@@ -335,15 +346,18 @@ public class SQLUsers implements ISQLUsers {
 
     @Override
     public void addAccount(Account account, Integer userId) throws SQLException {
-        String sql = "INSERT INTO accounts (user_id, name, balance) VALUES (?, ?, ?) RETURNING id";
+        String sql = "INSERT INTO accounts (user_id, name) VALUES (?, ?) RETURNING id";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
             stmt.setString(2, account.getName());
-            stmt.setDouble(3, 0.0);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 account.setId(rs.getInt("id"));
+                LOGGER.info("Account added: id=" + account.getId() + ", name=" + account.getName() + " for user " + userId);
             }
+        } catch (SQLException e) {
+            LOGGER.severe("Error adding account for user " + userId + ": " + e.getMessage());
+            throw e;
         }
     }
 
@@ -597,41 +611,64 @@ public class SQLUsers implements ISQLUsers {
     }
 
     @Override
-    public boolean deleteAccount(int accountId, int userId) throws SQLException {
-        // принадлежит ли счёт пользователю
-        String checkSql = "SELECT user_id FROM accounts WHERE id = ?";
-        try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
-            checkStmt.setInt(1, accountId);
-            ResultSet rs = checkStmt.executeQuery();
-            if (rs.next() && rs.getInt("user_id") == userId) {
-                String deleteSql = "DELETE FROM accounts WHERE id = ?";
-                try (PreparedStatement deleteStmt = conn.prepareStatement(deleteSql)) {
-                    deleteStmt.setInt(1, accountId);
-                    int rowsAffected = deleteStmt.executeUpdate();
-                    return rowsAffected > 0;
-                }
-            }
+    public boolean editAccount(int accountId, int userId, String newName) throws SQLException {
+        if (newName == null || newName.trim().isEmpty()) {
+            LOGGER.warning("Invalid account name for accountId=" + accountId + ", userId=" + userId);
+            throw new SQLException("Название счета не может быть пустым");
         }
-        return false;
+
+        String sql = "UPDATE accounts SET name = ? WHERE id = ? AND user_id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, newName);
+            stmt.setInt(2, accountId);
+            stmt.setInt(3, userId);
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected == 0) {
+                LOGGER.warning("Account not found or unauthorized: accountId=" + accountId + ", userId=" + userId);
+                throw new SQLException("Счет не найден или доступ запрещен");
+            }
+            LOGGER.info("Account updated: accountId=" + accountId + ", newName=" + newName);
+            return true;
+        } catch (SQLException e) {
+            LOGGER.severe("Error editing account: " + e.getMessage());
+            throw e;
+        }
     }
 
     @Override
-    public boolean editAccount(int accountId, int userId, String newName) throws SQLException {
-        String checkSql = "SELECT user_id FROM accounts WHERE id = ?";
+    public boolean deleteAccount(int accountId, int userId) throws SQLException {
+        // Проверка, есть ли транзакции
+        String checkSql = "SELECT COUNT(*) AS transaction_count, COALESCE(SUM(amount), 0) AS balance " +
+                "FROM transactions WHERE account_id = ?";
         try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
             checkStmt.setInt(1, accountId);
             ResultSet rs = checkStmt.executeQuery();
-            if (rs.next() && rs.getInt("user_id") == userId) {
-                String updateSql = "UPDATE accounts SET name = ? WHERE id = ?";
-                try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
-                    updateStmt.setString(1, newName);
-                    updateStmt.setInt(2, accountId);
-                    int rowsAffected = updateStmt.executeUpdate();
-                    return rowsAffected > 0;
+            if (rs.next()) {
+                int transactionCount = rs.getInt("transaction_count");
+                double balance = rs.getDouble("balance");
+                if (transactionCount > 0 || balance != 0) {
+                    LOGGER.warning("Cannot delete account with transactions or non-zero balance: accountId=" + accountId + ", transactions=" + transactionCount + ", balance=" + balance);
+                    throw new SQLException("Нельзя удалить счет с транзакциями или ненулевым балансом");
                 }
             }
         }
-        return false;
+
+        // Удаление счета
+        String sql = "DELETE FROM accounts WHERE id = ? AND user_id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, accountId);
+            stmt.setInt(2, userId);
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected == 0) {
+                LOGGER.warning("Account not found or unauthorized: accountId=" + accountId + ", userId=" + userId);
+                throw new SQLException("Счет не найден или доступ запрещен");
+            }
+            LOGGER.info("Account deleted: accountId=" + accountId + ", userId=" + userId);
+            return true;
+        } catch (SQLException e) {
+            LOGGER.severe("Error deleting account: " + e.getMessage());
+            throw e;
+        }
     }
 
     @Override
