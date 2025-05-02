@@ -24,7 +24,34 @@ public interface ISQLUsers {
     double getBalance(Integer userId) throws SQLException;
     HashMap<String, Double> getAccountBalances(Integer userId) throws SQLException;
 
-    ArrayList<Transaction> getTransactionHistory(Integer userId) throws SQLException;
+   // ArrayList<Transaction> getTransactionHistory(Integer userId) throws SQLException;
+
+    /*@Override
+    public ArrayList<Transaction> getTransactionHistory(Integer userId) throws SQLException {
+        ArrayList<Transaction> transactions = new ArrayList<>();
+        String sql = "SELECT t.date, a.name AS account_name, c.name AS category_name, t.amount, t.description " +
+                "FROM transactions t " +
+                "JOIN accounts a ON t.account_id = a.id " +
+                "JOIN categories c ON t.category_id = c.id " +
+                "WHERE t.user_id = ? " +
+                "ORDER BY t.date DESC";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                transactions.add(new Transaction(
+                        rs.getTimestamp("date"),
+                        rs.getString("account_name"),
+                        rs.getString("category_name"),
+                        rs.getDouble("amount"),
+                        rs.getString("description")
+                ));
+            }
+        }
+        return transactions;
+    }*/
+    ArrayList<Transaction> getTransactionHistory(Integer userId, HashMap<String, Object> filters) throws SQLException;
+
     void addCategory(Category category) throws SQLException;
     void deleteCategory(int categoryId) throws SQLException;
     ArrayList<Category> getAllCategories(Integer userId) throws SQLException;

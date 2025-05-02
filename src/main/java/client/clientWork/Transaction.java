@@ -1,42 +1,24 @@
 package client.clientWork;
 
+import lombok.Getter;
+
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.sql.Timestamp;
 
+@Getter
 public class Transaction implements Serializable {
-    private final String date;
-    private final String accountName;
-    private final String categoryName;
-    private final double amount;
-    private final String description;
+    private Timestamp date;
+    private String accountName;
+    private String categoryName;
+    private double amount;
+    private String description;
 
-    public Transaction(Date date, String accountName, String categoryName, double amount, String description) {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm");
-        this.date = sdf.format(date);
-        this.accountName = accountName;
-        this.categoryName = categoryName;
+    public Transaction(Timestamp date, String accountName, String categoryName, double amount, String description) {
+        this.date = date;
+        this.accountName = accountName != null ? accountName : "";
+        this.categoryName = categoryName != null ? categoryName : "";
         this.amount = amount;
-        this.description = description;
+        this.description = description != null ? description : "";
     }
 
-    public String getDate() {
-        return date;
-    }
-
-    public String getAccountName() {
-        return accountName;
-    }
-
-    public String getCategoryName() {
-        return categoryName;
-    }
-
-    public double getAmount() {
-        return amount;
-    }
-
-    public String getDescription() {
-        return description;
-    }
 }

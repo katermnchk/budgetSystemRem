@@ -1,65 +1,260 @@
 package client.controllers.user;
 
+import client.clientWork.Account;
+import client.clientWork.Category;
 import client.clientWork.Connect;
 import client.clientWork.Transaction;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
-import java.net.URL;
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.ResourceBundle;
+import java.util.HashMap;
+import java.util.Optional;
+import java.util.logging.Logger;
 
-public class TransactionHistoryController implements Initializable {
+public class TransactionHistoryController {
+    private static final Logger LOGGER = Logger.getLogger(TransactionHistoryController.class.getName());
+
+    @FXML private TableView<Transaction> transactionsTable;
+    @FXML private TableColumn<Transaction, Timestamp> dateColumn;
+    @FXML private TableColumn<Transaction, String> accountColumn;
+    @FXML private TableColumn<Transaction, String> categoryColumn;
+    @FXML private TableColumn<Transaction, Double> amountColumn;
+    @FXML private TableColumn<Transaction, String> descriptionColumn;
+
+    @FXML private DatePicker startDatePicker;
+    @FXML private DatePicker endDatePicker;
+    @FXML private ComboBox<Account> accountComboBox;
+    @FXML private ComboBox<Category> categoryComboBox;
+    @FXML private ComboBox<String> typeComboBox;
+    @FXML private TextField descriptionField;
+    @FXML private TextField minAmountField;
+    @FXML private TextField maxAmountField;
+    @FXML private Button applyFilterButton;
+    @FXML private Button clearFilterButton;
+
+    private ArrayList<Transaction> transactions;
+
     @FXML
-    private TableView<Transaction> transactionTable;
+    private void initialize() {
+        // Настройка столбцов таблицы
+        dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+        dateColumn.setCellFactory(column -> new TableCell<>() {
+            @Override
+            protected void updateItem(Timestamp date, boolean empty) {
+                super.updateItem(date, empty);
+                if (empty || date == null) {
+                    setText(null);
+                } else {
+                    setText(date.toLocalDateTime().toLocalDate().toString() + " " +
+                            date.toLocalDateTime().toLocalTime().toString());
+                }
+            }
+        });
+        accountColumn.setCellValueFactory(new PropertyValueFactory<>("accountName"));
+        categoryColumn.setCellValueFactory(new PropertyValueFactory<>("categoryName"));
+        amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
+        amountColumn.setCellFactory(column -> new TableCell<>() {
+            @Override
+            protected void updateItem(Double amount, boolean empty) {
+                super.updateItem(amount, empty);
+                if (empty || amount == null) {
+                    setText(null);
+                } else {
+                    setText(String.format("%.2f BYN", amount));
+                }
+            }
+        });
+        descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
+        descriptionColumn.setCellFactory(column -> new TableCell<>() {
+            @Override
+            protected void updateItem(String description, boolean empty) {
+                super.updateItem(description, empty);
+                setText(empty || description == null ? null : description);
+            }
+        });
 
-    @FXML
-    private TableColumn<Transaction, String> dateColumn;
+        // Инициализация ComboBox
+        loadAccounts();
+        loadCategories();
+        typeComboBox.setItems(FXCollections.observableArrayList("Все типы", "Доход", "Расход"));
+        typeComboBox.getSelectionModel().select("Все типы");
 
-    @FXML
-    private TableColumn<Transaction, String> accountColumn;
+        // Начальная загрузка транзакций
+        loadTransactions(new HashMap<>());
+    }
 
-    @FXML
-    private TableColumn<Transaction, String> categoryColumn;
+    private void loadAccounts() {
+        Connect.client.sendMessage("getUserAccounts");
+        Connect.client.sendObject(Connect.id);
+        Object response = Connect.client.readObject();
+        if (response instanceof ArrayList) {
+            ArrayList<Account> accounts = (ArrayList<Account>) response;
+            accountComboBox.setItems(FXCollections.observableArrayList(accounts));
+            accountComboBox.setCellFactory(lv -> new ListCell<>() {
+                @Override
+                protected void updateItem(Account account, boolean empty) {
+                    super.updateItem(account, empty);
+                    setText(empty || account == null ? null : account.getName());
+                }
+            });
+            accountComboBox.setButtonCell(new ListCell<>() {
+                @Override
+                protected void updateItem(Account account, boolean empty) {
+                    super.updateItem(account, empty);
+                    setText(empty || account == null ? "Все счета" : account.getName());
+                }
+            });
+            LOGGER.info("Loaded " + accounts.size() + " accounts for filtering");
+        } else {
+            LOGGER.warning("Invalid response for getUserAccounts: " + response);
+            showAlert("Ошибка", "Не удалось загрузить счета: неверный ответ сервера");
+        }
+    }
 
-    @FXML
-    private TableColumn<Transaction, Double> amountColumn;
+    private void loadCategories() {
+        Connect.client.sendMessage("getAllCategories");
+        Connect.client.sendObject(Connect.id);
+        Object response = Connect.client.readObject();
+        if (response instanceof ArrayList) {
+            ArrayList<Category> categories = (ArrayList<Category>) response;
+            categoryComboBox.setItems(FXCollections.observableArrayList(categories));
+            categoryComboBox.setCellFactory(lv -> new ListCell<>() {
+                @Override
+                protected void updateItem(Category category, boolean empty) {
+                    super.updateItem(category, empty);
+                    setText(empty || category == null ? null : category.getName());
+                }
+            });
+            categoryComboBox.setButtonCell(new ListCell<>() {
+                @Override
+                protected void updateItem(Category category, boolean empty) {
+                    super.updateItem(category, empty);
+                    setText(empty || category == null ? "Все категории" : category.getName());
+                }
+            });
+            LOGGER.info("Loaded " + categories.size() + " categories for filtering");
+        } else {
+            LOGGER.warning("Invalid response for getAllCategories: " + response);
+            showAlert("Ошибка", "Не удалось загрузить категории: неверный ответ сервера");
+        }
+    }
 
-    @FXML
-    private TableColumn<Transaction, String> descriptionColumn;
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        dateColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDate()));
-        accountColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getAccountName()));
-        categoryColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCategoryName()));
-        amountColumn.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().getAmount()).asObject());
-        descriptionColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDescription()));
-
-        refreshHistory();
+    private void loadTransactions(HashMap<String, Object> filters) {
+        LOGGER.info("Sending getTransactionHistory with filters: " + filters);
+        Connect.client.sendMessage("getTransactionHistory");
+        Connect.client.sendObject(Connect.id);
+        Connect.client.sendObject(filters);
+        Object response = Connect.client.readObject();
+        if (response instanceof ArrayList) {
+            transactions = (ArrayList<Transaction>) response;
+            transactionsTable.setItems(FXCollections.observableArrayList(transactions));
+            LOGGER.info("Loaded " + transactions.size() + " transactions for user " + Connect.id + " with filters: " + filters);
+            if (transactions.isEmpty()) {
+                showAlert("Информация", "Транзакции не найдены для заданных фильтров.");
+            }
+        } else {
+            LOGGER.warning("Invalid response for getTransactionHistory: " + response);
+            showAlert("Ошибка", "Не удалось загрузить транзакции: неверный ответ сервера");
+        }
     }
 
     @FXML
-    private void refreshHistory() {
+    private void applyFilters() {
+        try {
+            HashMap<String, Object> filters = new HashMap<>();
 
-        Connect.client.sendMessage("getTransactionHistory");
-        Connect.client.sendObject(Connect.id);
+            // Фильтр по датам
+            if (startDatePicker.getValue() != null) {
+                filters.put("startDate", Timestamp.valueOf(startDatePicker.getValue().atStartOfDay()));
+            }
+            if (endDatePicker.getValue() != null) {
+                filters.put("endDate", Timestamp.valueOf(endDatePicker.getValue().plusDays(1).atStartOfDay()));
+            }
 
-        ArrayList<Transaction> transactions = (ArrayList<Transaction>) Connect.client.readObject();
-        transactionTable.setItems(FXCollections.observableArrayList(transactions));
+            // Фильтр по счету
+            if (accountComboBox.getValue() != null) {
+                filters.put("accountId", accountComboBox.getValue().getId());
+            }
+
+            // Фильтр по категории
+            if (categoryComboBox.getValue() != null) {
+                filters.put("categoryId", categoryComboBox.getValue().getId());
+            }
+
+            // Фильтр по типу
+            String selectedType = typeComboBox.getValue();
+            if (selectedType != null && !selectedType.equals("Все типы")) {
+                filters.put("categoryType", selectedType.equals("Доход") ? "INCOME" : "EXPENSE");
+            }
+
+            // Фильтр по описанию
+            if (!descriptionField.getText().isEmpty()) {
+                filters.put("description", descriptionField.getText().trim());
+            }
+
+            // Фильтр по сумме
+            if (!minAmountField.getText().isEmpty()) {
+                try {
+                    filters.put("minAmount", Double.parseDouble(minAmountField.getText().trim()));
+                } catch (NumberFormatException e) {
+                    showAlert("Ошибка", "Некорректный формат минимальной суммы.");
+                    return;
+                }
+            }
+            if (!maxAmountField.getText().isEmpty()) {
+                try {
+                    filters.put("maxAmount", Double.parseDouble(maxAmountField.getText().trim()));
+                } catch (NumberFormatException e) {
+                    showAlert("Ошибка", "Некорректный формат максимальной суммы.");
+                    return;
+                }
+            }
+
+            LOGGER.info("Applying filters: " + filters);
+            loadTransactions(filters);
+        } catch (Exception e) {
+            LOGGER.severe("Error in applyFilters: " + e.getMessage());
+            showAlert("Ошибка", "Ошибка при применении фильтров: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void clearFilters() {
+        try {
+            startDatePicker.setValue(null);
+            endDatePicker.setValue(null);
+            accountComboBox.getSelectionModel().clearSelection();
+            categoryComboBox.getSelectionModel().clearSelection();
+            typeComboBox.getSelectionModel().select("Все типы");
+            descriptionField.clear();
+            minAmountField.clear();
+            maxAmountField.clear();
+            LOGGER.info("Clearing filters");
+            loadTransactions(new HashMap<>());
+        } catch (Exception e) {
+            LOGGER.severe("Error in clearFilters: " + e.getMessage());
+            showAlert("Ошибка", "Ошибка при сбросе фильтров: " + e.getMessage());
+        }
     }
 
     @FXML
     private void closeWindow() {
-        Stage stage = (Stage) transactionTable.getScene().getWindow();
-        stage.close();
+        try {
+            Stage stage = (Stage) transactionsTable.getScene().getWindow();
+            stage.close();
+            LOGGER.info("Transaction history window closed");
+        } catch (Exception e) {
+            LOGGER.severe("Error in closeWindow: " + e.getMessage());
+            showAlert("Ошибка", "Ошибка при закрытии окна: " + e.getMessage());
+        }
     }
 
     private void showAlert(String title, String content) {

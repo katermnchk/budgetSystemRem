@@ -1,35 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox prefHeight="500.0" prefWidth="600.0" styleClass="root" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.user.TransactionHistoryController">
-    <padding>
-        <Insets bottom="20" left="20" right="20" top="20" />
-    </padding>
-
-    <HBox alignment="CENTER" spacing="10">
-        <!--<ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-            <image>
-                <Image url="@../images/history_icon.png"/>
-            </image>
-        </ImageView>-->
-        <Label prefHeight="54.0" prefWidth="203.0" styleClass="header-label" text="История транзакций" />
-    </HBox>
-
-    <TableView fx:id="transactionTable" prefHeight="350.0" styleClass="my-table">
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="client.controllers.user.TransactionHistoryController"
+      spacing="20" alignment="CENTER" styleClass="root" stylesheets="@../css/styles.css">
+    <!-- Фильтры -->
+    <VBox spacing="10" alignment="CENTER">
+        <HBox spacing="10" alignment="CENTER">
+            <Label text="Дата от:" styleClass="input-label"/>
+            <DatePicker fx:id="startDatePicker" styleClass="my-textfield"/>
+            <Label text="Дата до:" styleClass="input-label"/>
+            <DatePicker fx:id="endDatePicker" styleClass="my-textfield"/>
+        </HBox>
+        <HBox spacing="10" alignment="CENTER">
+            <Label text="Счет:" styleClass="input-label"/>
+            <ComboBox fx:id="accountComboBox" styleClass="my-combobox" promptText="Все счета"/>
+            <Label text="Категория:" styleClass="input-label"/>
+            <ComboBox fx:id="categoryComboBox" styleClass="my-combobox" promptText="Все категории"/>
+        </HBox>
+        <HBox spacing="10" alignment="CENTER">
+            <Label text="Тип:" styleClass="input-label"/>
+            <ComboBox fx:id="typeComboBox" styleClass="my-combobox" promptText="Все типы"/>
+            <Label text="Описание:" styleClass="input-label"/>
+            <TextField fx:id="descriptionField" styleClass="my-textfield" promptText="Введите описание"/>
+        </HBox>
+        <HBox spacing="10" alignment="CENTER">
+            <Label text="Сумма от:" styleClass="input-label"/>
+            <TextField fx:id="minAmountField" styleClass="my-textfield" promptText="Мин. сумма"/>
+            <Label text="Сумма до:" styleClass="input-label"/>
+            <TextField fx:id="maxAmountField" styleClass="my-textfield" promptText="Макс. сумма"/>
+        </HBox>
+        <HBox spacing="10" alignment="CENTER">
+            <Button fx:id="applyFilterButton" text="Применить фильтры" onAction="#applyFilters" styleClass="my-button"/>
+            <Button fx:id="clearFilterButton" text="Сбросить фильтры" onAction="#clearFilters" styleClass="cancel-button"/>
+        </HBox>
+    </VBox>
+    <!-- Таблица транзакций -->
+    <TableView fx:id="transactionsTable" styleClass="my-table">
         <columns>
-            <TableColumn fx:id="dateColumn" prefWidth="120" text="Дата" />
-            <TableColumn fx:id="accountColumn" prefWidth="100" text="Счет" />
-            <TableColumn fx:id="categoryColumn" prefWidth="100" text="Категория" />
-            <TableColumn fx:id="amountColumn" prefWidth="100" text="Сумма (BYN)" />
-            <TableColumn fx:id="descriptionColumn" prefWidth="150" text="Описание" />
+            <TableColumn fx:id="dateColumn" text="Дата" prefWidth="150"/>
+            <TableColumn fx:id="accountColumn" text="Счет" prefWidth="150"/>
+            <TableColumn fx:id="categoryColumn" text="Категория" prefWidth="150"/>
+            <TableColumn fx:id="amountColumn" text="Сумма (BYN)" prefWidth="120"/>
+            <TableColumn fx:id="descriptionColumn" text="Описание" prefWidth="200"/>
         </columns>
     </TableView>
-
-    <HBox alignment="CENTER" prefHeight="84.0" prefWidth="560.0" spacing="15">
-        <Button onAction="#refreshHistory" styleClass="my-button" text="Обновить" />
-        <Button onAction="#closeWindow" styleClass="cancel-button" text="Закрыть" />
-    </HBox>
+    <!-- Кнопка закрытия -->
+    <Button text="Закрыть" onAction="#closeWindow" styleClass="cancel-button"/>
 </VBox>

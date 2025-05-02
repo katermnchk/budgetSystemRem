@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class SQLUsers implements ISQLUsers {
@@ -261,7 +262,7 @@ public class SQLUsers implements ISQLUsers {
         return balances;
     }
 
-    @Override
+    /*@Override
     public ArrayList<Transaction> getTransactionHistory(Integer userId) throws SQLException {
         ArrayList<Transaction> transactions = new ArrayList<>();
         String sql = "SELECT t.date, a.name AS account_name, c.name AS category_name, t.amount, t.description " +
@@ -282,6 +283,86 @@ public class SQLUsers implements ISQLUsers {
                         rs.getString("description")
                 ));
             }
+        }
+        return transactions;
+    }*/
+    @Override
+    public ArrayList<Transaction> getTransactionHistory(Integer userId, HashMap<String, Object> filters) throws SQLException {
+        ArrayList<Transaction> transactions = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+                "SELECT t.date, a.name AS account_name, c.name AS category_name, t.amount, t.description " +
+                        "FROM transactions t " +
+                        "JOIN accounts a ON t.account_id = a.id " +
+                        "JOIN categories c ON t.category_id = c.id " +
+                        "WHERE t.user_id = ?"
+        );
+        List<Object> params = new ArrayList<>();
+        params.add(userId);
+
+        // Фильтр по датам
+        if (filters.containsKey("startDate") && filters.get("startDate") != null) {
+            sql.append(" AND t.date >= ?");
+            params.add(Timestamp.valueOf((LocalDateTime) filters.get("startDate")));
+        }
+        if (filters.containsKey("endDate") && filters.get("endDate") != null) {
+            sql.append(" AND t.date < ?");
+            params.add(Timestamp.valueOf((LocalDateTime) filters.get("endDate")));
+        }
+
+        // Фильтр по категории
+        if (filters.containsKey("categoryId") && filters.get("categoryId") != null) {
+            sql.append(" AND t.category_id = ?");
+            params.add((Integer) filters.get("categoryId"));
+        }
+
+        // Фильтр по типу категории
+        if (filters.containsKey("categoryType") && filters.get("categoryType") != null) {
+            sql.append(" AND c.type = ?");
+            params.add((String) filters.get("categoryType"));
+        }
+
+        // Фильтр по счету
+        if (filters.containsKey("accountId") && filters.get("accountId") != null) {
+            sql.append(" AND t.account_id = ?");
+            params.add((Integer) filters.get("accountId"));
+        }
+
+        // Фильтр по сумме
+        if (filters.containsKey("minAmount") && filters.get("minAmount") != null) {
+            sql.append(" AND t.amount >= ?");
+            params.add((Double) filters.get("minAmount"));
+        }
+        if (filters.containsKey("maxAmount") && filters.get("maxAmount") != null) {
+            sql.append(" AND t.amount <= ?");
+            params.add((Double) filters.get("maxAmount"));
+        }
+
+        // Фильтр по описанию
+        if (filters.containsKey("description") && filters.get("description") != null) {
+            sql.append(" AND t.description ILIKE ?");
+            params.add("%" + filters.get("description") + "%");
+        }
+
+        sql.append(" ORDER BY t.date DESC");
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                transactions.add(new Transaction(
+                        rs.getTimestamp("date"),
+                        rs.getString("account_name"),
+                        rs.getString("category_name"),
+                        rs.getDouble("amount"),
+                        rs.getString("description")
+                ));
+            }
+            LOGGER.info("Loaded " + transactions.size() + " transactions for user " + userId + " with filters: " + filters);
+        } catch (SQLException e) {
+            LOGGER.severe("Error fetching transaction history for user " + userId + ": " + e.getMessage());
+            throw e;
         }
         return transactions;
     }

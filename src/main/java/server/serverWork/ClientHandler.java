@@ -185,7 +185,7 @@ public class ClientHandler implements Runnable {
                             e.printStackTrace();
                         }
                     }
-                    case "getTransactionHistory" -> {
+                    /*case "getTransactionHistory" -> {
                         Integer userId = (Integer) sois.readObject();
                       //  SQLFactory sqlFactory = new SQLFactory();
                         try {
@@ -194,6 +194,24 @@ public class ClientHandler implements Runnable {
                         } catch (SQLException e) {
                             soos.writeObject("Ошибка при получении истории транзакций: " + e.getMessage());
                             e.printStackTrace();
+                        }
+                    }*/
+                    case "getTransactionHistory" -> {
+                        Integer userId = (Integer) sois.readObject();
+                        HashMap<String, Object> filters = (HashMap<String, Object>) sois.readObject();
+                        LOGGER.info("Processing getTransactionHistory for userId=" + userId + ", filters=" + filters);
+                        if (currentUserId == 0) {
+                            soos.writeObject("Ошибка: пользователь не авторизован или доступ запрещен");
+                            LOGGER.warning("Unauthorized getTransactionHistory attempt: userId=" + userId);
+                            return;
+                        }
+                        try {
+                            ArrayList<Transaction> transactions = sqlFactory.getUsers().getTransactionHistory(userId, filters);
+                            soos.writeObject(transactions);
+                            LOGGER.info("Sent " + transactions.size() + " transactions for userId=" + userId);
+                        } catch (SQLException e) {
+                            soos.writeObject("Ошибка при получении истории транзакций: " + e.getMessage());
+                            LOGGER.severe("Error fetching transaction history: " + e.getMessage());
                         }
                     }
                     case "addCategory" -> {
