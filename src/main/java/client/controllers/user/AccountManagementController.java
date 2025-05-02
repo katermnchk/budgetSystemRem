@@ -19,15 +19,11 @@ public class AccountManagementController {
     @FXML private TableView<Account> accountsTable;
     @FXML private TableColumn<Account, String> nameColumn;
     @FXML private TableColumn<Account, Double> balanceColumn;
-    @FXML private Button addAccountButton;
-    @FXML private Button editAccountButton;
-    @FXML private Button deleteAccountButton;
 
     private ArrayList<Account> accounts;
 
     @FXML
     private void initialize() {
-        // Настройка столбцов таблицы
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         balanceColumn.setCellValueFactory(new PropertyValueFactory<>("balance"));
         balanceColumn.setCellFactory(column -> new TableCell<>() {

@@ -44,7 +44,6 @@ public class TransactionHistoryController {
 
     @FXML
     private void initialize() {
-        // Настройка столбцов таблицы
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
         dateColumn.setCellFactory(column -> new TableCell<>() {
             @Override
@@ -81,13 +80,11 @@ public class TransactionHistoryController {
             }
         });
 
-        // Инициализация ComboBox
         loadAccounts();
         loadCategories();
         typeComboBox.setItems(FXCollections.observableArrayList("Все типы", "Доход", "Расход"));
         typeComboBox.getSelectionModel().select("Все типы");
 
-        // Начальная загрузка транзакций
         loadTransactions(new HashMap<>());
     }
 
@@ -112,9 +109,9 @@ public class TransactionHistoryController {
                     setText(empty || account == null ? "Все счета" : account.getName());
                 }
             });
-            LOGGER.info("Loaded " + accounts.size() + " accounts for filtering");
+            LOGGER.info("Загружено " + accounts.size() + " счетов для фильтрации");
         } else {
-            LOGGER.warning("Invalid response for getUserAccounts: " + response);
+            LOGGER.warning("Неверный ответ для getUserAccounts: " + response);
             showAlert("Ошибка", "Не удалось загрузить счета: неверный ответ сервера");
         }
     }
@@ -142,13 +139,13 @@ public class TransactionHistoryController {
             });
             LOGGER.info("Loaded " + categories.size() + " categories for filtering");
         } else {
-            LOGGER.warning("Invalid response for getAllCategories: " + response);
+            LOGGER.warning("Неверный ответ для getAllCategories: " + response);
             showAlert("Ошибка", "Не удалось загрузить категории: неверный ответ сервера");
         }
     }
 
     private void loadTransactions(HashMap<String, Object> filters) {
-        LOGGER.info("Sending getTransactionHistory with filters: " + filters);
+        LOGGER.info("Отправка getTransactionHistory с фильтрами: " + filters);
         Connect.client.sendMessage("getTransactionHistory");
         Connect.client.sendObject(Connect.id);
         Connect.client.sendObject(filters);
@@ -156,12 +153,12 @@ public class TransactionHistoryController {
         if (response instanceof ArrayList) {
             transactions = (ArrayList<Transaction>) response;
             transactionsTable.setItems(FXCollections.observableArrayList(transactions));
-            LOGGER.info("Loaded " + transactions.size() + " transactions for user " + Connect.id + " with filters: " + filters);
+            LOGGER.info("Загружено " + transactions.size() + " транзакций для пользователя " + Connect.id + " с фильтрами: " + filters);
             if (transactions.isEmpty()) {
                 showAlert("Информация", "Транзакции не найдены для заданных фильтров.");
             }
         } else {
-            LOGGER.warning("Invalid response for getTransactionHistory: " + response);
+            LOGGER.warning("Неверный ответ для getTransactionHistory: " + response);
             showAlert("Ошибка", "Не удалось загрузить транзакции: неверный ответ сервера");
         }
     }
@@ -171,7 +168,6 @@ public class TransactionHistoryController {
         try {
             HashMap<String, Object> filters = new HashMap<>();
 
-            // Фильтр по датам
             if (startDatePicker.getValue() != null) {
                 filters.put("startDate", Timestamp.valueOf(startDatePicker.getValue().atStartOfDay()));
             }
@@ -179,28 +175,23 @@ public class TransactionHistoryController {
                 filters.put("endDate", Timestamp.valueOf(endDatePicker.getValue().plusDays(1).atStartOfDay()));
             }
 
-            // Фильтр по счету
             if (accountComboBox.getValue() != null) {
                 filters.put("accountId", accountComboBox.getValue().getId());
             }
 
-            // Фильтр по категории
             if (categoryComboBox.getValue() != null) {
                 filters.put("categoryId", categoryComboBox.getValue().getId());
             }
 
-            // Фильтр по типу
             String selectedType = typeComboBox.getValue();
             if (selectedType != null && !selectedType.equals("Все типы")) {
                 filters.put("categoryType", selectedType.equals("Доход") ? "INCOME" : "EXPENSE");
             }
 
-            // Фильтр по описанию
             if (!descriptionField.getText().isEmpty()) {
                 filters.put("description", descriptionField.getText().trim());
             }
 
-            // Фильтр по сумме
             if (!minAmountField.getText().isEmpty()) {
                 try {
                     filters.put("minAmount", Double.parseDouble(minAmountField.getText().trim()));
@@ -237,10 +228,10 @@ public class TransactionHistoryController {
             descriptionField.clear();
             minAmountField.clear();
             maxAmountField.clear();
-            LOGGER.info("Clearing filters");
+            LOGGER.info("Очистка фильтров");
             loadTransactions(new HashMap<>());
         } catch (Exception e) {
-            LOGGER.severe("Error in clearFilters: " + e.getMessage());
+            LOGGER.severe("Ошибка в clearFilters: " + e.getMessage());
             showAlert("Ошибка", "Ошибка при сбросе фильтров: " + e.getMessage());
         }
     }
@@ -250,9 +241,9 @@ public class TransactionHistoryController {
         try {
             Stage stage = (Stage) transactionsTable.getScene().getWindow();
             stage.close();
-            LOGGER.info("Transaction history window closed");
+            LOGGER.info("Окно истории транзакций закрыто");
         } catch (Exception e) {
-            LOGGER.severe("Error in closeWindow: " + e.getMessage());
+            LOGGER.severe("Ошибка в closeWindow: " + e.getMessage());
             showAlert("Ошибка", "Ошибка при закрытии окна: " + e.getMessage());
         }
     }

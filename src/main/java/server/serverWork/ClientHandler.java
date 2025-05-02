@@ -83,7 +83,7 @@ public class ClientHandler implements Runnable {
                             soos.writeObject("OK");
                             soos.writeObject(r);
                         } else {
-                            soos.writeObject("This user is already existed");
+                            soos.writeObject("Этот пользователь уже существует");
                         }
                     }
                     case "authorization" -> {
@@ -330,36 +330,36 @@ public class ClientHandler implements Runnable {
                         HashMap<String, Object> accountData = (HashMap<String, Object>) sois.readObject();
                         Integer accountId = (Integer) accountData.get("accountId");
                         String newName = (String) accountData.get("newName");
-                        LOGGER.info("Processing editAccount: accountId=" + accountId + ", newName=" + newName + ", userId=" + currentUserId);
+                        LOGGER.info("Обработка editAccount: accountId=" + accountId + ", newName=" + newName + ", userId=" + currentUserId);
                         if (currentUserId == 0) {
                             soos.writeObject("Ошибка: пользователь не авторизован");
-                            LOGGER.warning("Unauthorized editAccount attempt: accountId=" + accountId);
+                            LOGGER.warning("Пользователь не авторизован: accountId=" + accountId);
                             return;
                         }
                         try {
                             sqlFactory.getUsers().editAccount(accountId, currentUserId, newName);
                             soos.writeObject("OK");
-                            LOGGER.info("Account edited successfully: accountId=" + accountId);
+                            LOGGER.info("Счета успешно изменен: accountId=" + accountId);
                         } catch (SQLException e) {
                             soos.writeObject("Ошибка при редактировании счета: " + e.getMessage());
-                            LOGGER.severe("Error editing account: " + e.getMessage());
+                            LOGGER.severe("Ошибка при редактирования счета: " + e.getMessage());
                         }
                     }
                     case "deleteAccount" -> {
                         Integer accountId = (Integer) sois.readObject();
-                        LOGGER.info("Processing deleteAccount: accountId=" + accountId + ", userId=" + currentUserId);
+                        LOGGER.info("Обработка deleteAccount: accountId=" + accountId + ", userId=" + currentUserId);
                         if (currentUserId == 0) {
                             soos.writeObject("Ошибка: пользователь не авторизован");
-                            LOGGER.warning("Unauthorized deleteAccount attempt: accountId=" + accountId);
+                            LOGGER.warning("Пользователь не авторизован: accountId=" + accountId);
                             return;
                         }
                         try {
                             sqlFactory.getUsers().deleteAccount(accountId, currentUserId);
                             soos.writeObject("OK");
-                            LOGGER.info("Account deleted successfully: accountId=" + accountId);
+                            LOGGER.info("Счет успешно удален: accountId=" + accountId);
                         } catch (SQLException e) {
                             soos.writeObject("Ошибка при удалении счета: " + e.getMessage());
-                            LOGGER.severe("Error deleting account: " + e.getMessage());
+                            LOGGER.severe("Ошибка при удалении счета: " + e.getMessage());
                         }
                     }
                     case "getAccountInfo" -> {

@@ -33,18 +33,6 @@ public class MenuUserController {
     @FXML
     public Button manageGoalsButton;
 
-   /* @FXML
-    private Button personalInfButton;
-
-  public MenuUserController() {
-        try {
-            Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/budgetsystem", "postgres", "postgresql");
-            this.userDAO = new UserDAO(connection);
-        } catch (SQLException e) {
-            showAlert("Ошибка подключения к БД", "Проверьте подключение к базе данных.");
-        }
-    }*/
-
     @FXML
     void backToMain(ActionEvent event) {
         backButton.getScene().getWindow().hide();

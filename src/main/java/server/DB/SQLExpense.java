@@ -16,27 +16,25 @@ public class SQLExpense implements ISQLExpense {
 
     @Override
     public void addTransaction(int userId, int accountId, int categoryId, double amount, String description) throws SQLException {
-        // Валидация входных данных
         if (amount <= 0) {
-            LOGGER.warning("Invalid expense amount: " + amount + " for user " + userId);
+            LOGGER.warning("Некорректная сумма расходов: " + amount + " для пользователя " + userId);
             throw new SQLException("Сумма расхода должна быть положительной");
         }
         if (!isExpenseCategory(categoryId)) {
-            LOGGER.warning("Invalid category for expense: categoryId=" + categoryId + " for user " + userId);
+            LOGGER.warning("Некорректная категория расходов: categoryId=" + categoryId + " для пользователя " + userId);
             throw new SQLException("Выбранная категория не является категорией расхода");
         }
 
-        // Начало SQL-транзакции
         connection.setAutoCommit(false);
         try {
-            // Проверка достаточности средств
             double currentBalance = getAccountBalance(accountId);
             if (currentBalance < amount) {
-                LOGGER.warning("Insufficient funds for user " + userId + " on account " + accountId + ". Current balance: " + currentBalance + ", attempted expense: " + amount);
-                throw new SQLException(String.format("Недостаточно средств на счете. Текущий баланс: %.2f BYN, попытка потратить: %.2f BYN", currentBalance, amount));
+                LOGGER.warning("Недостаточно средств для пользователя " + userId + " на счету " + accountId + ". " +
+                        "Текущий баланс: " + currentBalance + ", недостаточно средств: " + amount);
+                throw new SQLException(String.format("Недостаточно средств на счете." +
+                        " Текущий баланс: %.2f BYN, попытка потратить: %.2f BYN", currentBalance, amount));
             }
 
-            // Вставка транзакции с отрицательной суммой
             String insertQuery = "INSERT INTO transactions (user_id, account_id, category_id, amount, description, date) " +
                     "VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
             try (PreparedStatement stmt = connection.prepareStatement(insertQuery)) {
@@ -47,10 +45,9 @@ public class SQLExpense implements ISQLExpense {
                 stmt.setDouble(4, expenseAmount);
                 stmt.setString(5, description != null ? description : "Расход");
                 stmt.executeUpdate();
-                LOGGER.info("Expense transaction added for user " + userId + " on account " + accountId + ": " + expenseAmount);
+                LOGGER.info("Транзакция расходов добавлена для пользователя " + userId + " на счету " + accountId + ": " + expenseAmount);
             }
 
-            // Обновление баланса счета
             String updateBalanceQuery = "UPDATE accounts SET balance = balance - ? WHERE id = ?";
             try (PreparedStatement updateStmt = connection.prepareStatement(updateBalanceQuery)) {
                 updateStmt.setDouble(1, amount); // Уменьшаем баланс
@@ -62,23 +59,21 @@ public class SQLExpense implements ISQLExpense {
                 LOGGER.info("Account balance updated for account " + accountId + ": reduced by " + amount);
             }
 
-            // Фиксация транзакции
             connection.commit();
         } catch (SQLException e) {
-            // Откат транзакции при ошибке
+            //откат транзакции при ошибке
             try {
                 connection.rollback();
-                LOGGER.info("Transaction rolled back for user " + userId + " on account " + accountId);
+                LOGGER.info("Откат транзакции для пользователя " + userId + " на счету " + accountId);
             } catch (SQLException rollbackEx) {
-                LOGGER.severe("Error rolling back transaction: " + rollbackEx.getMessage());
+                LOGGER.severe("Ошибка в откате транзакции: " + rollbackEx.getMessage());
             }
             throw e;
         } finally {
-            // Восстановление автокоммита
             try {
                 connection.setAutoCommit(true);
             } catch (SQLException e) {
-                LOGGER.severe("Error restoring auto-commit: " + e.getMessage());
+                LOGGER.severe("Ошибка восстановления автокоммита: " + e.getMessage());
             }
         }
     }
@@ -90,11 +85,11 @@ public class SQLExpense implements ISQLExpense {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 double balance = rs.getDouble("balance");
-                LOGGER.info("Account balance for account " + accountId + ": " + balance);
+                LOGGER.info("Баланс для счета " + accountId + ": " + balance);
                 return balance;
             }
         }
-        LOGGER.warning("Account not found: accountId=" + accountId);
+        LOGGER.warning("Счет не найден: accountId=" + accountId);
         throw new SQLException("Счет с ID " + accountId + " не найден");
     }
 
@@ -105,11 +100,11 @@ public class SQLExpense implements ISQLExpense {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 String categoryType = rs.getString("type");
-                LOGGER.info("Category type for categoryId " + categoryId + ": " + categoryType);
+                LOGGER.info("Тип категории для categoryId " + categoryId + ": " + categoryType);
                 return "EXPENSE".equals(categoryType);
             }
         }
-        LOGGER.warning("Category not found: categoryId=" + categoryId);
+        LOGGER.warning("Категория не найдена: categoryId=" + categoryId);
         return false;
     }
 }

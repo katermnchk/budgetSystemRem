@@ -9,20 +9,14 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class AdminStatisticsController {
-
-    @FXML private Label adminStatistics;
 
     @FXML private Text totalUsers;
     @FXML private Text totalAccounts;
@@ -71,9 +65,9 @@ public class AdminStatisticsController {
         }
 
         public String getName() { return name.get(); }
-        public String getType() { return type.get(); }
+       /* public String getType() { return type.get(); }
         public int getTransactionCount() { return transactionCount.get(); }
-        public double getTotalAmount() { return totalAmount.get(); }
+        public double getTotalAmount() { return totalAmount.get(); }*/
     }
 
     @FXML

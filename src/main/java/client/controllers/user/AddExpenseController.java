@@ -124,10 +124,10 @@ public class AddExpenseController implements Initializable {
             if (balance == null) {
                 throw new IOException("Баланс для счета " + accountName + " не найден");
             }
-            LOGGER.info("Balance for accountId " + accountId + ": " + balance);
+            LOGGER.info("Баланс для accountId " + accountId + ": " + balance);
             return balance;
         } else {
-            LOGGER.warning("Invalid response for getAccountBalances: " + response);
+            LOGGER.warning("Неверный ответ для getAccountBalances: " + response);
             throw new IOException("Ошибка при получении баланса: " + response);
         }
     }

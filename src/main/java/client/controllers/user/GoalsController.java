@@ -22,7 +22,6 @@ public class GoalsController implements Initializable {
     @FXML private ComboBox<String> categoryComboBox;
     @FXML private ComboBox<String> typeComboBox;
     @FXML private TextField targetAmountField;
-    @FXML private Button addGoalButton;
     @FXML private Button cancelButton;
     @FXML private TableView<Goal> goalsTable;
     @FXML private TableColumn<Goal, String> categoryColumn;
@@ -166,7 +165,6 @@ public class GoalsController implements Initializable {
                 targetAmountField.clear();
                 loadGoals();
                 loadRecommendations();
-                // Не закрываем окно, чтобы пользователь мог добавить ещё цели
             } else {
                 showAlert("Ошибка", response);
             }

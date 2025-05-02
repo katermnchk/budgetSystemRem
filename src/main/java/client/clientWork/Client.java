@@ -16,7 +16,7 @@ public class Client {
             outStream = new ObjectOutputStream(clientSocket.getOutputStream());
             inStream = new ObjectInputStream(clientSocket.getInputStream());
         } catch (IOException e) {
-            System.out.println("Server not found: " + e.getMessage());
+            System.out.println("Сервер не нашел: " + e.getMessage());
             System.exit(0);
         }
     }

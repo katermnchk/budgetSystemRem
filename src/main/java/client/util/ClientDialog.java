@@ -58,5 +58,13 @@ public class ClientDialog {
         alert.setContentText("Повторите ввод пароля");
         alert.showAndWait();
     }
+
+    public static void showAlertWithSmallPassword() {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Ошибка");
+        alert.setHeaderText("Ошибка: Пароль должен состоять минимум из 6 символов");
+        alert.setContentText("Повторите ввод пароля");
+        alert.showAndWait();
+    }
 }
 

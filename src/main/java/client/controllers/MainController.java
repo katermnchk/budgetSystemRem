@@ -45,9 +45,9 @@ public class MainController {
         try {
             mes = Connect.client.readMessage();
         } catch (IOException ex) {
-            System.out.println("Error in reading");
+            System.out.println("Ошибка в чтении");
         }
-        if (mes.equals("There is no data!"))
+        if (mes.equals("Данные отсутствуют!"))
             ClientDialog.showAlertWithNoLogin();
         else {
             Role r = (Role) Connect.client.readObject();

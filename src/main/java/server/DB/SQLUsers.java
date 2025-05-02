@@ -39,7 +39,7 @@ public class SQLUsers implements ISQLUsers {
         return instance;
     }
 
-    public void hashExistingPasswords() {
+    /*public void hashExistingPasswords() {
         String selectSql = "SELECT id, password FROM users";
         String updateSql = "UPDATE users SET password = ? WHERE id = ?";
         try (PreparedStatement selectStmt = conn.prepareStatement(selectSql);
@@ -48,7 +48,6 @@ public class SQLUsers implements ISQLUsers {
             while (rs.next()) {
                 int userId = rs.getInt("id");
                 String plainPassword = rs.getString("password");
-                // Проверяем, не хеширован ли пароль уже (BCrypt начинается с $2a$)
                 if (!plainPassword.startsWith("$2a$")) {
                     String hashedPassword = BCrypt.hashpw(plainPassword, BCrypt.gensalt(12));
                     updateStmt.setString(1, hashedPassword);
@@ -61,7 +60,7 @@ public class SQLUsers implements ISQLUsers {
             System.err.println("Ошибка при хешировании паролей: " + e.getMessage());
         }
     }
-
+*/
     @Override
     public ArrayList<Users> findUser(Users obj) {
         ArrayList<Users> usList = new ArrayList<>();
@@ -182,10 +181,10 @@ public class SQLUsers implements ISQLUsers {
                 String name = rs.getString("name");
                 double balance = rs.getDouble("balance");
                 accounts.add(new Account(id, name, balance));
-                LOGGER.info("Loaded account: id=" + id + ", name=" + name + ", balance=" + balance + " for user " + userId);
+                LOGGER.info("Загружен счет: id=" + id + ", name=" + name + ", balance=" + balance + " for user " + userId);
             }
         } catch (SQLException e) {
-            LOGGER.severe("Error fetching accounts for user " + userId + ": " + e.getMessage());
+            LOGGER.severe("Ошибка получения счетов для пользователя " + userId + ": " + e.getMessage());
             throw e;
         }
         return accounts;
@@ -227,14 +226,14 @@ public class SQLUsers implements ISQLUsers {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 double balance = rs.getDouble("balance");
-                LOGGER.info("Balance for user " + userId + ": " + balance);
+                LOGGER.info("Баланс для пользователя " + userId + ": " + balance);
                 return balance;
             }
         } catch (SQLException e) {
-            LOGGER.severe("Error calculating balance for user " + userId + ": " + e.getMessage());
+            LOGGER.severe("Ошибка расчета баланса для пользователя " + userId + ": " + e.getMessage());
             throw e;
         }
-        LOGGER.info("No transactions found for user " + userId + ", returning 0.0");
+        LOGGER.info("Не найдено транзакций у пользователя " + userId + ", возвращаем 0.0");
         return 0.0;
     }
 
@@ -253,10 +252,10 @@ public class SQLUsers implements ISQLUsers {
                 String accountName = rs.getString("name");
                 double balance = rs.getDouble("balance");
                 balances.put(accountName, balance);
-                LOGGER.info("Account balance for user " + userId + ", account " + accountName + ": " + balance);
+                LOGGER.info("Баланс счета для пользователя " + userId + ", счет " + accountName + ": " + balance);
             }
         } catch (SQLException e) {
-            LOGGER.severe("Error fetching account balances for user " + userId + ": " + e.getMessage());
+            LOGGER.severe("Ошибка получения балансов счетов для пользователя " + userId + ": " + e.getMessage());
             throw e;
         }
         return balances;
@@ -299,7 +298,6 @@ public class SQLUsers implements ISQLUsers {
         List<Object> params = new ArrayList<>();
         params.add(userId);
 
-        // Фильтр по датам
         if (filters.containsKey("startDate") && filters.get("startDate") != null) {
             sql.append(" AND t.date >= ?");
             params.add(Timestamp.valueOf((LocalDateTime) filters.get("startDate")));
@@ -309,25 +307,21 @@ public class SQLUsers implements ISQLUsers {
             params.add(Timestamp.valueOf((LocalDateTime) filters.get("endDate")));
         }
 
-        // Фильтр по категории
         if (filters.containsKey("categoryId") && filters.get("categoryId") != null) {
             sql.append(" AND t.category_id = ?");
             params.add((Integer) filters.get("categoryId"));
         }
 
-        // Фильтр по типу категории
         if (filters.containsKey("categoryType") && filters.get("categoryType") != null) {
             sql.append(" AND c.type = ?");
             params.add((String) filters.get("categoryType"));
         }
 
-        // Фильтр по счету
         if (filters.containsKey("accountId") && filters.get("accountId") != null) {
             sql.append(" AND t.account_id = ?");
             params.add((Integer) filters.get("accountId"));
         }
 
-        // Фильтр по сумме
         if (filters.containsKey("minAmount") && filters.get("minAmount") != null) {
             sql.append(" AND t.amount >= ?");
             params.add((Double) filters.get("minAmount"));
@@ -337,7 +331,6 @@ public class SQLUsers implements ISQLUsers {
             params.add((Double) filters.get("maxAmount"));
         }
 
-        // Фильтр по описанию
         if (filters.containsKey("description") && filters.get("description") != null) {
             sql.append(" AND t.description ILIKE ?");
             params.add("%" + filters.get("description") + "%");
@@ -434,10 +427,11 @@ public class SQLUsers implements ISQLUsers {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 account.setId(rs.getInt("id"));
-                LOGGER.info("Account added: id=" + account.getId() + ", name=" + account.getName() + " for user " + userId);
+                LOGGER.info("Счет добавлен: id=" + account.getId() + ", name=" + account.getName() +
+                        " для пользователя " + userId);
             }
         } catch (SQLException e) {
-            LOGGER.severe("Error adding account for user " + userId + ": " + e.getMessage());
+            LOGGER.severe("Ошибка добавления счета для пользователя " + userId + ": " + e.getMessage());
             throw e;
         }
     }
@@ -694,7 +688,7 @@ public class SQLUsers implements ISQLUsers {
     @Override
     public boolean editAccount(int accountId, int userId, String newName) throws SQLException {
         if (newName == null || newName.trim().isEmpty()) {
-            LOGGER.warning("Invalid account name for accountId=" + accountId + ", userId=" + userId);
+            LOGGER.warning("Некорректное название счета для accountId=" + accountId + ", userId=" + userId);
             throw new SQLException("Название счета не может быть пустым");
         }
 
@@ -705,20 +699,19 @@ public class SQLUsers implements ISQLUsers {
             stmt.setInt(3, userId);
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected == 0) {
-                LOGGER.warning("Account not found or unauthorized: accountId=" + accountId + ", userId=" + userId);
+                LOGGER.warning("Счет не найден или доступ запрещен: accountId=" + accountId + ", userId=" + userId);
                 throw new SQLException("Счет не найден или доступ запрещен");
             }
-            LOGGER.info("Account updated: accountId=" + accountId + ", newName=" + newName);
+            LOGGER.info("Счет обновлен: accountId=" + accountId + ", newName=" + newName);
             return true;
         } catch (SQLException e) {
-            LOGGER.severe("Error editing account: " + e.getMessage());
+            LOGGER.severe("Ошибка добавления счетов: " + e.getMessage());
             throw e;
         }
     }
 
     @Override
     public boolean deleteAccount(int accountId, int userId) throws SQLException {
-        // Проверка, есть ли транзакции
         String checkSql = "SELECT COUNT(*) AS transaction_count, COALESCE(SUM(amount), 0) AS balance " +
                 "FROM transactions WHERE account_id = ?";
         try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
@@ -728,26 +721,26 @@ public class SQLUsers implements ISQLUsers {
                 int transactionCount = rs.getInt("transaction_count");
                 double balance = rs.getDouble("balance");
                 if (transactionCount > 0 || balance != 0) {
-                    LOGGER.warning("Cannot delete account with transactions or non-zero balance: accountId=" + accountId + ", transactions=" + transactionCount + ", balance=" + balance);
+                    LOGGER.warning("Нельзя удалить транзакции с нулевым балансов:" +
+                            " accountId=" + accountId + ", transactions=" + transactionCount + ", balance=" + balance);
                     throw new SQLException("Нельзя удалить счет с транзакциями или ненулевым балансом");
                 }
             }
         }
 
-        // Удаление счета
         String sql = "DELETE FROM accounts WHERE id = ? AND user_id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, accountId);
             stmt.setInt(2, userId);
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected == 0) {
-                LOGGER.warning("Account not found or unauthorized: accountId=" + accountId + ", userId=" + userId);
+                LOGGER.warning("Счет не найден или доступ запрещен: accountId=" + accountId + ", userId=" + userId);
                 throw new SQLException("Счет не найден или доступ запрещен");
             }
-            LOGGER.info("Account deleted: accountId=" + accountId + ", userId=" + userId);
+            LOGGER.info("Счет удален: accountId=" + accountId + ", userId=" + userId);
             return true;
         } catch (SQLException e) {
-            LOGGER.severe("Error deleting account: " + e.getMessage());
+            LOGGER.severe("Ошибка удаления счета: " + e.getMessage());
             throw e;
         }
     }

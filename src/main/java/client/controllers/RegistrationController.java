@@ -1,7 +1,9 @@
 package client.controllers;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
+import client.clientWork.Account;
 import client.clientWork.Connect;
 import client.clientWork.Users;
 import javafx.event.ActionEvent;
@@ -62,6 +64,9 @@ public class RegistrationController {
     void registrationUser(ActionEvent event) throws IOException {
         if (checkInput())
             ClientDialog.showAlertWithNullInput();
+        else if(password.getText().length()< 6) {
+            ClientDialog.showAlertWithSmallPassword();
+        }
         else if(!password.getText().equals(confirmPassword.getText())) {
             ClientDialog.showAlertWithPassword(); }
         else {
@@ -78,15 +83,21 @@ public class RegistrationController {
                 try {
                     mes = Connect.client.readMessage();
                 } catch (IOException ex) {
-                    System.out.println("Error in reading");
+                    System.out.println("Ошибка в чтении");
                 }
-            if (mes.equals("This user is already existed")) {
+            if (mes.equals("Этот пользователь уже существует")) {
                 ClientDialog.showAlertWithExistLogin();
             }
             else {
                 Role r = (Role) Connect.client.readObject();
+
                 Connect.id = r.getId();
                 Connect.role = r.getRole();
+
+                Connect.client.sendMessage("getUserAccounts");
+                Connect.client.sendObject(r.getId());
+                Connect.accounts = (ArrayList<Account>) Connect.client.readObject();
+
                 registrationButton.getScene().getWindow().hide();
 
                 FXMLLoader loader = new FXMLLoader();
@@ -102,7 +113,7 @@ public class RegistrationController {
                 Stage stage = new Stage();
                 stage.setScene(new Scene((root)));
                 stage.show();
-                }
+            }
 
         }
     }
@@ -112,7 +123,7 @@ public class RegistrationController {
             return firstName.getText().isEmpty() || lastName.getText().isEmpty() ||
                     login.getText().isEmpty() || password.getText().isEmpty();
         } catch (Exception e) {
-            System.out.println("Error in checkInput: " + e.getMessage());
+            System.out.println("Ошибка в checkInput: " + e.getMessage());
             return true;
         }
     }

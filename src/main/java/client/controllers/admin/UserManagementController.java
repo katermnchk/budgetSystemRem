@@ -34,7 +34,6 @@ public class UserManagementController {
 
     @FXML
     public void initialize() {
-        // Проверяем инициализацию элементов
         if (userTable == null || idColumn == null || loginColumn == null || roleColumn == null ||
                 addUserButton == null || editUserButton == null || deleteUserButton == null || backButton == null) {
             System.err.println("Ошибка: Один или несколько элементов FXML не инициализированы!");
