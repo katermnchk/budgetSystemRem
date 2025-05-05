@@ -2,6 +2,7 @@ package client.clientWork;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class Client {
     private Socket clientSocket;
@@ -76,4 +77,22 @@ public class Client {
         outStream.writeObject(amount);
         return (String) inStream.readObject();
     }
+
+    public ArrayList<Account> getParentAccounts(int parentId) throws IOException, ClassNotFoundException {
+        outStream.writeObject("getParentAccounts");
+        Object response = inStream.readObject();
+        if (response instanceof String) {
+            throw new IOException((String) response);
+        }
+        return (ArrayList<Account>) response;
+    }
+
+    public String topUpChildAccount(int childAccountId, int parentAccountId, double amount) throws IOException, ClassNotFoundException {
+        outStream.writeObject("topUpChildAccount");
+        outStream.writeObject(childAccountId);
+        outStream.writeObject(parentAccountId);
+        outStream.writeObject(amount);
+        return (String) inStream.readObject();
+    }
+
 }

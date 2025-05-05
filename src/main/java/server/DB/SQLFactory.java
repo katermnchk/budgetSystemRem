@@ -24,4 +24,8 @@ public class SQLFactory extends AbstractFactory {
     public SQLExpense getExpense() throws SQLException {
         return new SQLExpense(getConnection());
     }
+
+    public SQLChildren getChildren() throws SQLException {
+        return new SQLChildren(getConnection());
+    }
 }

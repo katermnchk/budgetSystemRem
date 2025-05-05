@@ -3,7 +3,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.user.ChildAccountManagementController" spacing="10" alignment="TOP_CENTER" stylesheets="@child_account_management.css" maxWidth="700" maxHeight="550">
+<VBox xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="client.controllers.user.ChildAccountManagementController"
+      spacing="10" alignment="TOP_CENTER" stylesheets="@../css/child_account_management.css" maxWidth="700" maxHeight="550">
     <children>
         <Label text="Управление счетами детей" styleClass="header-label" />
         <HBox spacing="8" alignment="CENTER_LEFT">

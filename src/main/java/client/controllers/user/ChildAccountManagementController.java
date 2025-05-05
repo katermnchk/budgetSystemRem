@@ -11,6 +11,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -393,45 +394,99 @@ public class ChildAccountManagementController {
 
     @FXML
     private void topUpAccount() {
-        Account selectedAccount = accountsTable.getSelectionModel().getSelectedItem();
-        if (selectedAccount == null) {
+        Account selectedChildAccount = accountsTable.getSelectionModel().getSelectedItem();
+        if (selectedChildAccount == null) {
             LOGGER.warning("Попытка пополнить счет без выбора счета");
-            ClientDialog.showAlert("Ошибка", "Выберите счет");
+            ClientDialog.showAlert("Ошибка", "Выберите счет ребенка");
             return;
         }
-        if (selectedAccount.isBlocked()) {
-            LOGGER.warning("Попытка пополнить заблокированный счет: id=" + selectedAccount.getId());
+        if (selectedChildAccount.isBlocked()) {
+            LOGGER.warning("Попытка пополнить заблокированный счет: id=" + selectedChildAccount.getId());
             ClientDialog.showAlert("Ошибка", "Нельзя пополнить заблокированный счет");
             return;
         }
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Пополнить счет");
-        dialog.setHeaderText("Введите сумму пополнения для счета: " + selectedAccount.getName());
-        dialog.setContentText("Сумма:");
-        dialog.showAndWait().ifPresent(amountStr -> {
-            try {
-                double amount = Double.parseDouble(amountStr);
-                if (amount <= 0) {
-                    LOGGER.warning("Недопустимая сумма пополнения: " + amount);
-                    ClientDialog.showAlert("Ошибка", "Сумма должна быть положительной");
-                    return;
-                }
-                LOGGER.info("Отправка topUpAccount для accountId: " + selectedAccount.getId() + ", amount: " + amount);
-                String result = client.topUpAccount(selectedAccount.getId(), amount);
-                if ("OK".equals(result)) {
-                    loadChildAccounts(childComboBox.getSelectionModel().getSelectedItem().getId());
-                    LOGGER.info("Счет успешно пополнен: id=" + selectedAccount.getId() + ", amount=" + amount);
-                } else {
-                    LOGGER.warning("Ошибка сервера при пополнении счета: " + result);
-                    ClientDialog.showAlert("Ошибка", result);
-                }
-            } catch (NumberFormatException e) {
-                LOGGER.warning("Недопустимый формат суммы: " + amountStr);
-                ClientDialog.showAlert("Ошибка", "Введите корректную сумму");
-            } catch (IOException | ClassNotFoundException e) {
-                LOGGER.severe("Ошибка пополнения счета: " + e.getMessage());
-                ClientDialog.showAlert("Ошибка", "Не удалось пополнить счет: " + e.getMessage());
+        try {
+            ArrayList<Account> parentAccounts = client.getParentAccounts(currentUserId);
+            if (parentAccounts.isEmpty()) {
+                LOGGER.warning("У родителя с id=" + currentUserId + " нет счетов");
+                ClientDialog.showAlert("Ошибка", "У вас нет счетов для списания средств");
+                return;
             }
-        });
+            Dialog<String> dialog = new Dialog<>();
+            dialog.setTitle("Пополнить счет");
+            dialog.setHeaderText("Пополнение счета: " + selectedChildAccount.getName());
+            ButtonType confirmButtonType = new ButtonType("Пополнить", ButtonBar.ButtonData.OK_DONE);
+            dialog.getDialogPane().getButtonTypes().addAll(confirmButtonType, ButtonType.CANCEL);
+            GridPane grid = new GridPane();
+            grid.setHgap(10);
+            grid.setVgap(10);
+            ComboBox<Account> parentAccountComboBox = new ComboBox<>();
+            parentAccountComboBox.setItems(FXCollections.observableArrayList(parentAccounts));
+            parentAccountComboBox.setPromptText("Выберите ваш счет");
+            parentAccountComboBox.setCellFactory(lv -> new ListCell<Account>() {
+                @Override
+                protected void updateItem(Account account, boolean empty) {
+                    super.updateItem(account, empty);
+                    setText(empty || account == null ? "" : account.getName() + " (Баланс: " + account.getBalance() + ")");
+                }
+            });
+            parentAccountComboBox.setButtonCell(new ListCell<Account>() {
+                @Override
+                protected void updateItem(Account account, boolean empty) {
+                    super.updateItem(account, empty);
+                    setText(empty || account == null ? "" : account.getName() + " (Баланс: " + account.getBalance() + ")");
+                }
+            });
+            TextField amountField = new TextField();
+            amountField.setPromptText("Введите сумму");
+            grid.add(new Label("Ваш счет:"), 0, 0);
+            grid.add(parentAccountComboBox, 1, 0);
+            grid.add(new Label("Сумма:"), 0, 1);
+            grid.add(amountField, 1, 1);
+            dialog.getDialogPane().setContent(grid);
+            dialog.setResultConverter(dialogButton -> {
+                if (dialogButton == confirmButtonType) {
+                    return amountField.getText();
+                }
+                return null;
+            });
+            dialog.showAndWait().ifPresent(amountStr -> {
+                try {
+                    double amount = Double.parseDouble(amountStr);
+                    Account selectedParentAccount = parentAccountComboBox.getSelectionModel().getSelectedItem();
+                    if (selectedParentAccount == null) {
+                        LOGGER.warning("Счет родителя не выбран");
+                        ClientDialog.showAlert("Ошибка", "Выберите ваш счет");
+                        return;
+                    }
+                    if (amount <= 0) {
+                        LOGGER.warning("Недопустимая сумма пополнения: " + amount);
+                        ClientDialog.showAlert("Ошибка", "Сумма должна быть положительной");
+                        return;
+                    }
+                    LOGGER.info("Отправка topUpChildAccountFromParentAccount: childAccountId=" + selectedChildAccount.getId() +
+                            ", parentAccountId=" + selectedParentAccount.getId() + ", amount=" + amount);
+                    String result = client.topUpChildAccount(
+                            selectedChildAccount.getId(), selectedParentAccount.getId(), amount);
+                    if ("OK".equals(result)) {
+                        loadChildAccounts(childComboBox.getSelectionModel().getSelectedItem().getId());
+                        LOGGER.info("Счет успешно пополнен: childAccountId=" + selectedChildAccount.getId() +
+                                ", parentAccountId=" + selectedParentAccount.getId() + ", amount=" + amount);
+                    } else {
+                        LOGGER.warning("Ошибка сервера при пополнении счета: " + result);
+                        ClientDialog.showAlert("Ошибка", result);
+                    }
+                } catch (NumberFormatException e) {
+                    LOGGER.warning("Недопустимый формат суммы: " + amountStr);
+                    ClientDialog.showAlert("Ошибка", "Введите корректную сумму");
+                } catch (IOException | ClassNotFoundException e) {
+                    LOGGER.severe("Ошибка пополнения счета: " + e.getMessage());
+                    ClientDialog.showAlert("Ошибка", "Не удалось пополнить счет: " + e.getMessage());
+                }
+            });
+        } catch (IOException | ClassNotFoundException e) {
+            LOGGER.severe("Ошибка загрузки счетов родителя: " + e.getMessage());
+            ClientDialog.showAlert("Ошибка", "Не удалось загрузить ваши счета: " + e.getMessage());
+        }
     }
 }

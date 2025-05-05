@@ -380,7 +380,7 @@ public class ClientHandler implements Runnable {
                             continue;
                         }
                         try {
-                            ArrayList<Users> children = sqlFactory.getUsers().getChildren(currentUserId);
+                            ArrayList<Users> children = sqlFactory.getChildren().getChildren(currentUserId);
                             soos.writeObject(children);
                             LOGGER.info("Отправлено " + children.size() + " детей для userId=" + currentUserId);
                         } catch (SQLException e) {
@@ -397,7 +397,7 @@ public class ClientHandler implements Runnable {
                             continue;
                         }
                         try {
-                            ArrayList<Account> accounts = sqlFactory.getUsers().getChildAccounts(childId, currentUserId);
+                            ArrayList<Account> accounts = sqlFactory.getChildren().getChildAccounts(childId, currentUserId);
                             soos.writeObject(accounts);
                             LOGGER.info("Отправлено " + accounts.size() + " счетов для childId=" + childId);
                         } catch (SQLException e) {
@@ -420,7 +420,7 @@ public class ClientHandler implements Runnable {
                             continue;
                         }
                         try {
-                            Role r = sqlFactory.getUsers().addChild(child, parentId);
+                            Role r = sqlFactory.getChildren().addChild(child, parentId);
                             if (r.getId() != 0 && !r.getRole().isEmpty()) {
                                 soos.writeObject("OK");
                                 LOGGER.info("Ребенок успешно добавлен: login=" + child.getLogin());
@@ -442,7 +442,7 @@ public class ClientHandler implements Runnable {
                             continue;
                         }
                         try {
-                            boolean success = sqlFactory.getUsers().toggleBlockAccount(accountId, currentUserId);
+                            boolean success = sqlFactory.getChildren().toggleBlockAccount(accountId, currentUserId);
                             soos.writeObject(success ? "OK" : "Ошибка при блокировке/разблокировке счета");
                             LOGGER.info("Блокировка/разблокировка счета: " + (success ? "успешно" : "неудачно") + ", accountId=" + accountId);
                         } catch (SQLException e) {
@@ -459,12 +459,49 @@ public class ClientHandler implements Runnable {
                             LOGGER.warning("Неавторизованный запрос пополнения счета");
                             continue;
                         }
-                        String result = sqlFactory.getUsers().topUpAccount(accountId, amount, currentUserId);
+                        String result = sqlFactory.getChildren().topUpAccount(accountId, amount, currentUserId);
                         soos.writeObject(result);
                         if ("OK".equals(result)) {
                             LOGGER.info("Счет успешно пополнен: accountId=" + accountId + ", amount=" + amount);
                         } else {
                             LOGGER.warning("Ошибка при пополнении счета: " + result);
+                        }
+                    }
+                    case "topUpChildAccount" -> {
+                        int childAccountId = (int) sois.readObject();
+                        int parentAccountId = (int) sois.readObject();
+                        double amount = (double) sois.readObject();
+                        LOGGER.info("Обработка topUpChildAccountFromParentAccount: childAccountId=" + childAccountId +
+                                ", parentAccountId=" + parentAccountId + ", amount=" + amount + ", userId=" + currentUserId);
+                        if (currentUserId == 0) {
+                            soos.writeObject("Ошибка: пользователь не авторизован");
+                            LOGGER.warning("Неавторизованный запрос пополнения счета");
+                            continue;
+                        }
+                        String result = sqlFactory.getChildren().topUpChildAccount (
+                                childAccountId, parentAccountId, amount, currentUserId);
+                        soos.writeObject(result);
+                        if ("OK".equals(result)) {
+                            LOGGER.info("Счет ребёнка успешно пополнен: childAccountId=" + childAccountId +
+                                    ", parentAccountId=" + parentAccountId + ", amount=" + amount);
+                        } else {
+                            LOGGER.warning("Ошибка при пополнении счета: " + result);
+                        }
+                    }
+                    case "getParentAccounts" -> {
+                        LOGGER.info("Запрос счетов родителя: userId=" + currentUserId);
+                        if (currentUserId == 0) {
+                            soos.writeObject("Ошибка: пользователь не авторизован");
+                            LOGGER.warning("Неавторизованный запрос счетов родителя");
+                            continue;
+                        }
+                        try {
+                            ArrayList<Account> accounts = sqlFactory.getChildren().getParentAccounts(currentUserId);
+                            soos.writeObject(accounts);
+                            LOGGER.info("Отправлено " + accounts.size() + " счетов для родителя userId=" + currentUserId);
+                        } catch (SQLException e) {
+                            soos.writeObject(new ArrayList<Account>());
+                            LOGGER.severe("Ошибка при получении счетов родителя: " + e.getMessage());
                         }
                     }
                 }
