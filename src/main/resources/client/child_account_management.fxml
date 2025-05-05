@@ -21,6 +21,7 @@
         </TableView>
         <HBox spacing="8" alignment="CENTER">
             <Button fx:id="toggleBlockButton" text="Заблокировать/Разблокировать" styleClass="my-button" onAction="#toggleBlockAccount" />
+            <Button text="Пополнить счет" styleClass="my-button" onAction="#topUpAccount" />
             <Button text="Добавить счет" styleClass="my-button" onAction="#addAccount" />
             <Button text="Редактировать счет" styleClass="my-button" onAction="#editAccount" />
             <Button text="Закрыть" styleClass="cancel-button" onAction="#closeWindow" />

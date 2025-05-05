@@ -69,4 +69,11 @@ public class Client {
             e.printStackTrace();
         }
     }
+
+    public String topUpAccount(int accountId, double amount) throws IOException, ClassNotFoundException {
+        outStream.writeObject("topUpAccount");
+        outStream.writeObject(accountId);
+        outStream.writeObject(amount);
+        return (String) inStream.readObject();
+    }
 }

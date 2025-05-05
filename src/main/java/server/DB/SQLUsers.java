@@ -853,4 +853,47 @@ public class SQLUsers implements ISQLUsers {
         }
         return role;
     }
+
+    public String topUpAccount(int accountId, double amount, int parentId) {
+        if (amount <= 0) {
+            LOGGER.severe("Недопустимая сумма пополнения: " + amount);
+            return "Ошибка: сумма должна быть положительной";
+        }
+        String checkQuery = "SELECT accounts.id, accounts.is_blocked FROM accounts JOIN users ON accounts.user_id = users.id " +
+                "WHERE accounts.id = ? AND users.parent_id = ?";
+        try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
+            checkStmt.setInt(1, accountId);
+            checkStmt.setInt(2, parentId);
+            try (ResultSet rs = checkStmt.executeQuery()) {
+                if (!rs.next()) {
+                    LOGGER.severe("Счет с id=" + accountId + " не существует или не принадлежит ребёнку родителя с id=" + parentId);
+                    return "Ошибка: счёт не существует или не принадлежит вашему ребёнку";
+                }
+                if (rs.getBoolean("is_blocked")) {
+                    LOGGER.severe("Счет с id=" + accountId + " заблокирован");
+                    return "Ошибка: нельзя пополнить заблокированный счет";
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Ошибка проверки счёта: " + e.getMessage());
+            return "Ошибка проверки счёта: " + e.getMessage();
+        }
+        String query = "UPDATE accounts SET balance = balance + ? WHERE accounts.id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setDouble(1, amount);
+            stmt.setInt(2, accountId);
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                LOGGER.info("Счет успешно пополнен: accountId=" + accountId + ", amount=" + amount);
+                return "OK";
+            } else {
+                LOGGER.warning("Счет с id=" + accountId + " не найден");
+                return "Ошибка: счёт не найден";
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Ошибка при пополнении счета: " + e.getMessage());
+            return "Ошибка при пополнении счета: " + e.getMessage();
+        }
+    }
+
 }

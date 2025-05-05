@@ -390,4 +390,48 @@ public class ChildAccountManagementController {
         Stage stage = (Stage) accountsTable.getScene().getWindow();
         stage.close();
     }
+
+    @FXML
+    private void topUpAccount() {
+        Account selectedAccount = accountsTable.getSelectionModel().getSelectedItem();
+        if (selectedAccount == null) {
+            LOGGER.warning("Попытка пополнить счет без выбора счета");
+            ClientDialog.showAlert("Ошибка", "Выберите счет");
+            return;
+        }
+        if (selectedAccount.isBlocked()) {
+            LOGGER.warning("Попытка пополнить заблокированный счет: id=" + selectedAccount.getId());
+            ClientDialog.showAlert("Ошибка", "Нельзя пополнить заблокированный счет");
+            return;
+        }
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Пополнить счет");
+        dialog.setHeaderText("Введите сумму пополнения для счета: " + selectedAccount.getName());
+        dialog.setContentText("Сумма:");
+        dialog.showAndWait().ifPresent(amountStr -> {
+            try {
+                double amount = Double.parseDouble(amountStr);
+                if (amount <= 0) {
+                    LOGGER.warning("Недопустимая сумма пополнения: " + amount);
+                    ClientDialog.showAlert("Ошибка", "Сумма должна быть положительной");
+                    return;
+                }
+                LOGGER.info("Отправка topUpAccount для accountId: " + selectedAccount.getId() + ", amount: " + amount);
+                String result = client.topUpAccount(selectedAccount.getId(), amount);
+                if ("OK".equals(result)) {
+                    loadChildAccounts(childComboBox.getSelectionModel().getSelectedItem().getId());
+                    LOGGER.info("Счет успешно пополнен: id=" + selectedAccount.getId() + ", amount=" + amount);
+                } else {
+                    LOGGER.warning("Ошибка сервера при пополнении счета: " + result);
+                    ClientDialog.showAlert("Ошибка", result);
+                }
+            } catch (NumberFormatException e) {
+                LOGGER.warning("Недопустимый формат суммы: " + amountStr);
+                ClientDialog.showAlert("Ошибка", "Введите корректную сумму");
+            } catch (IOException | ClassNotFoundException e) {
+                LOGGER.severe("Ошибка пополнения счета: " + e.getMessage());
+                ClientDialog.showAlert("Ошибка", "Не удалось пополнить счет: " + e.getMessage());
+            }
+        });
+    }
 }

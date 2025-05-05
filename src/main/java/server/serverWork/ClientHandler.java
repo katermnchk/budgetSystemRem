@@ -450,6 +450,23 @@ public class ClientHandler implements Runnable {
                             LOGGER.severe("Ошибка при блокировке/разблокировке счета: " + e.getMessage());
                         }
                     }
+                    case "topUpAccount" -> {
+                        int accountId = (int) sois.readObject();
+                        double amount = (double) sois.readObject();
+                        LOGGER.info("Обработка topUpAccount: accountId=" + accountId + ", amount=" + amount + ", userId=" + currentUserId);
+                        if (currentUserId == 0) {
+                            soos.writeObject("Ошибка: пользователь не авторизован");
+                            LOGGER.warning("Неавторизованный запрос пополнения счета");
+                            continue;
+                        }
+                        String result = sqlFactory.getUsers().topUpAccount(accountId, amount, currentUserId);
+                        soos.writeObject(result);
+                        if ("OK".equals(result)) {
+                            LOGGER.info("Счет успешно пополнен: accountId=" + accountId + ", amount=" + amount);
+                        } else {
+                            LOGGER.warning("Ошибка при пополнении счета: " + result);
+                        }
+                    }
                 }
             }
         } catch (IOException | ClassNotFoundException | SQLException e) {
