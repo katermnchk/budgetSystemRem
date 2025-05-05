@@ -40,7 +40,9 @@
             <Button fx:id="viewChartButton" onAction="#viewChart" styleClass="main-button" text="График расходов"
                     GridPane.columnIndex="0" GridPane.rowIndex="3" />
 <!--                    graphic="@../images/chart_icon.png"/>-->
-            <Button text="Управление счетами" onAction="#openAccountManagement" styleClass="main-button"  GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+            <Button text="Личные счета" onAction="#openAccountManagement" styleClass="main-button"  GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+            <Button onAction="#manageChildAccounts" styleClass="main-button" text="Счета детей"
+                    GridPane.columnIndex="0" GridPane.rowIndex="5" />
             <Button fx:id="transactionHistoryButton" onAction="#viewHistory" styleClass="main-button" text="История транзакций"
                     GridPane.columnIndex="1" GridPane.rowIndex="0" />
 <!--                    graphic="@../images/history_icon.png"/>-->
@@ -53,7 +55,7 @@
             <Button fx:id="personalInfButton" onAction="#persInf" styleClass="main-button" text="Профиль" GridPane.columnIndex="1"
                     GridPane.rowIndex="3" />
             <Button fx:id="manageGoalsButton" onAction="#manageGoals" styleClass="main-button" text="Управление целями"
-                    GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                    GridPane.columnIndex="1" GridPane.rowIndex="4" />
 
          <columnConstraints>
             <ColumnConstraints />

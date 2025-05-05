@@ -21,6 +21,7 @@ public class SQLUsers implements ISQLUsers {
     private Connection conn;
     private static SQLUsers instance;
 
+
     public SQLUsers(Connection conn) {
         this.conn = conn;
     }
@@ -763,5 +764,93 @@ public class SQLUsers implements ISQLUsers {
             }
         }
         return accountInfo;
+    }
+
+    public ArrayList<Users> getChildren(int parentId) throws SQLException {
+        ArrayList<Users> children = new ArrayList<>();
+        String query = "SELECT id, firstname, lastname, username, password, role_id FROM users WHERE parent_id = ? AND role_id = 2";
+        PreparedStatement stmt = conn.prepareStatement(query);
+        stmt.setInt(1, parentId);
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            Users child = new Users();
+            child.setId(rs.getInt("id"));
+            child.setFirstname(rs.getString("firstname"));
+            child.setLastname(rs.getString("lastname"));
+            String username = rs.getString("username");
+            child.setLogin(username != null ? username : "");
+            child.setPassword(rs.getString("password"));
+            child.setRole("CHILD"); // role_id = 2 соответствует CHILD
+            //child.setStatus(rs.getString("status"));
+            children.add(child);
+            LOGGER.info("Загружен ребенок: id=" + child.getId() + ", name=" + child.getFullName() + ", username=" + child.getLogin());
+        }
+        return children;
+    }
+
+    public ArrayList<Account> getChildAccounts(int childId, int parentId) throws SQLException {
+        ArrayList<Account> accounts = new ArrayList<>();
+        String query = "SELECT a.id, a.name, a.balance, a.is_blocked FROM accounts a JOIN users u ON a.user_id = u.id WHERE a.user_id = ? AND u.parent_id = ?";
+        PreparedStatement stmt = conn.prepareStatement(query);
+        stmt.setInt(1, childId);
+        stmt.setInt(2, parentId);
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            Account account = new Account(rs.getInt("id"), rs.getString("name"), rs.getDouble("balance"));
+            account.setBlocked(rs.getBoolean("is_blocked"));
+            accounts.add(account);
+            LOGGER.info("Загружен счет: id=" + account.getId() + ", name=" + account.getName() + ", balance=" + account.getBalance());
+        }
+        return accounts;
+    }
+
+    public boolean toggleBlockAccount(int accountId, int parentId) throws SQLException {
+        String query = "UPDATE accounts SET is_blocked = NOT is_blocked WHERE id = ? AND user_id IN (SELECT id FROM users WHERE parent_id = ?)";
+        PreparedStatement stmt = conn.prepareStatement(query);
+        stmt.setInt(1, accountId);
+        stmt.setInt(2, parentId);
+        int rows = stmt.executeUpdate();
+        if (rows == 0) {
+            throw new SQLException("Счет не найден или не принадлежит ребенку пользователя");
+        }
+        return true;
+    }
+
+    public Role addChild(Users child, int parentId) throws SQLException {
+        Role role = new Role();
+        String checkQuery = "SELECT id FROM users WHERE username = ?";
+        PreparedStatement checkStmt = conn.prepareStatement(checkQuery);
+        checkStmt.setString(1, child.getLogin());
+        ResultSet checkRs = checkStmt.executeQuery();
+        if (checkRs.next()) {
+            return role;
+        }
+
+        String parentCheckQuery = "SELECT id FROM users WHERE id = ? AND role_id = 1";
+        PreparedStatement parentCheckStmt = conn.prepareStatement(parentCheckQuery);
+        parentCheckStmt.setInt(1, parentId);
+        ResultSet parentCheckRs = parentCheckStmt.executeQuery();
+        if (!parentCheckRs.next()) {
+            throw new SQLException("Родитель не найден или не является пользователем с ролью USER");
+        }
+
+        String query = "INSERT INTO users (firstname, lastname, username, password, role_id, parent_id) VALUES (?, ?, ?, ?, ?, ?)";
+        PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+        stmt.setString(1, child.getFirstname());
+        stmt.setString(2, child.getLastname());
+        stmt.setString(3, child.getLogin());
+        stmt.setString(4, child.getPassword());
+        stmt.setInt(5, 2);
+       // stmt.setString(6, child.getStatus());
+        stmt.setInt(6, parentId);
+        int rows = stmt.executeUpdate();
+        if (rows > 0) {
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                role.setId(rs.getInt(1));
+                role.setRole("CHILD");
+            }
+        }
+        return role;
     }
 }

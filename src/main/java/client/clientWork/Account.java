@@ -6,12 +6,16 @@ import lombok.Setter;
 import java.io.Serializable;
 
 public class Account implements Serializable {
+    @Getter
     @Setter
     private int id;
+    @Getter
+    @Setter
     private String name;
     @Setter
     @Getter
     private double balance;
+    private boolean blockedValue;
 
     public Account(int id, String name) {
         this.id = id;
@@ -25,7 +29,15 @@ public class Account implements Serializable {
         this.balance = balance;
     }
 
-    public int getId() { return id; }
-    public String getName() { return name; }
+    public Account() {
+
+    }
+
+    public boolean isBlocked() {
+        return blockedValue;
+    }
+    public void setBlocked(boolean blockedValue) {
+        this.blockedValue = blockedValue;
+    }
 
 }

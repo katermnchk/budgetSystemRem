@@ -93,6 +93,7 @@ public class ClientHandler implements Runnable {
                         SQLAuthorization authDAO = sqlFactory.getRole();
                         Role r = authDAO.getRole(auth);
                         System.out.println(r.toString());
+
                         if (r.getId() != 0 && !r.getRole().isEmpty()) {
                             currentUserId = r.getId();
                             soos.writeObject("OK");
@@ -369,6 +370,84 @@ public class ClientHandler implements Runnable {
                         soos.writeObject(accountInfo.isEmpty() ? "Ошибка: счет не найден или не принадлежит пользователю" : "OK");
                         if (!accountInfo.isEmpty()) {
                             soos.writeObject(accountInfo);
+                        }
+                    }
+                    case "getChildren" -> {
+                        LOGGER.info("Запрос списка детей для userId: " + currentUserId);
+                        if (currentUserId == 0) {
+                            soos.writeObject("Ошибка: пользователь не авторизован");
+                            LOGGER.warning("Неавторизованный запрос списка детей");
+                            continue;
+                        }
+                        try {
+                            ArrayList<Users> children = sqlFactory.getUsers().getChildren(currentUserId);
+                            soos.writeObject(children);
+                            LOGGER.info("Отправлено " + children.size() + " детей для userId=" + currentUserId);
+                        } catch (SQLException e) {
+                            soos.writeObject(new ArrayList<Users>()); // Пустой список вместо строки ошибки
+                            LOGGER.severe("Ошибка при получении списка детей: " + e.getMessage());
+                        }
+                    }
+                    case "getChildAccounts" -> {
+                        Integer childId = (Integer) sois.readObject();
+                        LOGGER.info("Запрос счетов ребенка: childId=" + childId + ", userId=" + currentUserId);
+                        if (currentUserId == 0) {
+                            soos.writeObject("Ошибка: пользователь не авторизован");
+                            LOGGER.warning("Неавторизованный запрос счетов ребенка: childId=" + childId);
+                            continue;
+                        }
+                        try {
+                            ArrayList<Account> accounts = sqlFactory.getUsers().getChildAccounts(childId, currentUserId);
+                            soos.writeObject(accounts);
+                            LOGGER.info("Отправлено " + accounts.size() + " счетов для childId=" + childId);
+                        } catch (SQLException e) {
+                            soos.writeObject(new ArrayList<Account>()); // Пустой список вместо строки ошибки
+                            LOGGER.severe("Ошибка при получении счетов ребенка: " + e.getMessage());
+                        }
+                    }
+                    case "addChild" -> {
+                        Users child = (Users) sois.readObject();
+                        Integer parentId = (Integer) sois.readObject();
+                        LOGGER.info("Добавление ребенка для parentId: " + parentId + ", child=" + child.toString());
+                        if (currentUserId == 0 || currentUserId != parentId) {
+                            soos.writeObject("Ошибка: пользователь не авторизован или не имеет прав");
+                            LOGGER.warning("Неавторизованный запрос добавления ребенка: parentId=" + parentId);
+                            continue;
+                        }
+                        if (child.getLogin() == null || child.getLogin().isEmpty()) {
+                            soos.writeObject("Ошибка: поле login не заполнено");
+                            LOGGER.warning("Попытка добавить ребенка с пустым login");
+                            continue;
+                        }
+                        try {
+                            Role r = sqlFactory.getUsers().addChild(child, parentId);
+                            if (r.getId() != 0 && !r.getRole().isEmpty()) {
+                                soos.writeObject("OK");
+                                LOGGER.info("Ребенок успешно добавлен: login=" + child.getLogin());
+                            } else {
+                                soos.writeObject("Этот логин уже существует");
+                                LOGGER.warning("Добавление ребенка не удалось: логин уже существует");
+                            }
+                        } catch (SQLException e) {
+                            soos.writeObject("Ошибка при добавлении ребенка: " + e.getMessage());
+                            LOGGER.severe("Ошибка при добавлении ребенка: " + e.getMessage());
+                        }
+                    }
+                    case "toggleBlockAccount" -> {
+                        Integer accountId = (Integer) sois.readObject();
+                        LOGGER.info("Обработка toggleBlockAccount: accountId=" + accountId + ", userId=" + currentUserId);
+                        if (currentUserId == 0) {
+                            soos.writeObject("Ошибка: пользователь не авторизован");
+                            LOGGER.warning("Неавторизованный запрос блокировки счета: accountId=" + accountId);
+                            continue;
+                        }
+                        try {
+                            boolean success = sqlFactory.getUsers().toggleBlockAccount(accountId, currentUserId);
+                            soos.writeObject(success ? "OK" : "Ошибка при блокировке/разблокировке счета");
+                            LOGGER.info("Блокировка/разблокировка счета: " + (success ? "успешно" : "неудачно") + ", accountId=" + accountId);
+                        } catch (SQLException e) {
+                            soos.writeObject("Ошибка при блокировке/разблокировке счета: " + e.getMessage());
+                            LOGGER.severe("Ошибка при блокировке/разблокировке счета: " + e.getMessage());
                         }
                     }
                 }

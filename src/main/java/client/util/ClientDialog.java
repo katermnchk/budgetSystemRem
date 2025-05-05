@@ -3,6 +3,14 @@ package client.util;
 import javafx.scene.control.Alert;
 
 public class ClientDialog {
+    static public void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
     static public void showAlertWithNullInput(){
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Ошибка");
@@ -63,6 +71,14 @@ public class ClientDialog {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Ошибка");
         alert.setHeaderText("Ошибка: Пароль должен состоять минимум из 6 символов");
+        alert.setContentText("Повторите ввод пароля");
+        alert.showAndWait();
+    }
+
+    public static void correctMonitoring() {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Ошибка");
+        alert.setHeaderText("Ошибка: КОРРЕКТН МОНІТОРІНГ");
         alert.setContentText("Повторите ввод пароля");
         alert.showAndWait();
     }

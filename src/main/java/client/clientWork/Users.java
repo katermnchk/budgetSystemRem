@@ -69,6 +69,10 @@ public class Users implements Serializable {
         this.status = status;
     }
 
+    public String getFullName() {
+        return (firstname != null ? firstname : "") + " " + (lastname != null ? lastname : "");
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -89,14 +93,6 @@ public class Users implements Serializable {
 
     @Override
     public String toString() {
-        return "Users{" +
-                "id=" + id +
-                ", firstname='" + firstname + '\'' +
-                ", lastname='" + lastname + '\'' +
-                ", login='" + login + '\'' +
-                ", password='" + password + '\'' +
-                ", role='" + role + '\'' +
-                ", status='" + status + '\'' +
-                '}';
+        return getFullName().trim().isEmpty() ? login : getFullName();
     }
 }
