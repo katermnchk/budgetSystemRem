@@ -13,6 +13,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -58,7 +59,6 @@ public class ChildAccountManagementController {
             LOGGER.warning("Клиент не инициализирован");
         }
 
-        // Настройка ComboBox и TableView
         childComboBox.setItems(childrenList);
         childComboBox.setCellFactory(param -> new ListCell<>() {
             @Override
@@ -193,7 +193,8 @@ public class ChildAccountManagementController {
             newChild.setFirstname(firstName);
             newChild.setLastname(lastName);
             newChild.setLogin(login);
-            newChild.setPassword(password);
+            String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(12));
+            newChild.setPassword(hashedPassword);
             newChild.setRole("CHILD");
             newChild.setStatus("ACTIVE");
             client.sendObject(newChild);
@@ -464,7 +465,7 @@ public class ChildAccountManagementController {
                         ClientDialog.showAlert("Ошибка", "Сумма должна быть положительной");
                         return;
                     }
-                    LOGGER.info("Отправка topUpChildAccountFromParentAccount: childAccountId=" + selectedChildAccount.getId() +
+                    LOGGER.info("Отправка topUpChildAccount: childAccountId=" + selectedChildAccount.getId() +
                             ", parentAccountId=" + selectedParentAccount.getId() + ", amount=" + amount);
                     String result = client.topUpChildAccount(
                             selectedChildAccount.getId(), selectedParentAccount.getId(), amount);

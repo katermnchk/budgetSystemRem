@@ -150,6 +150,7 @@ public class MainController {
             String fxmlPath = switch (Connect.role) {
                 case "USER" -> "/client/menu.fxml";
                 case "ADMIN" -> "/client/menuAdmin.fxml";
+                case "CHILD" -> "/client/menuChild.fxml";
                 default -> {
                     LOGGER.warning("Неизвестная роль: " + Connect.role);
                     ClientDialog.showAlert("Ошибка", "Неизвестная роль пользователя: " + Connect.role);

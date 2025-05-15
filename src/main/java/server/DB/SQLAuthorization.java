@@ -32,7 +32,13 @@ public class SQLAuthorization implements ISQLAuthorization {
                 String hashedPassword = rs.getString("password");
                 if (BCrypt.checkpw(obj.getPassword(), hashedPassword)) {
                     r.setId(rs.getInt("id"));
-                    String role = rs.getInt("role_id") == 1 ? "USER" : "ADMIN";
+                    int roleId = rs.getInt("role_id");
+                    String role = switch (roleId) {
+                        case 2 -> "CHILD";
+                        case 3 -> "ADMIN";
+                        default -> "USER";
+                    };
+                    //String role = rs.getInt("role_id") == 1 ? "USER" : "ADMIN";
                     r.setRole(role);
                     System.out.println("Успешная авторизация: " + obj.getLogin());
                 } else {
