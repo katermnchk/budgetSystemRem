@@ -34,68 +34,6 @@ public class MainController {
     @FXML
     private Button  registrationButton;
 
-   /* @FXML
-    void authorization(ActionEvent event) throws IOException {
-        if (checkInput()) {
-            ClientDialog.showAlertWithNullInput();
-            return;
-        }
-
-        LOGGER.info("Отправка запроса на авторизацию, login: " + login.getText());
-        Connect.client.sendMessage("authorization");
-        Authorization auth = new Authorization();
-        auth.setLogin(login.getText());
-        auth.setPassword(password.getText());
-        Connect.client.sendObject(auth);
-
-        String mes = "";
-        try {
-            mes = Connect.client.readMessage();
-        } catch (IOException ex) {
-            System.out.println("Ошибка в чтении");
-        }
-        if (mes.equals("Данные отсутствуют!"))
-            ClientDialog.showAlertWithNoLogin();
-        else {
-            Role r = (Role) Connect.client.readObject();
-            Connect.id = r.getId();
-            Connect.role = r.getRole();
-            LOGGER.info("Авторизация успешна: id=" + Connect.id + ", role=" + Connect.role);
-
-            enterButton.getScene().getWindow().hide();
-            System.out.println(Connect.role);
-            FXMLLoader loader = new FXMLLoader();
-
-
-            if (Objects.equals(Connect.role, "USER")) {
-                System.out.println("Окно пользователя");
-                loader.setLocation(getClass().getResource("/client/menu.fxml"));
-            }
-            else if(Objects.equals(Connect.role, "ADMIN"))
-                loader.setLocation(getClass().getResource("/client/menuAdmin.fxml"));
-            else
-                loader.setLocation(getClass().getResource("/client/menuAdmin.fxml"));
-            try {
-                loader.load();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            if ("USER".equals(Connect.role)) {
-                MenuUserController controller = loader.getController();
-                controller.setClient(Connect.client);
-                controller.setCurrentUserId(Connect.id);
-                LOGGER.info("Sending client and currentUserId in MenuUserController: id=" + Connect.id);
-            }
-
-            Parent root = loader.getRoot();
-            Stage stage = new Stage();
-            stage.setScene(new Scene((root)));
-            stage.show();
-        }
-    }
-*/
-
     @FXML
     void authorization(ActionEvent event) {
         if (checkInput()) {
@@ -170,40 +108,6 @@ public class MainController {
                 LOGGER.severe("Ошибка : " + e.getMessage());
             }
         }
-
-       /* if (Objects.equals(fxmlPath, "/client/menu.fxml")) {
-            try {
-                Stage stage = (Stage) enterButton.getScene().getWindow();
-                MenuUserController.openMenuUserController(stage);
-
-                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-                MenuUserController controller = loader.getController();
-                controller.setClient(Connect.client);
-                controller.setCurrentUserId(Connect.id);
-                LOGGER.info("Передача client и currentUserId в MenuUserController: id=" + Connect.id);
-
-            } catch (Exception e) {
-                LOGGER.severe("Ошибка : " + e.getMessage());
-            }
-        }*/
-
-           /* if (fxmlPath != null) {
-               *//* FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-                Parent root = loader.load();*//*
-
-                if ("USER".equals(Connect.role)) {
-                    MenuUserController controller = loader.getController();
-                    controller.setClient(Connect.client);
-                    controller.setCurrentUserId(Connect.id);
-                    LOGGER.info("Передача client и currentUserId в MenuUserController: id=" + Connect.id);
-                }
-
-              *//*  Stage stage = (Stage) enterButton.getScene().getWindow();
-                stage.setMaximized(true);
-                stage.setScene(new Scene(root));
-                stage.setTitle("Меню " + Connect.role);
-                stage.show();*//*
-            }*/
     }
 
     @FXML

@@ -1,21 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="client.controllers.user.AccountManagementController"
-      spacing="20" alignment="CENTER" styleClass="root" stylesheets="@../css/styles.css">
+<VBox alignment="CENTER" spacing="30" styleClass="root" stylesheets="@../css/accounts.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.user.AccountManagementController">
+
+    <padding>
+        <Insets bottom="50" left="50" right="50" top="50" />
+    </padding>
+    <HBox alignment="CENTER" spacing="15">
+        <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@../images/piggy-bank.png" />
+            </image>
+        </ImageView>
+        <Label styleClass="header-label" text="Управление счетами">
+            <font>
+                <Font name="Poppins Bold" size="24.0" />
+            </font>
+        </Label>
+    </HBox>
+
+
     <TableView fx:id="accountsTable" styleClass="my-table">
         <columns>
-            <TableColumn fx:id="nameColumn" text="Название счета" prefWidth="200"/>
-            <TableColumn fx:id="balanceColumn" text="Баланс (BYN)" prefWidth="150"/>
+            <TableColumn fx:id="nameColumn" prefWidth="260.0" text="Название счета" />
+            <TableColumn fx:id="balanceColumn" prefWidth="254.0" text="Баланс (BYN)" />
         </columns>
     </TableView>
-    <HBox spacing="10" alignment="CENTER">
-        <Button fx:id="addAccountButton" text="Добавить счет" onAction="#addAccount" styleClass="my-button"/>
-        <Button fx:id="editAccountButton" text="Редактировать" onAction="#editAccount" styleClass="my-button"/>
-        <Button fx:id="deleteAccountButton" text="Удалить" onAction="#deleteAccount" styleClass="my-button"/>
-        <Button text="Закрыть" onAction="#closeWindow" styleClass="cancel-button"/>
+    <HBox alignment="CENTER" spacing="20">
+        <Button fx:id="addAccountButton" onAction="#addAccount" styleClass="my-button" text="Добавить счет" />
+        <Button fx:id="editAccountButton" onAction="#editAccount" styleClass="my-button" text="Редактировать" />
+        <Button fx:id="deleteAccountButton" onAction="#deleteAccount" styleClass="my-button" text="Удалить" />
+        <Button onAction="#closeWindow" styleClass="cancel-button" text="Закрыть" />
     </HBox>
 </VBox>

@@ -93,8 +93,7 @@ public class MenuUserController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/profile.fxml"));
             Parent root = loader.load();
-            Stage stage = (Stage) backButton.getScene().getWindow();
-            stage.setMaximized(true);
+            Stage stage = new Stage();
             stage.setTitle("Профиль");
             stage.setScene(new Scene(root));
             stage.show();
@@ -246,42 +245,56 @@ public class MenuUserController {
         }
     }
 
-    @FXML
+      @FXML
     private void manageChildAccounts() {
-        try {
-            LOGGER.info("Открытие окна управления счетами детей, currentUserId: " + currentUserId + ", client: " + (client != null ? client.toString() : "null") + ", Connect.client: " + (Connect.client != null ? Connect.client.toString() : "null"));
-            if (currentUserId == 0) {
-                LOGGER.warning("Попытка открыть окно управления детьми без авторизации, currentUserId: " + currentUserId);
-                showAlert("Ошибка", "Пользователь не авторизован. Пожалуйста, войдите в систему.");
-                return;
-            }
-            if (client == null) {
-                LOGGER.warning("Соединение Client не инициализировано в manageChildAccounts, используя Connect.client");
-                client = Connect.client;
-                if (client == null) {
-                    LOGGER.severe("Connect.client не инициализирован");
-                    showAlert("Ошибка", "Соединение с сервером не установлено.");
-                    return;
-                }
-            }
+          try {
+              LOGGER.info("Открытие окна управления счетами детей, currentUserId: " + currentUserId + ", client: " + (client != null ? client.toString() : "null") + ", Connect.client: " + (Connect.client != null ? Connect.client.toString() : "null"));
+              if (currentUserId == 0) {
+                  LOGGER.warning("Попытка открыть окно управления детьми без авторизации, currentUserId: " + currentUserId);
+                  showAlert("Ошибка", "Пользователь не авторизован. Пожалуйста, войдите в систему.");
+                  return;
+              }
+              if (client == null) {
+                  LOGGER.warning("Соединение Client не инициализировано в manageChildAccounts, используя Connect.client");
+                  client = Connect.client;
+                  if (client == null) {
+                      LOGGER.severe("Connect.client не инициализирован");
+                      showAlert("Ошибка", "Соединение с сервером не установлено.");
+                      return;
+                  }
+              }
 
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/child_account_management.fxml"));
-            Parent root = loader.load();
-            ChildAccountManagementController controller = loader.getController();
-            LOGGER.info("Создан контроллер ChildAccountManagementController: " + controller.toString());
-            controller.setClient(client);
-            controller.setCurrentUserId(currentUserId);
-            LOGGER.info("Передача currentUserId в ChildAccountManagementController: " + currentUserId);
+              FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/child_account_management.fxml"));
+              Parent root = loader.load();
+              ChildAccountManagementController controller = loader.getController();
+              LOGGER.info("Создан контроллер ChildAccountManagementController: " + controller.toString());
+              controller.setClient(client);
+              controller.setCurrentUserId(currentUserId);
+              LOGGER.info("Передача currentUserId в ChildAccountManagementController: " + currentUserId);
 
-            Stage stage = new Stage();
-            stage.setTitle("Управление счетами детей");
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            showAlert("Ошибка", "Не удалось открыть управление счетами детей: " + e.getMessage());
-            LOGGER.severe("Ошибка открытия окна управления счетами детей: " + e.getMessage());
-            e.printStackTrace();
-        }
+              Stage stage = new Stage();
+              stage.setTitle("Управление счетами детей");
+
+              Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+              stage.setX(screenBounds.getMinX());
+              stage.setY(screenBounds.getMinY());
+              stage.setWidth(screenBounds.getWidth());
+              stage.setHeight(screenBounds.getHeight());
+              LOGGER.info("[" + LocalDate.now() + " " + LocalTime.now() + "] Screen bounds set: X=" + screenBounds.getMinX() +
+                      ", Y=" + screenBounds.getMinY() + ", Width=" + screenBounds.getWidth() +
+                      ", Height=" + screenBounds.getHeight());
+
+
+              stage.setMaximized(true);
+
+              stage.setScene(new Scene(root));
+              stage.show();
+          } catch (IOException e) {
+              showAlert("Ошибка", "Не удалось открыть управление счетами детей: " + e.getMessage());
+              LOGGER.severe("Ошибка открытия окна управления счетами детей: " + e.getMessage());
+              e.printStackTrace();
+          }
+
     }
 
     private void showAlert(String title, String content) {
@@ -327,42 +340,4 @@ public class MenuUserController {
 
         return controller;
     }
-
-
-
-    /*public static MenuUserController openMenuUserController(Stage primaryStage) throws IOException {
-        String fxmlPath = "/client/menu.fxml";
-        LOGGER.info("[" + LocalDate.now() + " " + LocalTime.now() + "] Attempting to load FXML from: " + fxmlPath);
-
-        java.net.URL location = MenuUserController.class.getResource(fxmlPath);
-        if (location == null) {
-            LOGGER.severe("[" + LocalDate.now() + " " + LocalTime.now() + "] FXML file not found at: " + fxmlPath);
-            throw new IOException("Cannot find FXML file at: " + fxmlPath);
-        }
-
-        FXMLLoader loader = new FXMLLoader(location);
-        Parent root = loader.load();
-        Scene scene = new Scene(root);
-        Stage stage = primaryStage != null ? primaryStage : new Stage();
-        stage.setScene(scene);
-
-        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-        stage.setX(screenBounds.getMinX());
-        stage.setY(screenBounds.getMinY());
-        stage.setWidth(screenBounds.getWidth());
-        stage.setHeight(screenBounds.getHeight());
-        LOGGER.info("[" + LocalDate.now() + " " + LocalTime.now() + "] Screen bounds set: X=" + screenBounds.getMinX() +
-                ", Y=" + screenBounds.getMinY() + ", Width=" + screenBounds.getWidth() +
-                ", Height=" + screenBounds.getHeight());
-
-
-        stage.setMaximized(true);
-
-        stage.setTitle("Меню пользователя");
-        stage.show();
-        LOGGER.info("[" + LocalDate.now() + " " + LocalTime.now() + "] Окно меню пользователя открыто на весь экран");
-        return controller;
-    }*/
-
-
 }

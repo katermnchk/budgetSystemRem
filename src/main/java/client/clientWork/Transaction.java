@@ -7,7 +7,9 @@ import java.sql.Timestamp;
 
 @Getter
 public class Transaction implements Serializable {
+    @Getter
     private Timestamp date;
+
     private String accountName;
     private String categoryName;
     private double amount;
@@ -21,4 +23,7 @@ public class Transaction implements Serializable {
         this.description = description != null ? description : "";
     }
 
+    public String getType() {
+        return amount < 0 ? "EXPENSE" : "INCOME";
+    }
 }

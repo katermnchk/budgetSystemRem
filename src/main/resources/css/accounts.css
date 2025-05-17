@@ -2,8 +2,6 @@
     -fx-background-color: linear-gradient(to bottom right, #F0F7FF, #E0EFFE);
 }
 
-
-
 .header-label {
     -fx-text-fill: #64B5F6;
     -fx-font-size: 26px;

@@ -1,23 +1,36 @@
 package client.controllers.user;
 
 import client.clientWork.Connect;
+import client.controllers.MainController;
+import com.sun.javafx.binding.DoubleConstant;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ComboBox;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 public class ExpenseChartController implements Initializable {
+    private static final Logger LOGGER = Logger.getLogger(ExpenseChartController.class.getName());
+
     @FXML
     private PieChart expenseChart;
+
+    @FXML
+    private ComboBox<String> periodComboBox;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -68,5 +81,23 @@ public class ExpenseChartController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+
+    @FXML
+    private void filterChart() {
+        String period = periodComboBox.getValue();
+        Connect.client.sendMessage("filterExpenseData");
+        Connect.client.sendObject(new Object[]{Connect.id, period});
+        ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
+
+        Object response = Connect.client.readObject();
+        if (response instanceof ObservableList) {
+            pieChartData.addAll((ObservableList<PieChart.Data>) response);
+            expenseChart.setData(pieChartData);
+            LOGGER.info("[" + LocalDate.now() + " " + LocalTime.now() + "] График отфильтрован по периоду: " + period);
+        } else {
+            showAlert("Ошибка", "Не удалось отфильтровать данные: " + response);
+            LOGGER.warning("[" + LocalDate.now() + " " + LocalTime.now() + "] Ошибка фильтрации данных: " + response);
+        }
     }
 }

@@ -1,13 +1,8 @@
 package client.controllers;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Objects;
 import java.util.logging.Logger;
 
-import client.clientWork.Account;
 import client.clientWork.Connect;
 import client.clientWork.Users;
 import client.controllers.user.MenuUserController;
@@ -26,7 +21,7 @@ import server.SystemOrg.Role;
 import static client.util.ClientDialog.showAlert;
 
 public class RegistrationController {
-    private static final Logger LOGGER = Logger.getLogger(MainController.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(RegistrationController.class.getName());
     @FXML
     private Button backButton;
 
@@ -121,24 +116,13 @@ public class RegistrationController {
                     return;
                 }
 
-               /* Connect.client.sendMessage("getUserAccounts");
-                Connect.client.sendObject(Connect.id);
-                Object accountsResponse = Connect.client.readObject();
-
-                if (accountsResponse instanceof ArrayList) {
-                    Connect.accounts = (ArrayList<Account>) accountsResponse;
-                    LOGGER.info("[" + LocalDate.now() + " " + LocalTime.now() + "] Получено счетов: " + Connect.accounts.size());
-                } else {
-                    LOGGER.warning("[" + LocalDate.now() + " " + LocalTime.now() + "] Неверный ответ для getUserAccounts: " + accountsResponse);
-                    Connect.accounts = new ArrayList<>();
-                }*/
-
                 try {
                     Stage stage = (Stage) registrationButton.getScene().getWindow();
-                    MenuUserController.openMenuUserController(stage);
+                    //MenuUserController.openMenuUserController(stage);
+                    MenuUserController controller = MenuUserController.openMenuUserController(stage);
+                    controller.setClient(Connect.client);
+                    controller.setCurrentUserId(Connect.id);
 
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/menu.fxml"));
-                    MenuUserController controller = loader.getController();
                     controller.setClient(Connect.client);
                     controller.setCurrentUserId(Connect.id);
                     } catch (Exception e) {

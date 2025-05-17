@@ -12,6 +12,8 @@ import server.SystemOrg.*;
 import java.io.*;
 import java.net.Socket;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
@@ -507,10 +509,66 @@ public class ClientHandler implements Runnable {
                             LOGGER.severe("Ошибка при получении счетов родителя: " + e.getMessage());
                         }
                     }
+                    case "filterExpenseData" -> {
+                        LOGGER.info("[" + LocalDateTime.now() + "] Processing filterExpenseData for userId=" + currentUserId);
+                        if (currentUserId == 0) {
+                            soos.writeObject("Ошибка: пользователь не авторизован");
+                            LOGGER.warning("[" + LocalDateTime.now() + "] Unauthorized filterExpenseData attempt: userId=" + currentUserId);
+                            continue;
+                        }
+                        try {
+
+                            Object[] params = (Object[]) sois.readObject();
+                            Integer userId = (Integer) params[0];
+                            String period = (String) params[1];
+
+                            HashMap<String, Double> filteredExpenseData = filterExpensesByPeriod(userId, period, sqlFactory);
+                            soos.writeObject(filteredExpenseData);
+                            LOGGER.info("[" + LocalDateTime.now() + "] Sent filtered expense data for userId=" + userId + ", period=" + period);
+                        } catch (IOException | ClassNotFoundException e) {
+                            soos.writeObject("Ошибка при фильтрации данных расходов: " + e.getMessage());
+                            LOGGER.severe("[" + LocalDateTime.now() + "] Error filtering expense data: " + e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
         } catch (IOException | ClassNotFoundException | SQLException e) {
             System.out.println("Клиент отключен");
         }
+    }
+
+    private HashMap<String, Double> filterExpensesByPeriod(Integer userId, String period, SQLFactory sqlFactory) throws SQLException, ClassNotFoundException {
+        HashMap<String, Double> expenseData = new HashMap<>();
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startDate;
+
+        switch (period) {
+            case "За день":
+                startDate = now.truncatedTo(ChronoUnit.DAYS);
+                break;
+            case "За неделю":
+                startDate = now.minusDays(7);
+                break;
+            case "За месяц":
+                startDate = now.minusMonths(1);
+                break;
+            default:
+                startDate = now.minusMonths(1);
+                LOGGER.warning("[" + LocalDateTime.now() + "] Unknown period '" + period + "', defaulting to 1 month");
+        }
+
+        ArrayList<Transaction> transactions = sqlFactory.getUsers().getTransactionHistory(userId, new HashMap<>());
+        for (Transaction transaction : transactions) {
+            LocalDateTime transactionDate = transaction.getDate().toLocalDateTime();
+
+            if (transaction.getAmount() < 0 && transactionDate.isAfter(startDate)) {
+                String categoryName = transaction.getCategoryName();
+                double amount = Math.abs(transaction.getAmount());
+                expenseData.merge(categoryName, amount, Double::sum);
+            }
+        }
+
+        return expenseData;
     }
 }

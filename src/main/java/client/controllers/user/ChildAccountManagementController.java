@@ -2,7 +2,6 @@ package client.controllers.user;
 
 import client.clientWork.Client;
 import client.clientWork.Account;
-import client.clientWork.Connect;
 import client.clientWork.Users;
 import client.util.ClientDialog;
 import javafx.collections.FXCollections;
@@ -17,7 +16,6 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -49,6 +47,8 @@ public class ChildAccountManagementController {
     @FXML
     private TextField passwordField;
 
+    private Stage stage;
+
     @FXML
     public void initialize() {
         LOGGER.info("Инициализация контроллера, currentUserId: " + currentUserId + ", client: " + client + ", this: " + this);
@@ -58,6 +58,7 @@ public class ChildAccountManagementController {
         if (client == null) {
             LOGGER.warning("Клиент не инициализирован");
         }
+        //stage.setMaximized(true);
 
         childComboBox.setItems(childrenList);
         childComboBox.setCellFactory(param -> new ListCell<>() {
@@ -86,6 +87,13 @@ public class ChildAccountManagementController {
                 loadChildAccounts(newValue.getId());
             }
         });
+    }
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
+        if (stage != null && !stage.isMaximized()) {
+            stage.setMaximized(true);
+        }
     }
 
     public void setClient(Client client) {
@@ -148,30 +156,6 @@ public class ChildAccountManagementController {
         }
     }
 
-   /* private void loadChildAccounts(int childId) {
-        try {
-            LOGGER.info("Запрос getChildAccounts для childId: " + childId);
-            client.sendMessage("getChildAccounts");
-            client.sendObject(childId);
-            Object response = client.readObject();
-            if (response instanceof ArrayList<?> responseList) {
-                accountsList.setAll((ArrayList<Account>) responseList);
-                LOGGER.info("Загружено " + accountsList.size() + " счетов для childId=" + childId);
-            } else if (response instanceof String errorMessage) {
-                LOGGER.warning("Ошибка сервера при getChildAccounts: " + errorMessage);
-                ClientDialog.showAlert("Ошибка", "Не удалось загрузить счета ребенка: " + errorMessage);
-                accountsList.clear();
-            } else {
-                LOGGER.warning("Неожиданный тип ответа для getChildAccounts: " + (response != null ? response.getClass().getName() : "null"));
-                ClientDialog.showAlert("Ошибка", "Неожиданный ответ от сервера при загрузке счетов.");
-                accountsList.clear();
-            }
-        } catch (Exception e) {
-            LOGGER.severe("Ошибка при загрузке счетов ребенка: " + e.getMessage());
-            ClientDialog.showAlert("Ошибка", "Ошибка при загрузке счетов ребенка: " + e.getMessage());
-            accountsList.clear();
-        }
-    }*/
 
     @FXML
     private void addChild() {

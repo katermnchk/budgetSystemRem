@@ -2,15 +2,14 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.text.Font?>
+
 <VBox xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="client.controllers.user.ChildAccountManagementController"
-      spacing="20" alignment="TOP_CENTER" stylesheets="@../css/accounts.css" maxWidth="800" maxHeight="600">
+      spacing="20" alignment="TOP_CENTER" stylesheets="@../css/accounts.css">
     <children>
-
         <HBox alignment="CENTER" spacing="15">
             <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                 <image>
@@ -24,7 +23,7 @@
             </Label>
         </HBox>
 
-        <VBox styleClass="card" spacing="15" maxWidth="1200">
+        <VBox styleClass="card" spacing="15">
             <HBox spacing="15" alignment="CENTER_LEFT">
                 <Label text="Выберите ребенка:" styleClass="input-label" />
                 <ComboBox fx:id="childComboBox" styleClass="my-combobox" prefWidth="200" />
@@ -39,7 +38,8 @@
                 </columns>
             </TableView>
             <HBox spacing="10" alignment="CENTER">
-                <Button fx:id="toggleBlockButton" text="Заблокировать/Разблокировать" styleClass="my-button" onAction="#toggleBlockAccount" />
+                <Button fx:id="toggleBlockButton" text="Заблокировать/Разблокировать"
+                        styleClass="my-button" onAction="#toggleBlockAccount" />
                 <Button text="Пополнить счет" styleClass="my-button" onAction="#topUpAccount" />
                 <Button text="Добавить счет" styleClass="my-button" onAction="#addAccount" />
                 <Button text="Редактировать счет" styleClass="my-button" onAction="#editAccount" />
@@ -47,7 +47,7 @@
             </HBox>
         </VBox>
 
-        <VBox styleClass="card" spacing="15" maxWidth="1200">
+        <VBox styleClass="card" spacing="15">
             <Label text="Добавить нового ребенка" styleClass="header-label" />
             <GridPane hgap="15" vgap="10">
                 <Label text="Имя:" styleClass="input-label" GridPane.columnIndex="0" GridPane.rowIndex="0" />

@@ -151,3 +151,36 @@
 .scroll-pane .scroll-bar:vertical .track {
     -fx-background-color: transparent;
 }
+
+.info-label {
+    -fx-text-fill: #37474F;
+    -fx-font-family: "Roboto";
+    -fx-font-size: 14px;
+    -fx-padding: 5 10;
+    -fx-background-color: #F6FAFF;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 8, 0, 0, 2);
+}
+
+
+.cancel-button {
+    -fx-background-color: transparent;
+    -fx-border-color: #EF5350;
+    -fx-border-width: 2;
+    -fx-text-fill: #EF5350;
+    -fx-font-family: "Roboto";
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 8, 0, 0, 2);
+}
+
+.cancel-button:hover {
+    -fx-background-color: #FFEDEE;
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+    -fx-transition: all 0.3s ease-in-out;
+}
