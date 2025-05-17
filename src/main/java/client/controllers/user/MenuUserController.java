@@ -5,13 +5,18 @@ import client.clientWork.Connect;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
+import lombok.Setter;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.logging.Logger;
 
 public class MenuUserController {
@@ -29,6 +34,9 @@ public class MenuUserController {
     @FXML
     private Button backButton;
 
+    @Setter
+    private Stage stage;
+
     @FXML
     private Button addAccountButton;
 
@@ -42,7 +50,7 @@ public class MenuUserController {
     private void initialize() {
         LOGGER.info("Инициализация MenuUserController, currentUserId: " + currentUserId + ", client: " + (client != null ? client.toString() : "null"));
         if (currentUserId == 0 || client == null) {
-            LOGGER.warning("MenuUserController: currentUserId равен 0 при инициализации");
+            LOGGER.warning("MenuUserController: currentUserId равен 0 или client null при инициализации");
         }
     }
 
@@ -67,7 +75,8 @@ public class MenuUserController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/main.fxml"));
             Parent root = loader.load();
-            Stage stage = new Stage();
+            Stage stage = (Stage) backButton.getScene().getWindow();
+            stage.setMaximized(true);
             stage.setScene(new Scene(root));
             stage.setTitle("Авторизация");
             stage.show();
@@ -84,7 +93,8 @@ public class MenuUserController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/profile.fxml"));
             Parent root = loader.load();
-            Stage stage = new Stage();
+            Stage stage = (Stage) backButton.getScene().getWindow();
+            stage.setMaximized(true);
             stage.setTitle("Профиль");
             stage.setScene(new Scene(root));
             stage.show();
@@ -178,12 +188,9 @@ public class MenuUserController {
     @FXML
     void viewHistory() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/transactionHistory.fxml"));
-            Parent root = loader.load();
-            Stage stage = new Stage();
-            stage.setTitle("История транзакций");
-            stage.setScene(new Scene(root));
-            stage.show();
+            Stage stage = (Stage) backButton.getScene().getWindow();
+            TransactionHistoryController.openTransactionHistory(stage);
+
         } catch (IOException e) {
             showAlert("Ошибка", "Не удалось открыть историю транзакций: " + e.getMessage());
             LOGGER.severe("Ошибка открытия истории транзакций: " + e.getMessage());
@@ -284,6 +291,78 @@ public class MenuUserController {
         alert.setContentText(content);
         alert.showAndWait();
     }
+
+    public static MenuUserController openMenuUserController(Stage primaryStage) throws IOException {
+        String fxmlPath = "/client/menu.fxml";
+        LOGGER.info("[" + LocalDate.now() + " " + LocalTime.now() + "] Пытаемся загрузить FXML из: " + fxmlPath);
+
+        java.net.URL location = MenuUserController.class.getResource(fxmlPath);
+        if (location == null) {
+            LOGGER.severe("[" + LocalDate.now() + " " + LocalTime.now() + "] Файл FXML не найден по пути: " + fxmlPath);
+            throw new IOException("Не удаётся найти FXML файл по пути: " + fxmlPath);
+        }
+
+        FXMLLoader loader = new FXMLLoader(location);
+        Parent root = loader.load();
+        MenuUserController controller = loader.getController();
+        Scene scene = new Scene(root);
+        Stage stage = primaryStage != null ? primaryStage : new Stage();
+        stage.setScene(scene);
+
+        controller.setStage(stage);
+
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+        stage.setX(screenBounds.getMinX());
+        stage.setY(screenBounds.getMinY());
+        stage.setWidth(screenBounds.getWidth());
+        stage.setHeight(screenBounds.getHeight());
+        LOGGER.info("[" + LocalDate.now() + " " + LocalTime.now() + "] Установлены границы экрана: X=" + screenBounds.getMinX() +
+                ", Y=" + screenBounds.getMinY() + ", Width=" + screenBounds.getWidth() +
+                ", Height=" + screenBounds.getHeight());
+
+        stage.setMaximized(true);
+        stage.setTitle("Меню пользователя");
+        stage.show();
+        LOGGER.info("[" + LocalDate.now() + " " + LocalTime.now() + "] Окно меню пользователя открыто на весь экран");
+
+        return controller;
+    }
+
+
+
+    /*public static MenuUserController openMenuUserController(Stage primaryStage) throws IOException {
+        String fxmlPath = "/client/menu.fxml";
+        LOGGER.info("[" + LocalDate.now() + " " + LocalTime.now() + "] Attempting to load FXML from: " + fxmlPath);
+
+        java.net.URL location = MenuUserController.class.getResource(fxmlPath);
+        if (location == null) {
+            LOGGER.severe("[" + LocalDate.now() + " " + LocalTime.now() + "] FXML file not found at: " + fxmlPath);
+            throw new IOException("Cannot find FXML file at: " + fxmlPath);
+        }
+
+        FXMLLoader loader = new FXMLLoader(location);
+        Parent root = loader.load();
+        Scene scene = new Scene(root);
+        Stage stage = primaryStage != null ? primaryStage : new Stage();
+        stage.setScene(scene);
+
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+        stage.setX(screenBounds.getMinX());
+        stage.setY(screenBounds.getMinY());
+        stage.setWidth(screenBounds.getWidth());
+        stage.setHeight(screenBounds.getHeight());
+        LOGGER.info("[" + LocalDate.now() + " " + LocalTime.now() + "] Screen bounds set: X=" + screenBounds.getMinX() +
+                ", Y=" + screenBounds.getMinY() + ", Width=" + screenBounds.getWidth() +
+                ", Height=" + screenBounds.getHeight());
+
+
+        stage.setMaximized(true);
+
+        stage.setTitle("Меню пользователя");
+        stage.show();
+        LOGGER.info("[" + LocalDate.now() + " " + LocalTime.now() + "] Окно меню пользователя открыто на весь экран");
+        return controller;
+    }*/
 
 
 }

@@ -1,0 +1,149 @@
+.root {
+    -fx-background-color: linear-gradient(to bottom right, #F0F7FF, #E0EFFE);
+}
+
+
+
+.header-label {
+    -fx-text-fill: #64B5F6;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 6, 0, 0, 2);
+}
+
+.card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 20, 0, 0, 10);
+    -fx-padding: 20;
+    -fx-spacing: 10;
+}
+
+.my-button {
+    -fx-background-color: #64B5F6;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-family: "Roboto";
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0, 0, 3);
+    -fx-transition: all 0.3s ease-in-out;
+}
+
+.my-button:hover {
+    -fx-background-color: #42A5F5;
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+}
+
+.cancel-button {
+    -fx-background-color: transparent;
+    -fx-border-color: #EF5350;
+    -fx-border-width: 2;
+    -fx-text-fill: #EF5350;
+    -fx-font-family: "Roboto";
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 8, 0, 0, 2);
+}
+
+.cancel-button:hover {
+    -fx-background-color: #FFEDEE;
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+    -fx-transition: all 0.3s ease-in-out;
+}
+
+.my-textfield {
+    -fx-background-color: #F6FAFF;
+    -fx-border-color: #BBDEFB;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 10;
+    -fx-font-family: "Roboto";
+    -fx-font-size: 14px;
+    -fx-text-fill: #37474F;
+    -fx-prompt-text-fill: #B0BEC5;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 10, 0, 0, 2);
+}
+
+.my-textfield:focused {
+    -fx-border-color: #64B5F6;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 12, 0, 0, 3);
+}
+
+.input-label {
+    -fx-text-fill: #78909C;
+    -fx-font-family: "Roboto";
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.my-combobox {
+    -fx-background-color: #F6FAFF;
+    -fx-border-color: #BBDEFB;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 6;
+    -fx-font-family: "Roboto";
+    -fx-font-size: 14px;
+    -fx-text-fill: #37474F;
+}
+
+.my-combobox:focused {
+    -fx-border-color: #64B5F6;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 0, 2);
+}
+
+.my-combobox .list-cell {
+    -fx-background-color: #F6FAFF;
+    -fx-text-fill: #37474F;
+    -fx-padding: 10;
+}
+
+.my-combobox-popup .list-view .list-cell:hover {
+    -fx-background-color: #E3F2FD;
+    -fx-text-fill: #37474F;
+}
+
+.my-table {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #BBDEFB;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 15, 0, 0, 5);
+}
+
+.my-table .column-header {
+    -fx-background-color: linear-gradient(to bottom, #64B5F6, #42A5F5);
+    -fx-text-fill: #FFFFFF;
+    -fx-font-family: "Roboto";
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER;
+}
+
+.my-table .column-header-background {
+    -fx-background-color: transparent;
+}
+
+.my-table .table-cell {
+    -fx-text-fill: #37474F;
+    -fx-font-family: "Roboto";
+    -fx-font-size: 13px;
+    -fx-alignment: CENTER;
+}
+
+.my-table .table-row-cell:hover {
+    -fx-background-color: #E3F2FD;
+    -fx-cursor: hand;
+}

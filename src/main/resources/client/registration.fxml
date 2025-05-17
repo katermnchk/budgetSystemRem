@@ -2,46 +2,78 @@
 
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<VBox prefHeight="450.0" prefWidth="700.0" styleClass="root" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/17.0.12"
+<VBox styleClass="root" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/17.0.12"
       xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.RegistrationController">
 
-    <AnchorPane prefHeight="80.0" styleClass="header">
-        <children>
-            <Label styleClass="header-label" text="Регистрация" AnchorPane.topAnchor="20.0" />
-        </children>
-    </AnchorPane>
-
-    <VBox alignment="CENTER" spacing="15" VBox.vgrow="ALWAYS">
+    <VBox prefHeight="74.0" prefWidth="922.0" styleClass="header" VBox.vgrow="NEVER">
         <padding>
-            <Insets bottom="20" left="40" right="40" top="20" />
+            <Insets bottom="15" top="20" />
+        </padding>
+        <Label styleClass="header-label" text="BUDGET SYSTEM">
+            <font>
+                <Font name="System Bold" size="28.0" />
+            </font>
+        </Label>
+    </VBox>
+
+    <HBox alignment="CENTER" spacing="40" VBox.vgrow="ALWAYS">
+        <padding>
+            <Insets bottom="30" left="30" right="30" top="30" />
         </padding>
 
-        <HBox alignment="CENTER" spacing="15">
-            <VBox alignment="CENTER_RIGHT" prefHeight="165.0" prefWidth="144.0" spacing="30">
-                <Label styleClass="input-label" text="Имя" />
+        <ImageView fx:id="welcomeImage" fitHeight="400.0" fitWidth="400.0" pickOnBounds="true" preserveRatio="true" styleClass="welcome-image">
+            <image>
+                <Image url="@../images/login.jpg" />
+            </image>
+        </ImageView>
 
-                <Label styleClass="input-label" text="Фамилия" />
+        <ScrollPane fitToWidth="true" styleClass="scroll-pane">
+            <content>
+                <VBox alignment="CENTER" spacing="10" styleClass="login-form">
+                    <padding>
+                        <Insets bottom="10" left="20" right="20" top="10" />
+                    </padding>
+                    <Label styleClass="form-title" text="Регистрация">
+                        <font>
+                            <Font name="System Bold" size="22.0" />
+                        </font>
+                    </Label>
 
-                <Label styleClass="input-label" text="Логин" />
-                <Label styleClass="input-label" text="Пароль" />
+                    <VBox spacing="10">
+                        <Label styleClass="input-label" text="Имя" />
+                        <TextField fx:id="firstName" prefHeight="0.0" prefWidth="350.0" promptText="Введите имя" styleClass="input-field" />
+                    </VBox>
 
-                <Label styleClass="input-label" text="Подтвердите пароль" />
-            </VBox>
+                    <VBox prefHeight="41.0" prefWidth="350.0" spacing="7">
+                        <Label styleClass="input-label" text="Фамилия" />
+                        <TextField fx:id="lastName" prefWidth="280.0" promptText="Введите фамилию" styleClass="input-field" />
+                    </VBox>
 
-            <VBox alignment="CENTER_RIGHT" spacing="10">
-                <TextField fx:id="firstName" promptText="Введите имя" styleClass="my-textfield" />
-                <TextField fx:id="lastName" promptText="Введите фамилию" styleClass="my-textfield" />
-                <TextField fx:id="login" promptText="Введите логин" styleClass="my-textfield" />
-                <PasswordField fx:id="password" promptText="Введите пароль" styleClass="my-textfield" />
-                <PasswordField fx:id="confirmPassword" promptText="Подтвердите пароль" styleClass="my-textfield" />
-            </VBox>
-        </HBox>
+                    <VBox spacing="10">
+                        <Label styleClass="input-label" text="Логин" />
+                        <TextField fx:id="login" prefWidth="280.0" promptText="Введите логин" styleClass="input-field" />
+                    </VBox>
 
-        <HBox alignment="CENTER" spacing="20">
-            <Button fx:id="backButton" onAction="#backToMain" styleClass="cancel-button" text="Назад" />
-            <Button fx:id="registrationButton" onAction="#registrationUser" prefWidth="249.0" styleClass="my-button" text="Регистрация" />
-        </HBox>
-    </VBox>
+                    <VBox spacing="10">
+                        <Label styleClass="input-label" text="Пароль" />
+                        <PasswordField fx:id="password" prefWidth="280.0" promptText="Введите пароль" styleClass="input-field" />
+                    </VBox>
+
+                    <VBox spacing="10">
+                        <Label styleClass="input-label" text="Подтвердите пароль" />
+                        <PasswordField fx:id="confirmPassword" prefWidth="280.0" promptText="Подтвердите пароль" styleClass="input-field" />
+                    </VBox>
+
+                    <HBox alignment="CENTER" spacing="20">
+                        <Button fx:id="backButton" onAction="#backToMain" prefWidth="130.0" styleClass="secondary-button" text="Назад" />
+                        <Button fx:id="registrationButton" onAction="#registrationUser" prefWidth="200.0" styleClass="primary-button" text="Зарегистрироваться" />
+                    </HBox>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </HBox>
 </VBox>

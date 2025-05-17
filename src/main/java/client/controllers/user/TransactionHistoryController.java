@@ -6,8 +6,13 @@ import client.clientWork.Connect;
 import client.clientWork.Transaction;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -240,12 +245,46 @@ public class TransactionHistoryController {
     private void closeWindow() {
         try {
             Stage stage = (Stage) transactionsTable.getScene().getWindow();
-            stage.close();
-            LOGGER.info("Окно истории транзакций закрыто");
+            MenuUserController controller = MenuUserController.openMenuUserController(stage);
+            controller.setClient(Connect.client);
+            controller.setCurrentUserId(Connect.id);
         } catch (Exception e) {
             LOGGER.severe("Ошибка в closeWindow: " + e.getMessage());
             showAlert("Ошибка", "Ошибка при закрытии окна: " + e.getMessage());
         }
+    }
+
+    public static void openTransactionHistory(Stage primaryStage) throws IOException {
+        String fxmlPath = "/client/transactionHistory.fxml";
+        LOGGER.info("[" + LocalDate.now() + " " + LocalTime.now() + "] Attempting to load FXML from: " + fxmlPath);
+
+        java.net.URL location = TransactionHistoryController.class.getResource(fxmlPath);
+        if (location == null) {
+            LOGGER.severe("[" + LocalDate.now() + " " + LocalTime.now() + "] FXML file not found at: " + fxmlPath);
+            throw new IOException("Cannot find FXML file at: " + fxmlPath);
+        }
+
+        FXMLLoader loader = new FXMLLoader(location);
+        Parent root = loader.load();
+        Scene scene = new Scene(root);
+        Stage stage = primaryStage != null ? primaryStage : new Stage();
+
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+        stage.setX(screenBounds.getMinX());
+        stage.setY(screenBounds.getMinY());
+        stage.setWidth(screenBounds.getWidth());
+        stage.setHeight(screenBounds.getHeight());
+        LOGGER.info("[" + LocalDate.now() + " " + LocalTime.now() + "] Screen bounds set: X=" + screenBounds.getMinX() +
+                ", Y=" + screenBounds.getMinY() + ", Width=" + screenBounds.getWidth() +
+                ", Height=" + screenBounds.getHeight());
+
+
+        stage.setMaximized(true);
+
+        stage.setScene(scene);
+        stage.setTitle("История транзакций");
+        stage.show();
+        LOGGER.info("[" + LocalDate.now() + " " + LocalTime.now() + "] Окно истории транзакций открыто на весь экран");
     }
 
     private void showAlert(String title, String content) {

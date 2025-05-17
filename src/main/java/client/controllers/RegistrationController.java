@@ -1,11 +1,16 @@
 package client.controllers;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Objects;
+import java.util.logging.Logger;
 
 import client.clientWork.Account;
 import client.clientWork.Connect;
 import client.clientWork.Users;
+import client.controllers.user.MenuUserController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,8 +23,10 @@ import javafx.stage.Stage;
 import client.util.ClientDialog;
 import server.SystemOrg.Role;
 
-public class RegistrationController {
+import static client.util.ClientDialog.showAlert;
 
+public class RegistrationController {
+    private static final Logger LOGGER = Logger.getLogger(MainController.class.getName());
     @FXML
     private Button backButton;
 
@@ -41,23 +48,28 @@ public class RegistrationController {
     @FXML
     private Button registrationButton;
 
+
+    @FXML
+    void initialize() {
+        Stage stage = (Stage) registrationButton.getScene().getWindow();
+        stage.setMaximized(true);
+    }
+
     @FXML
     void backToMain(ActionEvent event) {
-        backButton.getScene().getWindow().hide();
-
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/client/main.fxml"));
-
         try {
-            loader.load();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/main.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) backButton.getScene().getWindow();
+            stage.setMaximized(true);
+            stage.setScene(new Scene(root));
+            stage.setTitle("Авторизация");
+            stage.show();
+            backButton.getScene().getWindow().hide();
         } catch (IOException e) {
+            showAlert("Ошибка", "Не удалось открыть окно авторизации: " + e.getMessage());
             e.printStackTrace();
         }
-
-        Parent root = loader.getRoot();
-        Stage stage = new Stage();
-        stage.setScene(new Scene((root)));
-        stage.show();
     }
 
     @FXML
@@ -75,6 +87,7 @@ public class RegistrationController {
                 user.setLastname(lastName.getText());
                 user.setLogin(login.getText());
                 user.setPassword(password.getText());
+
                 Connect.client.sendMessage("registrationUser");
                 Connect.client.sendObject(user);
                 System.out.println("Запись отправлена");
@@ -89,31 +102,49 @@ public class RegistrationController {
                 ClientDialog.showAlertWithExistLogin();
             }
             else {
-                Role r = (Role) Connect.client.readObject();
+               // Role r = (Role) Connect.client.readObject();
+                Object roleResponse = Connect.client.readObject();
+                if (!(roleResponse instanceof Role)) {
+                    LOGGER.warning("Неожиданный тип ответа для Role: " + (roleResponse != null ? roleResponse.getClass().getName() : "null"));
+                    ClientDialog.showAlert("Ошибка", "Неожиданный ответ от сервера при авторизации.");
+                    return;
+                }
+
+                Role r = (Role) roleResponse;
 
                 Connect.id = r.getId();
                 Connect.role = r.getRole();
 
-                Connect.client.sendMessage("getUserAccounts");
-                Connect.client.sendObject(r.getId());
-                Connect.accounts = (ArrayList<Account>) Connect.client.readObject();
-
-                registrationButton.getScene().getWindow().hide();
-
-                FXMLLoader loader = new FXMLLoader();
-                loader.setLocation(getClass().getResource("/client/menu.fxml"));
-
-                try {
-                    loader.load();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if (Connect.id == 0 || Connect.role.isEmpty()) {
+                    LOGGER.warning("Некорректные данные авторизации: id=" + Connect.id + ", role=" + Connect.role);
+                    ClientDialog.showAlert("Ошибка", "Некорректные данные авторизации.");
+                    return;
                 }
 
-                Parent root = loader.getRoot();
-                Stage stage = new Stage();
-                stage.setScene(new Scene((root)));
-                stage.show();
-            }
+               /* Connect.client.sendMessage("getUserAccounts");
+                Connect.client.sendObject(Connect.id);
+                Object accountsResponse = Connect.client.readObject();
+
+                if (accountsResponse instanceof ArrayList) {
+                    Connect.accounts = (ArrayList<Account>) accountsResponse;
+                    LOGGER.info("[" + LocalDate.now() + " " + LocalTime.now() + "] Получено счетов: " + Connect.accounts.size());
+                } else {
+                    LOGGER.warning("[" + LocalDate.now() + " " + LocalTime.now() + "] Неверный ответ для getUserAccounts: " + accountsResponse);
+                    Connect.accounts = new ArrayList<>();
+                }*/
+
+                try {
+                    Stage stage = (Stage) registrationButton.getScene().getWindow();
+                    MenuUserController.openMenuUserController(stage);
+
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/menu.fxml"));
+                    MenuUserController controller = loader.getController();
+                    controller.setClient(Connect.client);
+                    controller.setCurrentUserId(Connect.id);
+                    } catch (Exception e) {
+                        LOGGER.severe("Ошибка : " + e.getMessage());
+                    }
+                }
 
         }
     }

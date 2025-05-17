@@ -79,10 +79,13 @@ public class ClientHandler implements Runnable {
                         System.out.println(user.toString());
                         Role r = sqlFactory.getUsers().insert(user);
                         System.out.println(r.toString());
+
                         if (r.getId() != 0 && !r.getRole().isEmpty()) {
+                            currentUserId = r.getId();
                             soos.writeObject("OK");
                             soos.writeObject(r);
                         } else {
+                            currentUserId = 0;
                             soos.writeObject("Этот пользователь уже существует");
                         }
                     }

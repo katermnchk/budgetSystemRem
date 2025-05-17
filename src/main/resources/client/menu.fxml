@@ -4,77 +4,172 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<VBox prefHeight="450.0" prefWidth="700.0" styleClass="root" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/17.0.12"
+<VBox styleClass="root" stylesheets="@../css/menu_styles.css" xmlns="http://javafx.com/javafx/17.0.12"
       xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.user.MenuUserController">
-
-    <AnchorPane prefHeight="80.0" styleClass="header">
-        <children>
-            <Label styleClass="header-label" text="Семейный бюджет" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0" />
-        </children>
-    </AnchorPane>
-
-    <HBox alignment="CENTER" spacing="20" VBox.vgrow="ALWAYS">
+    <VBox styleClass="header" VBox.vgrow="NEVER">
         <padding>
-            <Insets bottom="20" left="20" right="20" top="20" />
+            <Insets bottom="20" top="20" />
         </padding>
+        <Label styleClass="header-label" text="Панель пользователя">
+            <font>
+                <Font name="Poppins Bold" size="32.0" />
+            </font>
+        </Label>
+    </VBox>
 
-        <VBox alignment="CENTER_LEFT" spacing="10" styleClass="image-pane">
-            <ImageView fx:id="catImage" fitHeight="250.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true">
-                <image>
-                    <Image url="@../images/cat.jpg" />
-                </image>
-            </ImageView>
-        </VBox>
-
-        <GridPane alignment="CENTER" hgap="15" prefHeight="268.0" prefWidth="379.0" styleClass="button-grid" vgap="15">
-            <Button fx:id="addIncomeButton" onAction="#addIncome" prefWidth="132.0" styleClass="main-button" text="Добавить доход"
-                    GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                   <!-- graphic="@../images/add_income_icon.png"/>-->
-            <Button fx:id="addExpenseButton" onAction="#addExpense" prefWidth="170.0" styleClass="main-button" text="Добавить расход"
-                    GridPane.columnIndex="0" GridPane.rowIndex="1" />
-<!--                    graphic="@../images/add_expense_icon.png"/>-->
-            <Button fx:id="viewBalanceButton" onAction="#viewBalance" prefWidth="195.0" styleClass="main-button" text="Просмотр баланса"
-                    GridPane.columnIndex="0" GridPane.rowIndex="2" />
-<!--                    graphic="@../images/balance_icon.png"/>-->
-            <Button fx:id="viewChartButton" onAction="#viewChart" styleClass="main-button" text="График расходов"
-                    GridPane.columnIndex="0" GridPane.rowIndex="3" />
-<!--                    graphic="@../images/chart_icon.png"/>-->
-            <Button text="Личные счета" onAction="#openAccountManagement" styleClass="main-button"  GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-            <Button onAction="#manageChildAccounts" styleClass="main-button" text="Счета детей"
-                    GridPane.columnIndex="0" GridPane.rowIndex="5" />
-            <Button fx:id="transactionHistoryButton" onAction="#viewHistory" styleClass="main-button" text="История транзакций"
-                    GridPane.columnIndex="1" GridPane.rowIndex="0" />
-<!--                    graphic="@../images/history_icon.png"/>-->
-            <Button fx:id="addAccountButton" onAction="#addAccount" styleClass="main-button" text="Добавить счет"
-                    GridPane.columnIndex="1" GridPane.rowIndex="1" />
-<!--                    graphic="@../images/account_icon.png"/>-->
-            <Button fx:id="manageCategoriesButton" onAction="#manageCategories" styleClass="main-button" text="Настройки категорий"
-                    GridPane.columnIndex="1" GridPane.rowIndex="2" />
-<!--                    graphic="@../images/categories_icon.png"/>-->
-            <Button fx:id="personalInfButton" onAction="#persInf" styleClass="main-button" text="Профиль" GridPane.columnIndex="1"
-                    GridPane.rowIndex="3" />
-            <Button fx:id="manageGoalsButton" onAction="#manageGoals" styleClass="main-button" text="Управление целями"
-                    GridPane.columnIndex="1" GridPane.rowIndex="4" />
-
-         <columnConstraints>
-            <ColumnConstraints />
-            <ColumnConstraints />
-         </columnConstraints>
-         <rowConstraints>
-            <RowConstraints />
-            <RowConstraints />
-            <RowConstraints />
-            <RowConstraints />
-         </rowConstraints>
-<!--                    graphic="@../images/profile_icon.png"/>-->
-        </GridPane>
+    <HBox alignment="CENTER" spacing="40" VBox.vgrow="ALWAYS">
+        <padding>
+            <Insets bottom="30" left="30" right="30" top="30" />
+        </padding>
+        <ImageView fx:id="catImage" fitHeight="400.0" fitWidth="400.0" pickOnBounds="true" preserveRatio="true" styleClass="welcome-image">
+            <image>
+                <Image url="@../images/budget_illustration.jpg" />
+            </image>
+        </ImageView>
+        <ScrollPane fitToWidth="true" styleClass="scroll-pane">
+            <content>
+                <VBox prefHeight="667.0" prefWidth="560.0" spacing="20" styleClass="card-container">
+                    <padding>
+                        <Insets bottom="20" left="20" right="20" top="20" />
+                    </padding>
+                    <VBox spacing="15" styleClass="card">
+                        <Label styleClass="card-title" text="Транзакции" />
+                        <HBox alignment="CENTER" spacing="15">
+                            <Button fx:id="addIncomeButton" onAction="#addIncome" prefWidth="150.0" styleClass="action-button" text="Доход">
+                                <graphic>
+                                    <ImageView fitHeight="24.0" fitWidth="24.0" preserveRatio="true">
+                                        <image>
+                                            <Image url="@../images/wallet-income.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>
+                            <Button fx:id="addExpenseButton" onAction="#addExpense" prefWidth="150.0" styleClass="action-button" text="Расход">
+                                <graphic>
+                                    <ImageView fitHeight="24.0" fitWidth="24.0" preserveRatio="true">
+                                        <image>
+                                            <Image url="@../images/expense.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>
+                            <Button fx:id="transactionHistoryButton" onAction="#viewHistory" prefWidth="150.0" styleClass="action-button" text="История">
+                                <graphic>
+                                    <ImageView fitHeight="24.0" fitWidth="24.0" preserveRatio="true">
+                                        <image>
+                                            <Image url="@../images/time-past.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>
+                        </HBox>
+                    </VBox>
+                    <VBox spacing="15" styleClass="card">
+                        <Label styleClass="card-title" text="Счета" />
+                        <HBox alignment="CENTER" spacing="15">
+                            <Button fx:id="addAccountButton" onAction="#addAccount" prefWidth="150.0" styleClass="action-button" text="Добавить">
+                                <graphic>
+                                    <ImageView fitHeight="24.0" fitWidth="24.0" preserveRatio="true">
+                                        <image>
+                                         <Image url="@../images/add.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>
+                            <Button onAction="#openAccountManagement" prefWidth="150.0" styleClass="action-button" text="Личные">
+                                <graphic>
+                                    <ImageView fitHeight="24.0" fitWidth="24.0" preserveRatio="true">
+                                        <image>
+                                          <Image url="@../images/piggy-bank.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>
+                            <Button onAction="#manageChildAccounts" prefWidth="150.0" styleClass="action-button" text="Детские">
+                                <graphic>
+                                    <ImageView fitHeight="24.0" fitWidth="24.0" preserveRatio="true">
+                                        <image>
+                                            <Image url="@../images/child-head.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>
+                        </HBox>
+                    </VBox>
+                    <VBox spacing="15" styleClass="card">
+                        <Label styleClass="card-title" text="Аналитика" />
+                        <HBox alignment="CENTER" spacing="15">
+                            <Button fx:id="viewBalanceButton" onAction="#viewBalance" prefWidth="150.0" styleClass="action-button" text="Баланс">
+                                <graphic>
+                                    <ImageView fitHeight="24.0" fitWidth="24.0" preserveRatio="true">
+                                        <image>
+                                            <Image url="@../images/coins.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>
+                            <Button fx:id="viewChartButton" onAction="#viewChart" prefWidth="150.0" styleClass="action-button" text="Графики">
+                                <graphic>
+                                    <ImageView fitHeight="24.0" fitWidth="24.0" preserveRatio="true">
+                                        <image>
+                                            <Image url="@../images/chart-pie-alt.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>
+                        </HBox>
+                    </VBox>
+                    <VBox prefHeight="0.0" prefWidth="520.0" spacing="15" styleClass="card">
+                        <Label styleClass="card-title" text="Настройки" />
+                        <HBox alignment="CENTER" spacing="15">
+                            <Button fx:id="manageCategoriesButton" onAction="#manageCategories" prefWidth="150.0" styleClass="action-button" text="Категории">
+                                <graphic>
+                                    <ImageView fitHeight="24.0" fitWidth="24.0" preserveRatio="true">
+                                        <image>
+                                            <Image url="@../images/categories.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>
+                            <Button fx:id="personalInfButton" onAction="#persInf" prefWidth="150.0" styleClass="action-button" text="Профиль">
+                                <graphic>
+                                    <ImageView fitHeight="24.0" fitWidth="24.0" preserveRatio="true">
+                                        <image>
+                                            <Image url="@../images/user.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>
+                            <Button fx:id="manageGoalsButton" onAction="#manageGoals" prefWidth="150.0" styleClass="action-button" text="Цели">
+                                <graphic>
+                                    <ImageView fitHeight="24.0" fitWidth="24.0" preserveRatio="true">
+                                        <image>
+                                            <Image url="@../images/goals.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>
+                        </HBox>
+                    </VBox>
+                </VBox>
+            </content>
+        </ScrollPane>
     </HBox>
 
-    <HBox alignment="CENTER_LEFT" spacing="10">
+    <HBox alignment="CENTER_LEFT" spacing="20">
         <padding>
-            <Insets bottom="20" left="20" />
+            <Insets bottom="20" left="30" />
         </padding>
-        <Button fx:id="backButton" onAction="#backToMain" styleClass="cancel-button" text="Выйти" />
+        <Button fx:id="backButton" onAction="#backToMain" styleClass="logout-button" text="Выйти">
+            <graphic>
+                <ImageView fitHeight="24.0" fitWidth="24.0" preserveRatio="true">
+                    <image>
+                        <Image url="@../images/address-card.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
     </HBox>
 </VBox>

@@ -3,38 +3,43 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
 
-<VBox spacing="20" alignment="CENTER" prefWidth="400.0" prefHeight="350.0" styleClass="root"
-      xmlns="http://javafx.com/javafx/17.0.12"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="client.controllers.user.AddExpenseController"
-      stylesheets="@../css/styles.css">
+<VBox alignment="CENTER" spacing="30" styleClass="root" stylesheets="@../css/menu_styles.css"
+      xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="client.controllers.user.AddExpenseController">
     <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
+        <Insets top="50" right="50" bottom="50" left="50"/>
     </padding>
 
-    <HBox alignment="CENTER" spacing="10">
-        <!--<ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-            <image>
-                <Image url="@../images/expense_icon.png"/>
-            </image>
-        </ImageView>-->
-        <Label text="Добавление расхода" styleClass="header-label"/>
-    </HBox>
+    <VBox spacing="20" alignment="CENTER">
+        <HBox alignment="CENTER" spacing="15">
+            <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                <image>
+                    <Image url="@../images/expense.png"/>
+                </image>
+            </ImageView>
+            <Label text="Добавление расхода" styleClass="head-label">
+                <font>
+                    <Font name="Poppins Bold" size="24.0"/>
+                </font>
+            </Label>
+        </HBox>
 
-    <VBox spacing="10" alignment="CENTER">
-        <Label text="Сумма" styleClass="input-label"/>
-        <TextField fx:id="amountField" promptText="Введите сумму" styleClass="my-textfield"/>
+        <VBox spacing="15" alignment="CENTER">
+            <Label text="Сумма" styleClass="input-label"/>
+            <TextField fx:id="amountField" promptText="Введите сумму" styleClass="input-field"/>
 
-        <Label text="Счет" styleClass="input-label"/>
-        <ComboBox fx:id="accountComboBox" styleClass="my-combobox" prefWidth="200.0"/>
+            <Label text="Счёт" styleClass="input-label"/>
+            <ComboBox fx:id="accountComboBox" styleClass="combo-box" prefWidth="250.0"/>
 
-        <Label text="Категория" styleClass="input-label"/>
-        <ComboBox fx:id="categoryComboBox" styleClass="my-combobox" prefWidth="200.0"/>
+            <Label text="Категория" styleClass="input-label"/>
+            <ComboBox fx:id="categoryComboBox" styleClass="combo-box" prefWidth="250.0"/>
+        </VBox>
+
+        <HBox alignment="CENTER" spacing="20">
+            <Button text="Добавить" onAction="#addExpense" styleClass="action-button" prefWidth="150.0"/>
+            <Button text="Отмена" onAction="#closeWindow" styleClass="logout-button" prefWidth="150.0"/>
+        </HBox>
     </VBox>
-
-    <HBox spacing="15" alignment="CENTER">
-        <Button text="Добавить" onAction="#addExpense" styleClass="expense-button"/>
-        <Button text="Отмена" onAction="#closeWindow" styleClass="cancel-button"/>
-    </HBox>
 </VBox>

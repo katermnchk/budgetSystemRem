@@ -15,7 +15,8 @@ public class Main extends Application {
             throw new IllegalStateException("FXML файл не найден!");
         }
 
-        Scene scene = new Scene(fxmlLoader.load(), 700, 400);
+        Scene scene = new Scene(fxmlLoader.load());
+        stage.setMaximized(true);
         stage.setTitle("Budget System Rem");
         stage.setScene(scene);
         stage.show();
