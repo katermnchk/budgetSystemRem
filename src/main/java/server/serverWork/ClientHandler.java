@@ -531,6 +531,23 @@ public class ClientHandler implements Runnable {
                             e.printStackTrace();
                         }
                     }
+                    case "deleteGoal" -> {
+                        LOGGER.info("[" + LocalDateTime.now() + "] Processing deleteGoal for userId=" + currentUserId);
+                        if (currentUserId == 0) {
+                            soos.writeObject("Ошибка: пользователь не авторизован");
+                            LOGGER.warning("[" + LocalDateTime.now() + "] Unauthorized deleteGoal attempt: userId=" + currentUserId);
+                            continue;
+                        }
+                        try {
+                            Integer goalId = (Integer) sois.readObject();
+                            boolean success = sqlFactory.getUsers().deleteGoal(goalId, currentUserId);
+                            soos.writeObject(success ? "OK" : "Ошибка при удалении цели");
+                            LOGGER.info("[" + LocalDateTime.now() + "] Goal deletion " + (success ? "successful" : "failed") + ": goalId=" + goalId);
+                        } catch (SQLException e) {
+                            soos.writeObject("Ошибка при удалении цели: " + e.getMessage());
+                            LOGGER.severe("[" + LocalDateTime.now() + "] Error deleting goal: " + e.getMessage());
+                        }
+                    }
                 }
             }
         } catch (IOException | ClassNotFoundException | SQLException e) {

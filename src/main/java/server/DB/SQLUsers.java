@@ -624,15 +624,22 @@ public class SQLUsers implements ISQLUsers {
                 goal.put("targetAmount", targetAmount);
                 goal.put("actualAmount", actualAmount);
                 goal.put("period", rs.getString("period"));
-                boolean achieved = rs.getString("type").equals("INCOME") ? actualAmount >= targetAmount : actualAmount <= targetAmount * (-1);
+
+                boolean achieved;
+                if ("INCOME".equals(rs.getString("type"))) {
+                    achieved = actualAmount >= targetAmount;
+                } else {
+                    achieved = Math.abs(actualAmount) <= targetAmount;
+                }
                 goal.put("achieved", achieved);
                 goals.add(goal);
-                System.out.println("Цель добавлена: category=" + rs.getString("category_name") + ", target=" + targetAmount + ", actual=" + actualAmount);
+                LOGGER.info("[" + LocalDateTime.now() + "] Цель добавлена: category=" + rs.getString("category_name") +
+                        ", target=" + targetAmount + ", actual=" + actualAmount + ", achieved=" + achieved);
             }
         } catch (SQLException e) {
             System.err.println("Ошибка при получении целей: " + e.getMessage());
         }
-        System.out.println("Всего целей для userId=" + userId + ": " + goals.size());
+        LOGGER.info("[" + LocalDateTime.now() + "] Всего целей для userId=" + userId + ": " + goals.size());
         return goals;
     }
 
@@ -649,40 +656,45 @@ public class SQLUsers implements ISQLUsers {
                 if (targetObj instanceof Number && actualObj instanceof Number) {
                     double target = ((Number) targetObj).doubleValue();
                     double actual = ((Number) actualObj).doubleValue();
-                    double excess = actual - target;
-                    String categoryName = (String) goal.get("categoryName");
-                    recommendations.add(String.format("Цель по расходам на '%s' превышена на %.2f BYN. Рекомендуем сократить траты.", categoryName, excess));
+                    double excess = Math.abs(actual) - target;
+                    if (excess > 0) {
+                        String categoryName = (String) goal.get("categoryName");
+                        recommendations.add(String.format("Цель по расходам на '%s' превышена на %.2f BYN. Рекомендуем сократить траты.",
+                                categoryName, excess));
 
-                    String sql = "SELECT c.name, SUM(t.amount) AS total " +
-                            "FROM transactions t " +
-                            "JOIN categories c ON t.category_id = c.id " +
-                            "WHERE t.user_id = ? AND c.type = 'EXPENSE' AND c.id != ? " +
-                            "AND t.date >= ? AND t.date < ? " +
-                            "GROUP BY c.name " +
-                            "HAVING SUM(t.amount) > 0 " +
-                            "ORDER BY total DESC LIMIT 1";
-                    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                        LocalDateTime now = LocalDateTime.now();
-                        LocalDateTime startOfMonth = now.with(TemporalAdjusters.firstDayOfMonth()).withHour(0).withMinute(0).withSecond(0);
-                        LocalDateTime endOfMonth = now.with(TemporalAdjusters.firstDayOfNextMonth()).withHour(0).withMinute(0).withSecond(0);
-                        stmt.setInt(1, userId);
-                        stmt.setInt(2, (Integer) goal.get("categoryId"));
-                        stmt.setTimestamp(3, Timestamp.valueOf(startOfMonth));
-                        stmt.setTimestamp(4, Timestamp.valueOf(endOfMonth));
-                        ResultSet rs = stmt.executeQuery();
-                        if (rs.next()) {
-                            String otherCategory = rs.getString("name");
-                            double otherAmount = rs.getDouble("total");
-                            recommendations.add(String.format("Рассмотрите сокращение расходов на '%s' (текущие траты: %.2f BYN).", otherCategory, otherAmount));
+                        String sql = "SELECT c.name, SUM(t.amount) AS total " +
+                                "FROM transactions t " +
+                                "JOIN categories c ON t.category_id = c.id " +
+                                "WHERE t.user_id = ? AND c.type = 'EXPENSE' AND c.id != ? " +
+                                "AND t.date >= ? AND t.date < ? " +
+                                "GROUP BY c.name " +
+                                "HAVING SUM(t.amount) < 0 " +
+                                "ORDER BY total ASC LIMIT 1";
+                        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                            LocalDateTime now = LocalDateTime.now();
+                            LocalDateTime startOfMonth = now.with(TemporalAdjusters.firstDayOfMonth()).withHour(0).withMinute(0).withSecond(0);
+                            LocalDateTime endOfMonth = now.with(TemporalAdjusters.firstDayOfNextMonth()).withHour(0).withMinute(0).withSecond(0);
+                            stmt.setInt(1, userId);
+                            stmt.setInt(2, (Integer) goal.get("categoryId"));
+                            stmt.setTimestamp(3, Timestamp.valueOf(startOfMonth));
+                            stmt.setTimestamp(4, Timestamp.valueOf(endOfMonth));
+                            ResultSet rs = stmt.executeQuery();
+                            if (rs.next()) {
+                                String otherCategory = rs.getString("name");
+                                double otherAmount = Math.abs(rs.getDouble("total"));
+                                recommendations.add(String.format("Рассмотрите сокращение расходов на '%s' (текущие траты: %.2f BYN).",
+                                        otherCategory, otherAmount));
+                            }
+                        } catch (SQLException e) {
+                            System.err.println("Ошибка при генерации рекомендаций: " + e.getMessage());
                         }
-                    } catch (SQLException e) {
-                        System.err.println("Ошибка при генерации рекомендаций: " + e.getMessage());
                     }
                 } else {
                     System.err.println("Ошибка: targetAmount или actualAmount не являются числами для категории " + goal.get("categoryName"));
                 }
             }
         }
+        LOGGER.info("[" + LocalDateTime.now() + "] Сгенерировано рекомендаций для userId=" + userId + ": " + recommendations.size());
         return recommendations;
     }
 
@@ -766,4 +778,19 @@ public class SQLUsers implements ISQLUsers {
         return accountInfo;
     }
 
-  }
+    @Override
+    public boolean deleteGoal(int goalId, int userId) throws SQLException {
+        String sql = "DELETE FROM goals WHERE id = ? AND user_id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, goalId);
+            stmt.setInt(2, userId);
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected == 0) {
+                LOGGER.warning("[" + LocalDateTime.now() + "] Goal not found or access denied: goalId=" + goalId + ", userId=" + userId);
+                return false;
+            }
+            LOGGER.info("[" + LocalDateTime.now() + "] Goal deleted: goalId=" + goalId + ", userId=" + userId);
+            return true;
+        }
+    }
+}

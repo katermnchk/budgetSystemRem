@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox alignment="TOP_CENTER" prefHeight="700.0" prefWidth="600.0" spacing="10" stylesheets="@../css/history_styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.user.GoalsController">
+<VBox alignment="TOP_CENTER" prefHeight="700.0" prefWidth="700.0" spacing="10" stylesheets="@../css/history_styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.user.GoalsController">
     <padding>
         <Insets bottom="10" left="10" right="10" top="10" />
     </padding>
@@ -47,29 +47,30 @@
             <Button fx:id="addGoalButton" onAction="#addGoal" styleClass="action-button" text="Добавить цель" />
             <Button fx:id="cancelButton" onAction="#cancel" styleClass="cancel-button" text="Отмена" />
         </HBox>
-      <columnConstraints>
-         <ColumnConstraints />
-         <ColumnConstraints />
-      </columnConstraints>
-      <rowConstraints>
-         <RowConstraints />
-         <RowConstraints />
-         <RowConstraints />
-         <RowConstraints />
-      </rowConstraints>
+        <columnConstraints>
+            <ColumnConstraints />
+            <ColumnConstraints />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+        </rowConstraints>
     </GridPane>
 
     <Label styleClass="input-label" text="Ваши цели" />
     <TableView fx:id="goalsTable" prefHeight="240.0" prefWidth="580.0" styleClass="my-table">
         <columns>
-            <TableColumn fx:id="categoryColumn" prefWidth="140.0" text="Категория" />
-            <TableColumn fx:id="typeColumn" prefWidth="110.0" text="Тип" />
-            <TableColumn fx:id="targetAmountColumn" prefWidth="112.0" text="Цель (BYN)" />
-            <TableColumn fx:id="actualAmountColumn" minWidth="0.0" prefWidth="91.0" text="Факт (BYN)" />
-            <TableColumn fx:id="statusColumn" prefWidth="105.0" text="Статус" />
+            <TableColumn fx:id="categoryColumn" prefWidth="120.0" text="Категория" />
+            <TableColumn fx:id="typeColumn" prefWidth="100.0" text="Тип" />
+            <TableColumn fx:id="targetAmountColumn" prefWidth="100.0" text="Цель (BYN)" />
+            <TableColumn fx:id="actualAmountColumn" minWidth="0.0" prefWidth="105.0" text="Факт (BYN)" />
+            <TableColumn fx:id="statusColumn" prefWidth="101.0" text="Статус" />
+            <TableColumn fx:id="actionColumn" prefWidth="109.0" text="Действие" />
         </columns>
     </TableView>
 
     <Label styleClass="input-label" text="Рекомендации" />
-    <TextArea fx:id="recommendationsArea" editable="false" prefHeight="104.0" prefWidth="580.0" />
+    <TextArea fx:id="recommendationsArea" editable="false" prefHeight="104.0" prefWidth="580.0" styleClass="recommendation-area" />
 </VBox>

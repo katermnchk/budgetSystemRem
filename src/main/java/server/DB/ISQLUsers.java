@@ -79,4 +79,6 @@ public interface ISQLUsers {
     boolean editAccount(int accountId, int userId, String newName) throws SQLException;
 
     HashMap<String, Object> getAccountInfo(int accountId, int userId) throws SQLException;
+
+    boolean deleteGoal(int goalId, int userId) throws SQLException;
 }

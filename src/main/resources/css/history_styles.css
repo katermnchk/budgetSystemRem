@@ -245,3 +245,13 @@
     -fx-background-radius: 10;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 8, 0, 0, 2);
 }
+
+.recommendation-area {
+    -fx-background-color: #f0f4f8;
+    -fx-text-fill: #2d3748;
+    -fx-font-size: 14px;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-padding: 10px;
+}
