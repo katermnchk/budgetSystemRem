@@ -1,6 +1,8 @@
 package client.controllers.admin;
 
 import client.clientWork.Connect;
+import client.controllers.user.MenuUserController;
+import client.controllers.user.TransactionHistoryController;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -9,14 +11,25 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.text.Text;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 public class AdminStatisticsController {
+    private static final Logger LOGGER = Logger.getLogger(AdminStatisticsController.class.getName());
+
 
     @FXML private Text totalUsers;
     @FXML private Text totalAccounts;
@@ -134,8 +147,12 @@ public class AdminStatisticsController {
 
     @FXML
     private void closeWindow(ActionEvent event) {
-        Stage stage = (Stage) backButton.getScene().getWindow();
-        stage.close();
+        try {
+            Stage stage = (Stage) roleTable.getScene().getWindow();
+            MenuAdminController.openMenuAdminController(stage);
+        } catch (Exception e) {
+            LOGGER.severe("Ошибка в closeWindow: " + e.getMessage());
+        }
     }
 
     private void showAlert(Alert.AlertType type, String title, String content) {
@@ -146,5 +163,37 @@ public class AdminStatisticsController {
             alert.setContentText(content);
             alert.showAndWait();
         });
+    }
+
+    public static void openAdminStatistics(Stage primaryStage) throws IOException {
+        String fxmlPath = "/client/adminStatistics.fxml";
+        LOGGER.info("[" + LocalDate.now() + " " + LocalTime.now() + "] Attempting to load FXML from: " + fxmlPath);
+
+        java.net.URL location = AdminStatisticsController.class.getResource(fxmlPath);
+        if (location == null) {
+            LOGGER.severe("[" + LocalDate.now() + " " + LocalTime.now() + "] FXML file not found at: " + fxmlPath);
+            throw new IOException("Cannot find FXML file at: " + fxmlPath);
+        }
+
+        FXMLLoader loader = new FXMLLoader(location);
+        Parent root = loader.load();
+        Scene scene = new Scene(root);
+        Stage stage = primaryStage != null ? primaryStage : new Stage();
+
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+        stage.setX(screenBounds.getMinX());
+        stage.setY(screenBounds.getMinY());
+        stage.setWidth(screenBounds.getWidth());
+        stage.setHeight(screenBounds.getHeight());
+        LOGGER.info("[" + LocalDate.now() + " " + LocalTime.now() + "] Screen bounds set: X=" + screenBounds.getMinX() +
+                ", Y=" + screenBounds.getMinY() + ", Width=" + screenBounds.getWidth() +
+                ", Height=" + screenBounds.getHeight());
+
+        stage.setMaximized(true);
+
+        stage.setScene(scene);
+        stage.setTitle("Статистика администратора");
+        stage.show();
+        LOGGER.info("[" + LocalDate.now() + " " + LocalTime.now() + "] Окно статистики администратора открыто на весь экран");
     }
 }

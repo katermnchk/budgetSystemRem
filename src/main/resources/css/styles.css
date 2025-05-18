@@ -184,3 +184,38 @@
     -fx-scale-y: 1.1;
     -fx-transition: all 0.3s ease-in-out;
 }
+
+
+.my-table {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #BBDEFB;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 15, 0, 0, 5);
+}
+
+.my-table .column-header {
+    -fx-background-color: #64B5F6;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-family: "Roboto";
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER;
+}
+
+.my-table .column-header-background {
+    -fx-background-color: transparent;
+}
+
+.my-table .table-cell {
+    -fx-text-fill: #37474F;
+    -fx-font-family: "Roboto";
+    -fx-font-size: 13px;
+    -fx-alignment: CENTER;
+}
+
+.my-table .table-row-cell:hover {
+    -fx-background-color: #E3F2FD;
+    -fx-cursor: hand;
+}

@@ -6,15 +6,15 @@
 <VBox styleClass="root" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.admin.UserManagementController">
     <TableView fx:id="userTable" prefWidth="306.0" styleClass="my-table">
         <columns>
-            <TableColumn fx:id="idColumn" prefWidth="50" text="ID" />
-            <TableColumn fx:id="loginColumn" prefWidth="150" text="Логин" />
-            <TableColumn fx:id="roleColumn" prefWidth="100" text="Роль" />
+            <TableColumn fx:id="idColumn" prefWidth="101.0" text="ID" />
+            <TableColumn fx:id="loginColumn" prefWidth="255.0" text="Логин" />
+            <TableColumn fx:id="roleColumn" prefWidth="296.0" text="Роль" />
         </columns>
     </TableView>
     <HBox alignment="CENTER" prefHeight="70.0" prefWidth="710.0" spacing="10">
-        <Button fx:id="addUserButton" onAction="#addUser" styleClass="my-button" text="Добавить" />
-        <Button fx:id="editUserButton" onAction="#editUser" prefHeight="51.0" prefWidth="172.0" styleClass="my-button" text="Редактировать" />
-        <Button fx:id="deleteUserButton" onAction="#deleteUser" styleClass="my-button" text="Удалить" />
-        <Button fx:id="backButton" onAction="#back" styleClass="my-button" text="Назад" />
+        <Button fx:id="addUserButton" onAction="#addUser" styleClass="primary-button" text="Добавить" />
+        <Button fx:id="editUserButton" onAction="#editUser" styleClass="primary-button" text="Редактировать" />
+        <Button fx:id="deleteUserButton" onAction="#deleteUser" styleClass="primary-button" text="Удалить" />
+        <Button fx:id="backButton" onAction="#back" styleClass="cancel-button" text="Назад" />
     </HBox>
 </VBox>

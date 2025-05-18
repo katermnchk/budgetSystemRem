@@ -1,6 +1,7 @@
 package client.controllers;
 
 import client.clientWork.Connect;
+import client.controllers.admin.MenuAdminController;
 import client.controllers.user.MenuUserController;
 import client.util.ClientDialog;
 import javafx.fxml.FXML;
@@ -103,7 +104,23 @@ public class MainController {
                 MenuUserController controller = MenuUserController.openMenuUserController(stage);
                 controller.setClient(Connect.client);
                 controller.setCurrentUserId(Connect.id);
-                LOGGER.info("Передача client и currentUserId в MenuUserController: id=" + Connect.id);
+                LOGGER.info("Передача client и currentUserId в MenUserController: id=" + Connect.id);
+            } catch (Exception e) {
+                LOGGER.severe("Ошибка : " + e.getMessage());
+            }
+        } else if (Objects.equals(fxmlPath, "/client/menuAdmin.fxml")) {
+            try {
+                Stage stage = (Stage) enterButton.getScene().getWindow();
+                MenuAdminController.openMenuAdminController(stage);
+                LOGGER.info("Передача client и currentUserId в MenuAdminController: id=" + Connect.id);
+            } catch (Exception e) {
+                LOGGER.severe("Ошибка : " + e.getMessage());
+            }
+        } else {
+            try {
+                Stage stage = (Stage) enterButton.getScene().getWindow();
+                MenuChild.openMenuChild(stage);
+                LOGGER.info("Передача client и currentUserId в MenuChildController: id=" + Connect.id);
             } catch (Exception e) {
                 LOGGER.severe("Ошибка : " + e.getMessage());
             }

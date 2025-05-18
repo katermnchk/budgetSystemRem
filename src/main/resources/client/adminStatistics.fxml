@@ -1,55 +1,98 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox alignment="TOP_CENTER" prefHeight="656.0" prefWidth="452.0" spacing="10" xmlns="http://javafx.com/javafx/17.0.12"
-      xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.admin.AdminStatisticsController"
-      stylesheets="@../css/styles.css">
-    <Label style="-fx-font-size: 18; -fx-font-weight: bold;" text="Статистика администратора" styleClass="header-label"/>
+<VBox alignment="TOP_CENTER" styleClass="root" stylesheets="@../css/admin_statistics.css"
+      xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.admin.AdminStatisticsController">
+    <VBox styleClass="header" VBox.vgrow="NEVER">
+        <padding>
+            <Insets bottom="25" top="25" />
+        </padding>
+        <HBox alignment="CENTER" spacing="12">
+            <ImageView fitHeight="44.0" fitWidth="44.0" pickOnBounds="true" preserveRatio="true">
+                <image>
+                    <Image url="@../images/analytics.png" />
+                </image>
+            </ImageView>
+            <Label styleClass="header-label" text="Статистика администратора">
+                <font>
+                    <Font name="Poppins Bold" size="28.0" />
+                </font>
+            </Label>
+        </HBox>
+    </VBox>
 
-    <GridPane alignment="CENTER" hgap="10" vgap="10">
-        <Label text="Всего пользователей:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-        <Text fx:id="totalUsers" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+    <ScrollPane fitToWidth="true" styleClass="scroll-pane" VBox.vgrow="ALWAYS">
+        <content>
+            <VBox spacing="25" alignment="TOP_CENTER">
+                <VBox spacing="20" styleClass="card" VBox.vgrow="ALWAYS">
+                    <padding>
+                        <Insets bottom="20" left="20" right="20" top="20" />
+                    </padding>
 
-        <Label text="Всего счетов:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-        <Text fx:id="totalAccounts" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                    <GridPane alignment="CENTER" hgap="15" vgap="15" styleClass="info-grid">
+                        <Label text="Всего пользователей:" styleClass="info-label" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                        <Text fx:id="totalUsers" styleClass="info-text" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                        <Label text="Всего счетов:" styleClass="info-label" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                        <Text fx:id="totalAccounts" styleClass="info-text" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Label text="Общий баланс:" styleClass="info-label" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                        <Text fx:id="totalBalance" styleClass="info-text" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Label text="Всего транзакций:" styleClass="info-label" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                        <Text fx:id="totalTransactions" styleClass="info-text" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" />
+                            <ColumnConstraints hgrow="SOMETIMES" />
+                        </columnConstraints>
+                        <rowConstraints>
+                            <RowConstraints />
+                            <RowConstraints />
+                            <RowConstraints />
+                            <RowConstraints />
+                        </rowConstraints>
+                    </GridPane>
+                </VBox>
 
-        <Label text="Общий баланс:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-        <Text fx:id="totalBalance" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                <VBox spacing="15" styleClass="card" VBox.vgrow="ALWAYS">
+                    <padding>
+                        <Insets bottom="15" left="15" right="15" top="15" />
+                    </padding>
+                    <Label text="Пользователи по ролям" styleClass="card-title" />
+                    <TableView fx:id="roleTable" prefHeight="140.0" styleClass="my-table">
+                        <columns>
+                            <TableColumn fx:id="roleColumn" prefWidth="200.0" text="Роль" />
+                            <TableColumn fx:id="countColumn" prefWidth="200.0" text="Количество" />
+                        </columns>
+                    </TableView>
+                </VBox>
 
-        <Label text="Всего транзакций:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-        <Text fx:id="totalTransactions" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-      <columnConstraints>
-         <ColumnConstraints />
-         <ColumnConstraints />
-      </columnConstraints>
-      <rowConstraints>
-         <RowConstraints />
-         <RowConstraints />
-         <RowConstraints />
-         <RowConstraints />
-      </rowConstraints>
-    </GridPane>
+                <VBox spacing="15" styleClass="card" VBox.vgrow="ALWAYS">
+                    <padding>
+                        <Insets bottom="15" left="15" right="15" top="15" />
+                    </padding>
+                    <Label text="Транзакции по категориям" styleClass="card-title" />
+                    <TableView fx:id="categoryTable" prefHeight="140.0" styleClass="my-table">
+                        <columns>
+                            <TableColumn fx:id="categoryNameColumn" prefWidth="120.0" text="Категория" />
+                            <TableColumn fx:id="categoryTypeColumn" prefWidth="80.0" text="Тип" />
+                            <TableColumn fx:id="transactionCountColumn" prefWidth="80.0" text="Транзакций" />
+                            <TableColumn fx:id="totalAmountColumn" prefWidth="80.0" text="Сумма" />
+                        </columns>
+                    </TableView>
+                </VBox>
 
-    <Label text="Пользователи по ролям" />
-    <TableView fx:id="roleTable" prefHeight="200" styleClass="my-table">
-        <columns>
-            <TableColumn fx:id="roleColumn" prefWidth="100" text="Роль" />
-            <TableColumn fx:id="countColumn" prefWidth="100" text="Количество" />
-        </columns>
-    </TableView>
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <padding>
+                        <Insets bottom="25" left="20" />
+                    </padding>
+                    <Button fx:id="backButton" onAction="#closeWindow" styleClass="cancel-button" text="Назад">
 
-    <Label text="Транзакции по категориям" />
-    <TableView fx:id="categoryTable" prefHeight="200" styleClass="my-table">
-        <columns>
-            <TableColumn fx:id="categoryNameColumn" prefWidth="150" text="Категория" />
-            <TableColumn fx:id="categoryTypeColumn" prefWidth="100" text="Тип" />
-            <TableColumn fx:id="transactionCountColumn" prefWidth="100" text="Транзакций" />
-            <TableColumn fx:id="totalAmountColumn" prefWidth="100" text="Сумма" />
-        </columns>
-    </TableView>
-
-    <Button fx:id="backButton" onAction="#closeWindow" prefHeight="0.0" prefWidth="49.0" styleClass="my-button" text="Назад" />
+                    </Button>
+                </HBox>
+            </VBox>
+        </content>
+    </ScrollPane>
 </VBox>

@@ -1,0 +1,68 @@
+.root {
+    -fx-background-color: #EAF4FF;
+}
+
+.header {
+    -fx-background-color: #90CAF9;
+    -fx-alignment: center;
+    -fx-background-radius: 0 0 15 15;
+}
+
+.header-label {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 6, 0, 0, 2);
+}
+
+.action-button {
+    -fx-background-color: #64B5F6;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-family: "Roboto";
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 12 25;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 8, 0, 0, 3);
+    -fx-transition: all 0.3s ease-in-out;
+}
+
+.action-button:hover {
+    -fx-background-color: #42A5F5;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.logout-button {
+    -fx-background-color: transparent;
+    -fx-border-color: #64B5F6;
+    -fx-border-width: 2;
+    -fx-text-fill: #64B5F6;
+    -fx-font-family: "Roboto";
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 12 25;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-cursor: hand;
+}
+
+.logout-button:hover {
+    -fx-background-color: #E3F2FD;
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+    -fx-transition: all 0.3s ease-in-out;
+}
+
+.welcome-image {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 12, 0, 0, 4);
+    -fx-scale-x: 1.0;
+    -fx-scale-y: 1.0;
+    -fx-transition: all 0.3s ease-in-out;
+}
+
+.welcome-image:hover {
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
