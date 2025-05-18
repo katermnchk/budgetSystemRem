@@ -9,6 +9,8 @@ public class Account implements Serializable {
     @Getter
     @Setter
     private int id;
+    @Setter
+    private int userId;
     @Getter
     @Setter
     private String name;
@@ -39,5 +41,6 @@ public class Account implements Serializable {
     public void setBlocked(boolean blockedValue) {
         this.blockedValue = blockedValue;
     }
+
 
 }

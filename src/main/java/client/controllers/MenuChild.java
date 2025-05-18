@@ -1,6 +1,6 @@
 package client.controllers;
 
-import client.controllers.admin.MenuAdminController;
+import client.clientWork.Client;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,7 +20,10 @@ import java.util.logging.Logger;
 import static client.util.ClientDialog.showAlert;
 
 public class MenuChild {
-    private static final Logger LOGGER = Logger.getLogger(MenuAdminController.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(MenuChild.class.getName());
+
+    private Client client;
+    private int currentUserId;
 
     @FXML
     private Button backButton;
@@ -28,7 +31,17 @@ public class MenuChild {
     @Setter
     private Stage stage;
 
-    public static void openMenuChild(Stage primaryStage) throws IOException {
+    public void setClient(Client client) {
+        LOGGER.info("Установка клиента в MenuChild: " + (client != null ? client.toString() : "null"));
+        this.client = client;
+    }
+
+    public void setCurrentUserId(int currentUserId) {
+        LOGGER.info("Установка currentUserId в MenuChild: " + currentUserId);
+        this.currentUserId = currentUserId;
+    }
+
+    public static MenuChild openMenuChild(Stage primaryStage) throws IOException {
             String fxmlPath = "/client/menuChild.fxml";
             LOGGER.info("[" + LocalDate.now() + " " + LocalTime.now() + "] Пытаемся загрузить FXML из: " + fxmlPath);
 
@@ -61,13 +74,18 @@ public class MenuChild {
             stage.show();
             LOGGER.info("[" + LocalDate.now() + " " + LocalTime.now() + "] Окно меню ребенка открыто на весь экран");
 
+        return controller;
     }
 
     @FXML
     void viewBalance() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/balanceWindow.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/childBalanceWindow.fxml"));
             Parent root = loader.load();
+            ChildBalanceWindowController controller = loader.getController();
+            LOGGER.info("Установка client и userId в ChildBalanceWindowController");
+            controller.setClient(client);
+            controller.setUserId(currentUserId);
             Stage stage = new Stage();
             stage.setTitle("Текущий баланс");
             stage.setScene(new Scene(root));

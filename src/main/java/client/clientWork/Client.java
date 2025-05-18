@@ -1,5 +1,7 @@
 package client.clientWork;
 
+import models.TransactionRequest;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -95,4 +97,19 @@ public class Client {
         return (String) inStream.readObject();
     }
 
+    public String addExpense(TransactionRequest expenseRequest) throws IOException, ClassNotFoundException {
+        sendMessage("addExpense");
+        sendObject(expenseRequest);
+        return (String) readObject();
+    }
+
+    public ArrayList<Account> getAccounts(int userId) throws IOException, ClassNotFoundException {
+        sendMessage("getAccounts");
+        sendObject(userId);
+        Object response = readObject();
+        if (response instanceof String) {
+            throw new IOException((String) response);
+        }
+        return (ArrayList<Account>) response;
+    }
 }

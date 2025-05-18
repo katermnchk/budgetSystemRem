@@ -191,17 +191,19 @@ public class ClientHandler implements Runnable {
                             e.printStackTrace();
                         }
                     }
-                    /*case "getTransactionHistory" -> {
+                    case "getAccounts" -> {
                         Integer userId = (Integer) sois.readObject();
-                      //  SQLFactory sqlFactory = new SQLFactory();
                         try {
-                            ArrayList<Transaction> transactions = sqlFactory.getUsers().getTransactionHistory(userId);
-                            soos.writeObject(transactions);
+                            ArrayList<Account> accounts = sqlFactory.getUsers().getAccounts(userId);
+                            LOGGER.info("Отправлено " + accounts.size() + " счетов для userId: " + userId);
+                            soos.writeObject(accounts);
                         } catch (SQLException e) {
-                            soos.writeObject("Ошибка при получении истории транзакций: " + e.getMessage());
+                            String errorMessage = "Ошибка при получении счетов: " + e.getMessage();
+                            LOGGER.severe(errorMessage);
+                            soos.writeObject(errorMessage);
                             e.printStackTrace();
                         }
-                    }*/
+                    }
                     case "getTransactionHistory" -> {
                         Integer userId = (Integer) sois.readObject();
                         HashMap<String, Object> filters = (HashMap<String, Object>) sois.readObject();
@@ -406,7 +408,7 @@ public class ClientHandler implements Runnable {
                             soos.writeObject(accounts);
                             LOGGER.info("Отправлено " + accounts.size() + " счетов для childId=" + childId);
                         } catch (SQLException e) {
-                            soos.writeObject(new ArrayList<Account>()); // Пустой список вместо строки ошибки
+                            soos.writeObject(new ArrayList<Account>());
                             LOGGER.severe("Ошибка при получении счетов ребенка: " + e.getMessage());
                         }
                     }

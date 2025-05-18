@@ -40,28 +40,6 @@ public class SQLUsers implements ISQLUsers {
         return instance;
     }
 
-    /*public void hashExistingPasswords() {
-        String selectSql = "SELECT id, password FROM users";
-        String updateSql = "UPDATE users SET password = ? WHERE id = ?";
-        try (PreparedStatement selectStmt = conn.prepareStatement(selectSql);
-             PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
-            ResultSet rs = selectStmt.executeQuery();
-            while (rs.next()) {
-                int userId = rs.getInt("id");
-                String plainPassword = rs.getString("password");
-                if (!plainPassword.startsWith("$2a$")) {
-                    String hashedPassword = BCrypt.hashpw(plainPassword, BCrypt.gensalt(12));
-                    updateStmt.setString(1, hashedPassword);
-                    updateStmt.setInt(2, userId);
-                    updateStmt.executeUpdate();
-                    System.out.println("Пароль для userId=" + userId + " успешно хеширован.");
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("Ошибка при хешировании паролей: " + e.getMessage());
-        }
-    }
-*/
     @Override
     public ArrayList<Users> findUser(Users obj) {
         ArrayList<Users> usList = new ArrayList<>();
@@ -262,30 +240,7 @@ public class SQLUsers implements ISQLUsers {
         return balances;
     }
 
-    /*@Override
-    public ArrayList<Transaction> getTransactionHistory(Integer userId) throws SQLException {
-        ArrayList<Transaction> transactions = new ArrayList<>();
-        String sql = "SELECT t.date, a.name AS account_name, c.name AS category_name, t.amount, t.description " +
-                "FROM transactions t " +
-                "JOIN accounts a ON t.account_id = a.id " +
-                "JOIN categories c ON t.category_id = c.id " +
-                "WHERE t.user_id = ? " +
-                "ORDER BY t.date DESC";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, userId);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                transactions.add(new Transaction(
-                        rs.getTimestamp("date"),
-                        rs.getString("account_name"),
-                        rs.getString("category_name"),
-                        rs.getDouble("amount"),
-                        rs.getString("description")
-                ));
-            }
-        }
-        return transactions;
-    }*/
+
     @Override
     public ArrayList<Transaction> getTransactionHistory(Integer userId, HashMap<String, Object> filters) throws SQLException {
         ArrayList<Transaction> transactions = new ArrayList<>();
@@ -792,5 +747,29 @@ public class SQLUsers implements ISQLUsers {
             LOGGER.info("[" + LocalDateTime.now() + "] Goal deleted: goalId=" + goalId + ", userId=" + userId);
             return true;
         }
+    }
+
+    public ArrayList<Account> getAccounts(Integer userId) throws SQLException {
+        ArrayList<Account> accounts = new ArrayList<>();
+        String sql = "SELECT id, user_id, name, balance, is_blocked FROM accounts WHERE user_id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Account account = new Account();
+                account.setId(rs.getInt("id"));
+                account.setUserId(rs.getInt("user_id"));
+                account.setName(rs.getString("name"));
+                account.setBalance(rs.getDouble("balance"));
+                account.setBlocked(rs.getBoolean("is_blocked"));
+                accounts.add(account);
+                LOGGER.info("Счет для пользователя " + userId + ", имя: " + account.getName() + ", баланс: " + account.getBalance());
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Ошибка получения счетов для пользователя " + userId + ": " + e.getMessage());
+            throw e;
+        }
+        LOGGER.info("Возвращено " + accounts.size() + " счетов для userId: " + userId);
+        return accounts;
     }
 }

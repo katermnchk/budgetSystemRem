@@ -61,7 +61,6 @@ public class AddExpenseController implements Initializable {
 
     @FXML
     private void addExpense() {
-
         try {
             double amount = Double.parseDouble(amountField.getText());
             if (amount <= 0) {

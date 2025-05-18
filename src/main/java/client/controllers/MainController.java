@@ -119,7 +119,9 @@ public class MainController {
         } else {
             try {
                 Stage stage = (Stage) enterButton.getScene().getWindow();
-                MenuChild.openMenuChild(stage);
+                MenuChild controller = MenuChild.openMenuChild(stage);
+                controller.setClient(Connect.client);
+                controller.setCurrentUserId(Connect.id);
                 LOGGER.info("Передача client и currentUserId в MenuChildController: id=" + Connect.id);
             } catch (Exception e) {
                 LOGGER.severe("Ошибка : " + e.getMessage());
