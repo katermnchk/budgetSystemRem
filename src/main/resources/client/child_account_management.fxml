@@ -57,7 +57,7 @@
                 <Label text="Логин:" styleClass="input-label" GridPane.columnIndex="0" GridPane.rowIndex="2" />
                 <TextField fx:id="loginField" styleClass="my-textfield" GridPane.columnIndex="1" GridPane.rowIndex="2" prefWidth="200" />
                 <Label text="Пароль:" styleClass="input-label" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-                <TextField fx:id="passwordField" styleClass="my-textfield" GridPane.columnIndex="1" GridPane.rowIndex="3" prefWidth="200" />
+                <PasswordField fx:id="passwordField" styleClass="my-textfield" GridPane.columnIndex="1" GridPane.rowIndex="3" prefWidth="200" />
                 <Button text="Добавить ребенка" styleClass="my-button" onAction="#addChild" GridPane.columnIndex="1" GridPane.rowIndex="4" />
             </GridPane>
         </VBox>

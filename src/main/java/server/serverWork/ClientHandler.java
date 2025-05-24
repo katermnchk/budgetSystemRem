@@ -110,7 +110,6 @@ public class ClientHandler implements Runnable {
                     }
                     case "addIncome" -> {
                         TransactionRequest request = (TransactionRequest) sois.readObject();
-                        //SQLFactory sqlFactory = new SQLFactory();
                         try {
                             SQLIncome incomeDAO = sqlFactory.getIncome();
                             incomeDAO.addTransaction(

@@ -198,7 +198,7 @@ public class SQLChildren {
                     }
                 }
             }
-            String debitParentQuery = "UPDATE accounts SET balance = balance - ? WHERE id = ?";
+            /*String debitParentQuery = "UPDATE accounts SET balance = balance - ? WHERE id = ?";
             try (PreparedStatement debitStmt = conn.prepareStatement(debitParentQuery)) {
                 debitStmt.setDouble(1, amount);
                 debitStmt.setInt(2, parentAccountId);
@@ -206,7 +206,7 @@ public class SQLChildren {
                 if (rowsAffected == 0) {
                     throw new SQLException("Не удалось списать средства со счёта родителя: id=" + parentAccountId);
                 }
-            }
+            }*/
             String creditChildQuery = "UPDATE accounts SET balance = balance + ? WHERE id = ?";
             try (PreparedStatement creditStmt = conn.prepareStatement(creditChildQuery)) {
                 creditStmt.setDouble(1, amount);
